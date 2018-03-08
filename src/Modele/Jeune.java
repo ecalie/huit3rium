@@ -380,4 +380,13 @@ public class Jeune {
 		}
 
 	}
+	
+	public void initialiserReponses(int nbBalise, int nbMemo) {
+		for (int i = 0 ; i < nbBalise ; i ++) {
+			this.lesReponses.put("balise" + i, "XX");
+			this.lesReponses.put("maniabilite" + i, "XX");
+		}
+		for (int i = 0 ; i < nbMemo ; i++)
+			this.lesReponses.put("memo" + i, "XX");
+	}
 }

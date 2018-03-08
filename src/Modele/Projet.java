@@ -122,11 +122,6 @@ public class Projet {
 	 * @param fp  La fenêtre principale 
 	 */
 	public Projet(FenetrePrincipale fp) {
-		try {
-			File file = new File(".log.txt");
-			file.createNewFile();
-			Projet.fwLog = new FileWriter(file);
-		} catch (IOException e) {}
 		this.fp = fp;
 		this.nbBalise = 4;
 		this.nbMemo = 2;
@@ -185,13 +180,7 @@ public class Projet {
 				String line = br.readLine();
 				this.nomFichierLicencie = line;
 				br.close();
-			} catch (Exception e) {
-				try {
-					Projet.fwLog = new FileWriter(new File(".log.txt"), true);
-					Projet.fwLog.write(e + "");
-					Projet.fwLog.close();
-				} catch (IOException e1) {}
-			}
+			} catch (Exception e) {}
 		}
 		if (!param.exists() || !(new File(this.nomFichierLicencie).exists())) {
 			JFileChooser chooser = new JFileChooser();
@@ -224,22 +213,16 @@ public class Projet {
 				FileWriter fw = new FileWriter(config);
 				fw.write(this.nomFichierLicencie);
 				fw.close();
-			} catch (IOException e) {
-				try {
-					Projet.fwLog = new FileWriter(new File(".log.txt"), true);
-					Projet.fwLog.write(e + "");
-					Projet.fwLog.close();
-				} catch (IOException e1) {}
-			}
+			} catch (IOException e) {}
 		}
 
+		Workbook wb ;
+		
 		try {
 			// Créer le fichier et la feuille de calcul
-			File fichierLicencies = new File(this.nomFichierLicencie);
+			wb = WorkbookFactory.create(new File("08035.xlsm"));
 
-			Workbook wb = WorkbookFactory.create(new File("08035.xlsm"));
-
-			final Sheet sheet = wb.getSheet("Inscriptions");
+			Sheet sheet = wb.getSheet("Inscriptions");
 
 			int index = 4;
 			Row row = sheet.getRow(index++);
@@ -268,7 +251,10 @@ public class Projet {
 				fj.setTitle(j.toString());
 				fj.setLicencie(j);
 				fj.invaliderModif();
-
+				
+				// Initialiser les réponses 
+				j.initialiserReponses(this.nbBalise, this.nbMemo);
+				
 				this.ajouterLicencie(j);
 
 				this.fp.getDesktop().add(fj);
@@ -276,14 +262,9 @@ public class Projet {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
 					"Erreur dans l'ouverture du fichier des licenciés.");
-			try {
-				e.printStackTrace();
-				Projet.fwLog = new FileWriter(new File("log.txt"), true);
-				Projet.fwLog.write(e + "");
-				Projet.fwLog.close();
-			} catch (IOException e1) {}
 		}
 		this.licenciesEnreg = true;
 	}
@@ -768,7 +749,6 @@ public class Projet {
 	 **/
 	public void ajouterInscrits(String numero) {
 		if (!this.lesInscrits.contains(this.recupJeune(numero))) {
-			System.out.println(numero);
 			this.lesInscrits.add(this.recupJeune(numero));
 		}
 	}
@@ -1049,15 +1029,15 @@ public class Projet {
 			String nom = fichierSelectionnes.getAbsolutePath();
 
 			if (!nom.contains(".")) {
-				this.nomFichierCrit = nom;
+				this.nomFichierCrit = nom + ".xlsx";
 				this.enregistrerCrit();
 			}
-			else if (nom.endsWith(".xls")){
-				this.nomFichierCrit = nom.substring(0, nom.length() - 4);
+			else if (nom.endsWith(".xlsx")){
+				this.nomFichierCrit = nom;
 				this.enregistrerCrit();
 			} else {
 				javax.swing.JOptionPane.showMessageDialog(this.getFp(), 
-						"Veuillez sélectionner un fichier excel (extension .xls).", 
+						"Veuillez sélectionner un fichier excel.", 
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
@@ -1229,7 +1209,7 @@ public class Projet {
 
 
 			try {	
-				FileOutputStream fos = new FileOutputStream(this.nomFichierLicencie);
+				FileOutputStream fos = new FileOutputStream(this.nomFichierCrit);
 				wb.write(fos);
 
 				fos.close();
@@ -1428,6 +1408,29 @@ public class Projet {
 	 * @param nomFichierInscrtis   Le nom du fichier duquel on charge les inscrits
 	 **/
 	public void chargerCrit(String nomFichierInscrtis) {
+		/*Workbook wb ;
+	
+		// Créer le fichier et la feuille de calcul
+		wb = WorkbookFactory.create(new File(nomFichierInscrtis));
+	
+		Sheet sheet = wb.getSheet("Feuill1");
+
+		int i = 0, j = 0;
+		Row row = sheet.getRow(i++);
+
+		while (row.getCell(j).getStringCellValue() != "") {
+
+			String lettre = row.getCell(0).getStringCellValue();
+			int numero = (int) row.getCell(1).getNumericCellValue();
+			int equipe = (int) row.getCell(3).getNumericCellValue();
+			String nom = row.getCell(4).getStringCellValue();
+			String prenom = row.getCell(5).getStringCellValue();
+			int licence = (int) row.getCell(6).getNumericCellValue();
+			int nomClub = (int) row.getCell(7).getNumericCellValue();
+			String club = row.getCell(8).getStringCellValue();
+		
+		
+		
 		// Récupérer le fichier
 		File fichierInscrits = new File(nomFichierInscrtis);
 
@@ -1611,7 +1614,7 @@ public class Projet {
 			ecart = 10;
 		Confirmation charg = new Confirmation("Chargement réussi", this.fp, ecart);
 		Thread thread = new Thread(charg);
-		thread.start();
+		thread.start();*/
 	}
 
 	/////////////////////////////////////
