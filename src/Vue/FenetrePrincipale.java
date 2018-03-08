@@ -62,7 +62,7 @@ public class FenetrePrincipale extends JFrame {
 	/** La zone des boutons critérium. */
 	private JPanel btnsCrit;
 	
-	/** La zone des bares de progression. */
+	/** La zone des barres de progression. */
 	private JPanel zoneProg;
 
 	//////////////////

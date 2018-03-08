@@ -10,10 +10,10 @@ import java.util.HashMap;
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
-import Controleur.Score.ActionDeselectinner;
 import Controleur.Score.ActionValiderScore;
 import Modele.Jeune;
 import Modele.Projet;
@@ -46,65 +46,55 @@ public class FicheScore extends JInternalFrame {
 		JPanel contenu3 = new JPanel(new FlowLayout());
 		this.getContentPane().add(contenu3, BorderLayout.SOUTH);
 
-		String[] data1 = {"O", "N", "XX"};
-		String[] data2 = {"A", "B", "C", "D", "XX"};
+		String[] data1 = {"        O", "        N", "        XX"};
+		String[] data2 = {"        A", "        B", "        C", "        D", "        XX"};
 
 		for (int i = 1; i <= this.fp.getProjet().getNbMemo(); i++) {
-			// Ajouter le bouton de déselection
-			JButton btnMemo = new JButton("Mémo " + i);
+			JLabel btnMemo = new JLabel("Mémo " + i);
 			contenu1.add(btnMemo);
 
 			// Ajouter les réponses possibles
 			JList<String> memo = new JList<>(data2);
 			memo.setForeground(Color.BLUE);
 			memo.setBackground(Color.LIGHT_GRAY);
+			memo.setSelectedIndex(4);
 			this.lesMemos.add(memo);
 
 			// modifier l'action du bouton
-			btnMemo.addActionListener(new ActionDeselectinner(memo, this.fp.getProjet()));
 			btnMemo.setBackground(Color.LIGHT_GRAY);
-			btnMemo.setFocusPainted(false);
-			btnMemo.setBorderPainted(false);
-			btnMemo.setContentAreaFilled(false);
 			
 			contenu2.add(memo);
 		}
 
 		for (int i = 1; i <= this.fp.getProjet().getNbBalise(); i++) {
-			JButton btnBalise = new JButton("Balise " + i);
+			JLabel btnBalise = new JLabel("Balise " + i);
 			contenu1.add(btnBalise);
 
 			JList<String> balise = new JList<>(data2);
 			balise.setForeground(Color.BLUE);
 			balise.setBackground(Color.LIGHT_GRAY);
+			balise.setSelectedIndex(4);
 			this.lesBalises.add(balise);
 
 			// modifier l'action du bouton
-			btnBalise.addActionListener(new ActionDeselectinner(balise, this.fp.getProjet()));
 			btnBalise.setBackground(Color.LIGHT_GRAY);
-			btnBalise.setFocusPainted(false);
-			btnBalise.setBorderPainted(false);
-			btnBalise.setContentAreaFilled(false);
 			
 			contenu2.add(balise);
 		}
 
 		for (int i = 1; i <= this.fp.getProjet().getNbBalise(); i++) {
-			JButton btnZone = new JButton("Zone " + i);
+			JLabel btnZone = new JLabel("Zone " + i);
 			contenu1.add(btnZone);
 
 			JList<String> zone = new JList<>(data1);
 			zone.setPreferredSize(new Dimension(10, 20));
 			zone.setForeground(Color.BLUE);
 			zone.setBackground(Color.LIGHT_GRAY);
+			zone.setSelectedIndex(2);
 			this.lesZones.add(zone);
 
 			// modifier l'action du bouton
-			btnZone.addActionListener(new ActionDeselectinner(zone, this.fp.getProjet()));
 			btnZone.setBackground(Color.LIGHT_GRAY);
-			btnZone.setFocusPainted(false);
-			btnZone.setBorderPainted(false);
-			btnZone.setContentAreaFilled(false);
 
 			contenu2.add(zone);
 		}
@@ -173,7 +163,7 @@ public class FicheScore extends JInternalFrame {
 			Boolean finiMemo = true;
 			// Mettre à jour le nombre des jeunes sur chaque circuit
 			for (int i = 0; i < this.lesMemos.size(); i++) {
-				if (this.lesMemos.get(i).getSelectedIndex() == -1) {
+				if (this.lesMemos.get(i).getSelectedIndex() == 4) {
 					finiMemo = false;
 					break;
 				}
@@ -185,7 +175,7 @@ public class FicheScore extends JInternalFrame {
 
 			Boolean baliseFinie = true;
 			for (int i = 0; i < this.lesBalises.size(); i++) {
-				if (this.lesBalises.get(i).getSelectedIndex() == -1) {
+				if (this.lesBalises.get(i).getSelectedIndex() == 4) {
 					baliseFinie = false;
 					break;
 				}
@@ -211,12 +201,17 @@ public class FicheScore extends JInternalFrame {
 		this.licencie = licencie;
 	}
 
+	/**
+	 * Vérifier que la fiche est bien remplie, sinon colorer les colonnes 
+	 * qui devraient être remplies.
+	 * @return Vrai si la fichie est bien replie, Faux sinon
+	 */
 	public Boolean verif() {
 		Boolean ok = true;
 		// regarger si un mémo est rempli
 		Boolean memo = false;
 		for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
-			if (lesMemos.get(i).getSelectedIndex() != -1) {
+			if (lesMemos.get(i).getSelectedIndex() != 4) {
 				memo = true;
 				break;
 			}
@@ -226,7 +221,7 @@ public class FicheScore extends JInternalFrame {
 		if (memo) {
 			// vérifier que les mémos ont une réponse sélectionnée
 			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
-				if (lesMemos.get(i).getSelectedIndex() == -1) {
+				if (lesMemos.get(i).getSelectedIndex() == 4) {
 					lesMemos.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {
@@ -238,7 +233,7 @@ public class FicheScore extends JInternalFrame {
 		// regarder si une balise ou une maniabilité est remplie
 		Boolean balise = false;
 		for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-			if (lesBalises.get(i).getSelectedIndex() != -1 || lesZones.get(i).getSelectedIndex() != -1) {
+			if (lesBalises.get(i).getSelectedIndex() != 4 || lesZones.get(i).getSelectedIndex() != 2) {
 				balise = true;
 				break;
 			}
@@ -248,7 +243,7 @@ public class FicheScore extends JInternalFrame {
 		if (balise) {
 			// vérifier que les balises ont une réponse enregistrée
 			for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-				if (lesBalises.get(i).getSelectedIndex() == -1) {
+				if (lesBalises.get(i).getSelectedIndex() == 4) {
 					lesBalises.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {
@@ -258,7 +253,7 @@ public class FicheScore extends JInternalFrame {
 
 			// vérifier que les maniabilité sont renseignées
 			for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-				if (lesZones.get(i).getSelectedIndex() == -1) {
+				if (lesZones.get(i).getSelectedIndex() == 2) {
 					lesZones.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {

@@ -34,7 +34,7 @@ public class FicheClassement extends JInternalFrame {
 
 		int nb = 0;
 		for (Jeune j : lesInscrits)
-			if (j.getCate().equals(couleur))
+			if (j.getNiveau().equals(couleur))
 				nb++;	
 
 		this.getContentPane().setLayout(new GridLayout(nb, 1));
@@ -43,7 +43,7 @@ public class FicheClassement extends JInternalFrame {
 		int k = 0;
 		int nbPoints = 0;
 		for (Jeune j : lesInscrits) {
-			if (j.getCate().equals(couleur)) {
+			if (j.getNiveau().equals(couleur)) {
 				JPanel panel = new JPanel(new GridLayout(1,5));
 				i++;
 				if (nbPoints != j.getPoints())
@@ -54,7 +54,7 @@ public class FicheClassement extends JInternalFrame {
 				JLabel classement = new JLabel("" + k);
 				JLabel nom = new JLabel(j.getNom());
 				JLabel prenom = new JLabel(j.getPrenom());
-				JLabel club = new JLabel(j.getClub());
+				JLabel club = new JLabel(j.getClub().getNom());
 				JLabel points = new JLabel("" + j.getPoints());
 
 				// ajouter les labels

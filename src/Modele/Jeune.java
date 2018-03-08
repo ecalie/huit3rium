@@ -1,5 +1,6 @@
 package Modele;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 
 import Vue.FenetrePrincipale;
@@ -18,14 +19,23 @@ public class Jeune {
 	private FicheJeune fiche;
 
 	/** Le nom du club du jeune. */
-	private String club;
+	private Club club;
 
 	/** Le numéro de plaque du jeune. */
-	private String numero;
+	private int numero;
+	
+	/** Le numéro de licence du jeune. */
+	private int numLicence;
 
-	/** La catégorie du jeune. */
-	private String cate;
-
+	/** Le sexe. */
+	private char sexe;
+	
+	/** Le niveau. */
+	private String niveau;
+	
+	/** La date de naissance. */
+	private Date naissance;
+	
 	/** Les réponses. */
 	private HashMap<String, String> lesReponses;
 
@@ -48,13 +58,17 @@ public class Jeune {
 	 * @param fiche   La fiche répertoriant les caractéristiques du jeune
 	 * @param fiche2  La fiche répertoriant les scores du jeunes au critérium
 	 */
-	public Jeune(String nom, String prenom, String club, String numero, String cate,
+	public Jeune(String nom, String prenom, Club club, int numero,
+			Date naissance, int numLicence, String niveau, char sexe,
 			FicheJeune fiche, FicheScore fiche2) {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.club = club;
 		this.numero = numero;
-		this.cate = cate;
+		this.niveau = niveau;
+		this.naissance = naissance;
+		this.numLicence = numLicence;
+		this.sexe = sexe;
 		this.fiche = fiche;
 		this.fiche2 = fiche2;
 
@@ -69,9 +83,8 @@ public class Jeune {
 	public Jeune(FicheJeune fiche, FicheScore fiche2) {
 		this.nom = fiche.getNom2().getText();
 		this.prenom = fiche.getPrenom2().getText();
-		this.club = fiche.getClub2().getSelectedItem().toString();
-		this.numero = fiche.getNumero2().getText();
-		this.cate = fiche.getCate2().getSelectedItem().toString();
+		this.club = Projet.toClub(fiche.getClub2().getSelectedItem().toString());
+		this.numero = Integer.parseInt(fiche.getNumero2().getText());
 		this.fiche = fiche;
 		this.fiche2 = fiche2;
 		this.lesReponses = new HashMap<>();
@@ -132,7 +145,7 @@ public class Jeune {
 	 * Récupérer le club du jeune
 	 * @return le club du jeune
 	 */
-	public String getClub() {
+	public Club getClub() {
 		return club;
 	}
 
@@ -140,7 +153,7 @@ public class Jeune {
 	 * Modifier le club du jeune
 	 * @param club Le nouveau club du jeune
 	 */
-	public void setClub(String club) {
+	public void setClub(Club club) {
 		this.club = club;
 	}
 
@@ -148,7 +161,7 @@ public class Jeune {
 	 * Récupérer le numéro de plaque du jeune
 	 * @return le numéro de plaque du jeune
 	 */
-	public String getNumero() {
+	public int getNumero() {
 		return numero;
 	}
 
@@ -156,24 +169,8 @@ public class Jeune {
 	 * Modifier le numéro de plqaque du jeune
 	 * @param numero Le nouveau numéro de la plaque du jeune
 	 */
-	public void setNumero(String numero) {
+	public void setNumero(int numero) {
 		this.numero = numero;
-	}
-
-	/**
-	 * Récupérer la catégorie du jeune (la couleur)
-	 * @return la catégorie du jeune
-	 */
-	public String getCate() {
-		return cate;
-	}
-
-	/**
-	 * Modifier la catégorie du jeune
-	 * @param cate La nouvelle catégorie du jeune (couleur)
-	 */
-	public void setCate(String cate) {
-		this.cate = cate;
 	}
 
 	/**
@@ -214,21 +211,75 @@ public class Jeune {
 		this.points = points;
 	}
 
+	public int getNumLicence() {
+		return numLicence;
+	}
+
+	public void setNumLicence(int numLicence) {
+		this.numLicence = numLicence;
+	}
+
+	public Date getNaissance() {
+		return naissance;
+	}
+
+	public void setNaissance(Date naissance) {
+		this.naissance = naissance;
+	}
+	
+	public String getNiveau() {
+		return niveau;
+	}
+
+	public void setNiveau(String niveau) {
+		this.niveau = niveau;
+	}
+
+	public char getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(char sexe) {
+		this.sexe = sexe;
+	}
+
 	////////////////////////
 	///METHODES PUBLIQUES///
 	////////////////////////
 	/**
+	 * Calculer l'age du jeune (qu'il a ou qu'il aura cette année). 
+	 * @return l'age
+	 */
+	public int age() {
+		int d = LocalDate.now().getDayOfMonth();
+		int m = LocalDate.now().getMonthValue();
+		int y = LocalDate.now().getYear();
+		Date auj = new Date(y, m, d);
+		return this.getNaissance().diff(auj);
+	}
+
+	/**
+	 * Calculer la catégorie du jeune en fonction de son age.
+	 * @return La catégorie
+	 */
+	public String cate() {
+		if (this.age() < 13)
+			return "PUPILLE";
+		else if (this.age() < 15)
+			return "MINIME";
+		else if (this.age() < 17)
+			return "CADET";
+		else if (this.age() < 19)
+			return "JUNIOR";
+		else
+			return "SENIOR";
+	}
+	
+	/**
 	 * Transformer un jeune en String (numéro du jeune)
 	 */
 	public String toString() {
-		String res;
-		String[] l = this.getNumero().split("");
-		if (l[1].equals("0")) {
-			res = l[0] + l[2];
-		} else {
-			res = this.getNumero();
-		}
-		return res;
+		return this.club.toString() + this.numero;
 	}
 
 	/**
@@ -245,7 +296,6 @@ public class Jeune {
 		for (int i = 0 ; i < nbMemos ; i++) {
 			this.lesReponses.put("memo" + i,  donnees[i + 1]);
 		}
-
 	}
 
 	/**
@@ -254,21 +304,14 @@ public class Jeune {
 	 * @return vrai si j à un numéro plus petit
 	 */
 	public boolean inferieur(Jeune j) {
-		return (this.numero.compareTo(j.numero) < 0);
-	}
-
-	/**
-	 * Renvoyer une chaine de caracteres pour l'enregistrement.
-	 * @return une chaîne de caractères avec tous les attributs d'un jeune
-	 */
-	public String toStringEnreg(){
-		String res =  String.valueOf(this.getNom()) + "\t" +
-				String.valueOf(this.getPrenom()) + "\t" +
-				String.valueOf(this.getNumero()) + "\t" +
-				String.valueOf(this.getClub()) + "\t" +
-				String.valueOf(this.getCate()) + "\t\n";
-
-		return res;
+		if (this.club == j.getClub())
+			return this.numero < j.getNumero();
+		else {
+			if (this.club.toString().compareTo(j.getClub().toString()) == 0)
+				return true;
+			else 
+				return false;
+		}
 	}
 
 	/**
@@ -320,10 +363,10 @@ public class Jeune {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))
 				this.points += points.get("baliseCorrecte");
 
-			if (!this.lesReponses.get("balise" + i).equals("XX")) 
+			if (!this.lesReponses.get("balise" + i).equals("        XX"))
 				this.points += points.get("baliseTrouvee");
 
-			if (this.lesReponses.get("maniabilite" + i).equals("O")) 
+			if (this.lesReponses.get("maniabilite" + i).equals("        O"))
 				this.points += points.get("maniabilite");
 		}
 
@@ -332,7 +375,7 @@ public class Jeune {
 			if (reponses.get("memo" + i).equals(this.lesReponses.get("memo" + i)))
 				this.points += points.get("memoCorrect");
 
-			if (!this.lesReponses.get("memo" + i).equals("XX"))
+			if (!this.lesReponses.get("memo" + i).equals("        XX")) 
 				this.points += points.get("memoTrouve");
 		}
 

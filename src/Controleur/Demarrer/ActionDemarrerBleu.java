@@ -4,7 +4,7 @@ import Modele.Projet;
 
 public class ActionDemarrerBleu extends ActionDemarrerCouleur {
     public ActionDemarrerBleu(Projet projet) {
-        this.couleur = "Bleu";
+        this.couleur = "CHEMIN / MARCASSINS";
         this.projet = projet;
     }
 }

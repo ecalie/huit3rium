@@ -4,20 +4,25 @@ package Modele;
  * Created by Aurélie on 16/08/2017.
  */
 public enum Club {
-    VVF("Vélo Vert Flayoscais"),
-    UCPL("Union Cycliste et Pédestre Londaise"),
-    CSMS("Club Sportif Municipal Seynois"),
-    CCA("Cyclo Club Arcois"),
-    VCNPSB("Velo Club Nans les pins la Sainte Baume"),
-    VRC("Vélo Randonneur Cantonal"),
-    ECCA("Esterel Club Cycliste Adrets"),
-    CCL("Cyclo Club Lucois"),
-    LVC("La Valette Cyclotourisme");
-
-    private String nom = "";
-
-    Club(String nom) {
+	A("C S MUNICIPAL SEYNOIS", "01085"),
+	B("UNION CYCLISTE PEDESTRE LONDAISE", "01129"),
+	C("CYCLO CLUB ARCOIS", "02590"),
+	D("CYCLO CLUB LUCOIS", "03547"),
+	E("VELO RANDONNEUR CANTONAL", "07071"),
+	F("VELO VERT FLAYOSCAIS", "07981"),
+    G("VELO SPORT CYCLO HYEROIS", "00789"),
+	H("LA VALETTE CYCLOTOURISME", "01497"),
+	I("VELO CLUB SIX-FOURS", "03756"),
+	J("CRO ROIS TEAM", "07866"),
+	K("UFOLEP VELO CLUB FARLEDOIS", "99999"),
+	L("VELO CLUB NANS LES PINS LA STE BAUME", "08035");
+	
+    private String nom;
+    private String num;
+    
+    Club(String nom, String num) {
         this.nom = nom;
+        this.num = num;
     }
 
     public String getNom() {
@@ -27,9 +32,12 @@ public enum Club {
     public void setNom(String nom) {
         this.nom = nom;
     }
-
-    @Override
-    public String toString() {
-        return this.nom;
+    
+    public String getNum() {
+    	return this.num;
+    }
+    
+    public void setNum(String num) {
+    	this.num = num;
     }
 }
