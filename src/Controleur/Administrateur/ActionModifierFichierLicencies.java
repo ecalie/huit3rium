@@ -50,11 +50,7 @@ public class ActionModifierFichierLicencies implements ActionListener {
 				FileWriter fw = new FileWriter(config);
 				fw.write(this.projet.getNomFichierLicencie());
 				fw.close();
-			} catch (IOException e) {
-				try {
-					Projet.fwLog.write(e + "");
-				} catch (IOException e1) {}
-				}
+			} catch (IOException e) {}
 		}
 	}
 

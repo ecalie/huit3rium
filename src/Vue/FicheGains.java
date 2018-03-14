@@ -200,13 +200,6 @@ public class FicheGains extends JInternalFrame {
 				} catch(NumberFormatException e) {
 					gains.get(score).setBackground(Color.RED);
 					stop = true;
-
-					try {
-						Projet.fwLog = new FileWriter(new File("log.txt"), true);
-						Projet.fwLog.write(e + "");
-						Projet.fwLog.close();
-					} catch (IOException e1) {}
-					
 				}
 			}
 		}

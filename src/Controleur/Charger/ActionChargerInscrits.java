@@ -1,4 +1,4 @@
-package Controleur.Demarrer;
+package Controleur.Charger;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,17 +20,17 @@ public class ActionChargerInscrits implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // demander le fichier à ouvrir
         JFileChooser chooser = new JFileChooser();
-        String[] chemin = this.projet.getNomFichierLicencie().split("\\\\");
+    /*    String[] chemin = this.projet.getNomFichierLicencie().split("\\\\");
         
         String path  = "";
         if (chemin.length >= 4)
         	path = chemin[0] + File.separator + chemin[1] + File.separator 
         		+ chemin[2] + File.separator + chemin[3] + File.separator;
-        else
-        	path = "C" + File.separator + "Users" + File.separator;
+        else*/
+        	String path = "C" + File.separator + "Users" + File.separator;
         
         chooser.setCurrentDirectory(new File(path));
-        chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls"));
+        chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsm", "xlsx"));
         
         // si validation de l'ouverture
         if (chooser.showDialog(chooser, "Ouvrir") == 0) {

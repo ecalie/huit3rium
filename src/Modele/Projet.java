@@ -3,13 +3,10 @@ package Modele;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -24,12 +21,18 @@ import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controleur.Ajout.ActionModifierFiche;
@@ -107,9 +110,9 @@ public class Projet {
 
 	/** Classement du critérium. */
 	private ArrayList<Jeune> classement;
-
-	/** Le nom du fichier fwLog. */
-	public static FileWriter fwLog = null;
+	
+	/** Les fiches classements */
+	FicheClassement fcVert, fcBleu, fcRouge, fcNoir;
 
 	public static final HashMap<String, Integer> alphabet = new HashMap<>();
 
@@ -122,29 +125,11 @@ public class Projet {
 	 * @param fp  La fenêtre principale 
 	 */
 	public Projet(FenetrePrincipale fp) {
-		this.fp = fp;
-		this.nbBalise = 4;
-		this.nbMemo = 2;
-		this.reponses = new HashMap<>();
-		this.lesLicencies = new ArrayList<>();
-		this.lesInscrits = new ArrayList<>();
-		this.gains = new HashMap<>();
-		this.ficheGains = new FicheGains(this);
-		this.ficheParametre = new FicheParam(this);
-		this.ficheReponse = new FicheReponse(this);
-		this.conforme = true;
-		this.licenciesEnreg = true;
-		this.critEnreg = true;
-		this.barreMemo = new JProgressBar();
-		this.barreBalise = new JProgressBar();
-		this.revenuMemo = new ArrayList<>();
-		this.revenuBalises = new ArrayList<>();
-		this.nombreArriveBalise = new JLabel("");
-		this.nombreArriveMemo = new JLabel("");
+		// Initialisation du projet
+		initialiserProjet(fp);
 
-		this.fp.getDesktop().add(this.ficheGains);
-		this.fp.getDesktop().add(this.ficheParametre);
-		this.fp.getDesktop().add(this.ficheReponse);
+		// Initialiser l'alphabet
+		initialiserAlphabet();
 
 		// Gérer le sud de la fenêtre : les barres de progression
 		JPanel panel = this.fp.getZoneProg();
@@ -157,22 +142,7 @@ public class Projet {
 		panel.add(this.nombreArriveMemo);
 		panel.add(this.barreMemo);
 
-		alphabet.put("A", 0);
-		alphabet.put("B", 1);
-		alphabet.put("C", 2);
-		alphabet.put("D", 3);
-		alphabet.put("E", 4);
-		alphabet.put("F", 5);
-		alphabet.put("G", 6);
-		alphabet.put("H", 7);
-		alphabet.put("I", 8);
-		alphabet.put("J", 9);
-		alphabet.put("K", 10);
-		alphabet.put("L", 11);
-		alphabet.put("M", 12);
-		alphabet.put("N", 13);
-		alphabet.put("O", 14);
-
+		/*
 		File param = new File(".fichierConfiguration.txt");
 		if (param.exists()) {
 			try {
@@ -191,16 +161,14 @@ public class Projet {
 
 			// Si validation du fichier
 			if (chooser.showDialog(chooser, "Ouvrir") == 0) {
-				File f = chooser.getSelectedFile();
-				String nom = f.getAbsolutePath();
+				File f= chooser.getSelectedFile();
 
-				if (!nom.contains("."))
-					this.nomFichierLicencie = nom + ".xls";
-				else if (nom.endsWith(".xlsm"))
-					this.nomFichierLicencie = nom;
-				else {
-					this.fp.dispose();
-					System.exit(0);
+					String nom = f.getAbsolutePath();
+
+					if (!nom.contains("."))
+						this.nomFichierLicencie = nom + ".xls";
+					else if (nom.endsWith(".xlsm"))
+						this.nomFichierLicencie = nom;
 				}
 			} else {
 				this.fp.dispose();
@@ -215,58 +183,27 @@ public class Projet {
 				fw.close();
 			} catch (IOException e) {}
 		}
+		 */
 
-		Workbook wb ;
-		
-		try {
-			// Créer le fichier et la feuille de calcul
-			wb = WorkbookFactory.create(new File("08035.xlsm"));
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm"));
 
-			Sheet sheet = wb.getSheet("Inscriptions");
+		// Dossier 
+		chooser.setCurrentDirectory(new File("C:" + File.separator + "Users" + File.separator));
+		chooser.setMultiSelectionEnabled(true);
 
-			int index = 4;
-			Row row = sheet.getRow(index++);
+		// Si validation du fichier
+		if (chooser.showDialog(chooser, "Ouvrir") == 0) {
+			File files[] = chooser.getSelectedFiles();
 
-			while (row.getCell(0).getStringCellValue() != "") {
-
-				String lettre = row.getCell(0).getStringCellValue();
-				int numero = (int) row.getCell(1).getNumericCellValue();
-				int equipe = (int) row.getCell(3).getNumericCellValue();
-				String nom = row.getCell(4).getStringCellValue();
-				String prenom = row.getCell(5).getStringCellValue();
-				int licence = (int) row.getCell(6).getNumericCellValue();
-				int nomClub = (int) row.getCell(7).getNumericCellValue();
-				String club = row.getCell(8).getStringCellValue();
-				int naissance = (int) row.getCell(9).getNumericCellValue();
-				int age = (int) row.getCell(10).getNumericCellValue();
-				String categorie = row.getCell(11).getStringCellValue();
-				String niveau = row.getCell(12).getStringCellValue();
-				char sexe = row.getCell(13).getStringCellValue().charAt(0);
-				row = sheet.getRow(index++);
-
-				FicheJeune fj = new FicheJeune(this);
-
-				Jeune j = new Jeune(nom, prenom, recupClub(lettre), numero,
-						convertir(naissance), licence, niveau, sexe, fj, null);
-				fj.setTitle(j.toString());
-				fj.setLicencie(j);
-				fj.invaliderModif();
-				
-				// Initialiser les réponses 
-				j.initialiserReponses(this.nbBalise, this.nbMemo);
-				
-				this.ajouterLicencie(j);
-
-				this.fp.getDesktop().add(fj);
-				fj.hide();
+			for (int ind = 0 ; ind < files.length ; ind++) {
+				File f = files[ind];
+				inscription(f);
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
-					"Erreur dans l'ouverture du fichier des licenciés.");
+			this.licenciesEnreg = true;
+		} else {
+			System.exit(0);
 		}
-		this.licenciesEnreg = true;
 	}
 
 	////////////////////////
@@ -345,7 +282,7 @@ public class Projet {
 		return reponses;
 	}
 
-	/** 
+	/**
 	 * Récupérer la fiche des points.
 	 * @return La fiche ds gains
 	 */
@@ -440,6 +377,19 @@ public class Projet {
 		return this.nomFichierLicencie;
 	}
 
+	/**
+	 * Récupérer toutes les fiches classements
+	 * @return Les fiches classements de chaque couleurs
+	 */
+	public ArrayList<FicheClassement> getfc() {
+		ArrayList<FicheClassement> jifs = new ArrayList<>();
+		jifs.add(fcVert);
+		jifs.add(fcBleu);
+		jifs.add(fcRouge);
+		jifs.add(fcNoir);
+		return jifs;
+	}
+	
 	/////////////////////////////////////////
 	///AFFICHER LES FENETRES DE PARAMETRES///
 	/////////////////////////////////////////
@@ -464,7 +414,7 @@ public class Projet {
 	 * Afficher les fenêtres de sélection des inscrits.
 	 */
 	public void afficherFenetresSelection() {
-		String couleur = "";
+		Niveau niveau = Niveau.V;
 
 		// Pour chaque couleur
 		for (int i = 0; i < 4; i++) {
@@ -474,26 +424,26 @@ public class Projet {
 			// Initialiser la couleur
 			switch (i) {
 			case 0:
-				couleur = "";
+				niveau = Niveau.V;
 				break;
 			case 1:
-				couleur = "CHEMIN / MARCASSINS";
+				niveau = Niveau.B;
 				break;
 			case 2:
-				couleur = "PISTE / RENARDS";
+				niveau = Niveau.R;
 				break;
 			case 3:
-				couleur = "SENTIER / COYOTES";
+				niveau = Niveau.N;
 				break;
 			}
 
 			// Créer la fenêtre interne
 			JInternalFrame jif = new JInternalFrame(
-					"Sélectionner les participants " + couleur, true, false, false);
+					"Sélectionner les participants " + niveau.getNom(), true, false, false);
 
 			// Afficher tous les numéros de la couleur
 			for (Jeune licencie : this.lesLicencies) {
-				if (licencie.getNiveau().equals(couleur)) {
+				if (licencie.getNiveau() == niveau) {
 					JCheckBox btn = new JCheckBox(licencie.toString());
 					// Cocher les cases des incrits
 					if (lesInscrits.contains(licencie)) {
@@ -602,7 +552,7 @@ public class Projet {
 
 		/* afficher la grille des licenciés */
 		for (Jeune licencie : this.lesLicencies) {
-			if (licencie.getNiveau().equals("")) {
+			if (licencie.getNiveau() == Niveau.V) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
 				btn.setBackground(new Color(14, 106, 0));
@@ -612,7 +562,7 @@ public class Projet {
 		}
 
 		for (Jeune licencie : this.lesLicencies) {
-			if (licencie.getNiveau().equals("CHEMIN / MARCASSINS")) {
+			if (licencie.getNiveau() == Niveau.B) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
 				btn.setBackground(new Color(0, 0, 110));
@@ -622,7 +572,7 @@ public class Projet {
 		}
 
 		for (Jeune licencie : this.lesLicencies) {
-			if (licencie.getNiveau().equals("PISTE / RENARDS")) {
+			if (licencie.getNiveau() == Niveau.R) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
 				btn.setBackground(new Color(175, 0, 0));
@@ -632,7 +582,7 @@ public class Projet {
 		}
 
 		for (Jeune licencie : this.lesLicencies) {
-			if (licencie.getNiveau().equals("SENTIER / COYOTES")){
+			if (licencie.getNiveau() == Niveau.N){
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
 				btn.setBackground(new Color(0, 0, 0));
@@ -646,10 +596,10 @@ public class Projet {
 	 * Afficher la grille des sélectionnés
 	 * @param La couleur séletionnée à afficher
 	 **/
-	public void affichageSelectionnes(String couleur) {
+	public void affichageSelectionnes(Niveau niveau) {
 		ArrayList<Jeune> inscrits = new ArrayList<Jeune>();
 		for (Jeune licencie : this.getLesInscrits()) {
-			if (licencie.getNiveau().toString().equals(couleur)) {
+			if (licencie.getNiveau() == niveau) {
 				inscrits.add(licencie);
 			}
 		}
@@ -674,17 +624,17 @@ public class Projet {
 			JButton btn = new JButton(licencie.toString());
 			btn.addActionListener(new ActionModifierScore(licencie, this));
 
-			switch(couleur) {
-			case "" : 
+			switch(niveau) {
+			case V :
 				btn.setBackground(Color.GREEN);
 				break;
-			case "CHEMIN / MARCASSINS" : 
+			case B :
 				btn.setBackground(Color.BLUE);
 				break;
-			case "PISTE / RENARDS" : 
+			case R :
 				btn.setBackground(Color.RED);
 				break;
-			case "SENTIER / COYOTES" : 
+			case N :
 				btn.setBackground(Color.BLACK);
 				btn.setForeground(Color.WHITE);
 				break;
@@ -696,8 +646,8 @@ public class Projet {
 
 		// Afficher les barres de progression
 		this.fp.getZoneProg().setVisible(true);
-		this.majBarreBalise(couleur);
-		this.majBarreMemo(couleur);
+		this.majBarreBalise(niveau);
+		this.majBarreMemo(niveau);
 
 		this.getFp().repaint();
 	}
@@ -711,6 +661,10 @@ public class Projet {
 	 * @param Le licencié que l'on ajoute 
 	 **/
 	public void ajouterLicencie(Jeune licencie) {
+		// Si le jeune est déjà dans la liste, rien à faire
+		if (this.dejaLicencie(licencie))
+			return;
+		
 		// Si c'est le permier, pas besoin de trier
 		if (this.lesLicencies.size() == 0) {
 			this.lesLicencies.add(licencie);
@@ -738,7 +692,7 @@ public class Projet {
 	 * Ajouter un sélectioné à la liste des inscrits.
 	 * @param Le jeune à ajouter à la liste
 	 **/
-	public void ajouterInscrits(Jeune licencie) {
+	public void ajouterInscrit(Jeune licencie) {
 		if (!this.lesInscrits.contains(licencie))
 			this.lesInscrits.add(licencie);
 	}
@@ -778,14 +732,6 @@ public class Projet {
 				res = licencie;
 				break;
 			}
-		}
-
-		if (res == null) {
-			try {
-				Projet.fwLog = new FileWriter(new File("log.txt"), true);
-				Projet.fwLog.write("Impossible de trouver le jeune dont le numéro est : " + numero);
-				Projet.fwLog.close();
-			} catch (IOException e) {}
 		}
 		return res;
 	}
@@ -833,7 +779,7 @@ public class Projet {
 	///ENREGSITREMENT///
 	////////////////////
 
-	/** 
+	/**
 	 * Enregistrer l'ensemble des licenciées dans un fichier excel.
 	 */
 	public void enregistrerLicencies() {
@@ -843,9 +789,92 @@ public class Projet {
 		// Création de la feuille
 		Sheet sheet = wb.createSheet("Feuil1");
 
-		// Ecrire les en-têtes
-		Row row = sheet.createRow(0);
+		// Initialiser le style du titre
+		final CellStyle style1 = wb.createCellStyle();
+		// couleur de fond
+	    style1.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+	    style1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    // alignement
+	    style1.setAlignment(HorizontalAlignment.CENTER);
+	    style1.setVerticalAlignment(VerticalAlignment.CENTER);
+	    // bordure
+	    style1.setBorderLeft(BorderStyle.THIN);
+	    style1.setBorderRight(BorderStyle.THIN);
+	    style1.setBorderTop(BorderStyle.THIN);
+	    style1.setBorderBottom(BorderStyle.THIN);
+	    // police
+	    XSSFFont font = wb.createFont();
+	    font.setFontHeightInPoints((short) 18);
+	    font.setBold(true);
+	    style1.setFont(font);
+	    
+	    // Initialiser le style en-tête
+	    final CellStyle style2 = wb.createCellStyle();
+	    style2.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+	    style2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    // alignement
+	    style2.setAlignment(HorizontalAlignment.CENTER);
+	    style2.setVerticalAlignment(VerticalAlignment.CENTER);
+	    // police
+	    XSSFFont font2 = wb.createFont();
+	    font2.setBold(true);
+	    style2.setFont(font2);
+	    // bordure
+	    style2.setBorderLeft(BorderStyle.THIN);
+	    style2.setBorderRight(BorderStyle.THIN);
+	    style2.setBorderTop(BorderStyle.THIN);
+	    style2.setBorderBottom(BorderStyle.THIN);
 
+	    // Initialiser le style couleur
+	    final CellStyle style3 = wb.createCellStyle();
+	    style3.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+	    style3.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    // alignement
+	    style3.setAlignment(HorizontalAlignment.CENTER);
+	    style3.setVerticalAlignment(VerticalAlignment.CENTER);
+	    // bordure
+	    style3.setBorderLeft(BorderStyle.THIN);
+	    style3.setBorderRight(BorderStyle.THIN);
+	    style3.setBorderTop(BorderStyle.THIN);
+	    style3.setBorderBottom(BorderStyle.THIN);
+	    
+	    // Initialiser le style sans couleur
+	    final CellStyle style4 = wb.createCellStyle();
+	    style4.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+	    style4.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	    // alignement
+	    style4.setAlignment(HorizontalAlignment.CENTER);
+	    style4.setVerticalAlignment(VerticalAlignment.CENTER);
+	    // bordure
+	    style4.setBorderLeft(BorderStyle.THIN);
+	    style4.setBorderRight(BorderStyle.THIN);
+	    style4.setBorderTop(BorderStyle.THIN);
+	    style4.setBorderBottom(BorderStyle.THIN);
+
+	    // Fusionner la cellules des 3 première lignes
+	    CellRangeAddress cra = new CellRangeAddress(0, 2, 0, 14);
+	    sheet.addMergedRegion(cra);
+	    
+	    // Ecrire les titre de la feuille
+		Row row = sheet.createRow(0);
+		row.createCell(0);
+	    row.getCell(0).setCellValue("TABLEAU INSCRIPTIONS");
+	    row.getCell(0).setCellStyle(style1);
+		row.createCell(14);
+		
+		// Tracer la bordure droite sur la  première case
+		row.createCell(14);		
+	    row.getCell(14).setCellStyle(style1);
+	    row = sheet.createRow(1);
+		row.createCell(14);		
+	    row.getCell(14).setCellStyle(style1);
+	    row = sheet.createRow(2);
+		row.createCell(14);		
+	    row.getCell(14).setCellStyle(style1);
+
+		// Ecrire les en-têtes
+	    row  = sheet.createRow(3);
+	    
 		row.createCell(0);
 		row.getCell(0).setCellValue("Lettre");
 		row.createCell(1);
@@ -874,10 +903,13 @@ public class Projet {
 		row.getCell(12).setCellValue("Niveau");
 		row.createCell(13);
 		row.getCell(13).setCellValue("Sexe");
-
+		row.createCell(14);
+		row.getCell(14).setCellValue("Pastille");
+		
 		// Pour itérer sur les lignes
-		int ligne = 1;
+		int ligne = 4;
 		int colonne = 0;
+		
 		// Ecrire pour chaque jeune, une ligne dans le fichier
 		for (Jeune j : this.getLesLicencies()) {
 
@@ -886,7 +918,7 @@ public class Projet {
 
 			// Créer la ligne
 			row = sheet.createRow(ligne++);
-
+			
 			// Ecrire la lettre du club
 			row.createCell(colonne);
 			row.getCell(colonne++).setCellValue(j.getClub().toString());
@@ -937,7 +969,7 @@ public class Projet {
 
 			// Ecrire le niveau
 			row.createCell(colonne);
-			row.getCell(colonne++).setCellValue(j.getNiveau());
+			row.getCell(colonne++).setCellValue(j.getNiveau().getNom());
 
 			// Ecrire le sexe
 			row.createCell(colonne);
@@ -945,11 +977,72 @@ public class Projet {
 
 			// Afficher une pastille
 			row.createCell(colonne);
-			//	row.getCell(colonne++).setCellValue();
-
+			final CellStyle pastille = wb.createCellStyle();
+			// couleur de fond
+		    pastille.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    pastille.setBorderLeft(BorderStyle.THIN);
+		    pastille.setBorderRight(BorderStyle.THIN);
+		    pastille.setBorderTop(BorderStyle.THIN);
+		    pastille.setBorderBottom(BorderStyle.THIN);
+		    
+			switch (j.getNiveau()) {
+			case V : 
+			    pastille.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+			    break;
+			case B : 
+			    pastille.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+			    break;
+			case R :
+			    pastille.setFillForegroundColor(IndexedColors.RED.getIndex());
+			    break;
+			case N : 
+			    pastille.setFillForegroundColor(IndexedColors.BLACK.getIndex());
+			    break;
+			}
+				row.getCell(colonne++).setCellStyle(pastille);
 		}
 
-		try {	
+		// Ajouter le style des cellules
+		// La première ligne
+		row = sheet.getRow(3);
+		for (int ind = 0 ; ind < 15 ; ind++) {
+			row.getCell(ind).setCellStyle(style2);
+		}
+		
+		// Les colonnes 1, 2, 3, 9, 11, 12
+		for (int ind = 4; ind < this.lesLicencies.size() + 4 ; ind++) {
+			row = sheet.getRow(ind);
+			row.getCell(0).setCellStyle(style3);
+			row.getCell(1).setCellStyle(style3);
+			row.getCell(2).setCellStyle(style3);
+			row.getCell(8).setCellStyle(style3);
+			row.getCell(10).setCellStyle(style3);
+			row.getCell(11).setCellStyle(style3);
+		}
+		
+		// Les autres colonnes
+		for (int ind = 4; ind < this.lesLicencies.size() + 4 ; ind++) {
+			row = sheet.getRow(ind);
+			row.getCell(3).setCellStyle(style4);
+			row.getCell(4).setCellStyle(style4);
+			row.getCell(5).setCellStyle(style4);
+			row.getCell(6).setCellStyle(style4);
+			row.getCell(7).setCellStyle(style4);
+			row.getCell(9).setCellStyle(style4);
+			row.getCell(12).setCellStyle(style4);
+			row.getCell(13).setCellStyle(style4);
+		}
+		
+		// Ajuster la taille des colonnes
+		for (int ind = 0 ; ind < 14 ; ind++) {
+			sheet.autoSizeColumn(ind, true);
+		}
+		
+		// Vrai si pas de problème faux sinon
+		boolean ok = true;
+		
+		// Ecrire le fichier excel
+		try {
 			FileOutputStream fos = new FileOutputStream(this.nomFichierLicencie);
 			wb.write(fos);
 
@@ -957,23 +1050,27 @@ public class Projet {
 
 			wb.close();
 		} catch (Exception e) {
+			ok = false;
 			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
 					"Erreur dans d'enregistrement des licenciés, " +
 					"fermer le fichier s'il est ouvert et recommencer");
 		}
-		this.licenciesEnreg = true;
+		
+		if (ok) {
+			this.licenciesEnreg = true;
 
-		int ecart = 0;
-		if (this.fp.getAdmin().isVisible())
-			ecart = 250;
-		else 
-			ecart = 10;
-		Confirmation charg = new Confirmation("Enregistrement réussi" , this.fp, ecart);
-		Thread thread = new Thread(charg);
-		thread.start();
+			int ecart = 0;
+			if (this.fp.getAdmin().isVisible())
+				ecart = 250;
+			else
+				ecart = 10;
+			Confirmation charg = new Confirmation("Enregistrement réussi" , this.fp, ecart);
+			Thread thread = new Thread(charg);
+			thread.start();
+		}
 	}
 
-	/** 
+	/**
 	 * Enregistrer l'ensemble des licenciées dans un fichier excel dans un nouveau fichier.
 	 */
 	public void enregistrerSousLicencies() {
@@ -995,8 +1092,8 @@ public class Projet {
 				this.nomFichierLicencie = nom;
 				this.enregistrerLicencies();
 			} else {
-				javax.swing.JOptionPane.showMessageDialog(this.fp, 
-						"Veuillez sélectionner un fichier excel (extension .xls).", 
+				javax.swing.JOptionPane.showMessageDialog(this.fp,
+						"Veuillez sélectionner un fichier excel (extension .xls).",
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
@@ -1036,8 +1133,8 @@ public class Projet {
 				this.nomFichierCrit = nom;
 				this.enregistrerCrit();
 			} else {
-				javax.swing.JOptionPane.showMessageDialog(this.getFp(), 
-						"Veuillez sélectionner un fichier excel.", 
+				javax.swing.JOptionPane.showMessageDialog(this.getFp(),
+						"Veuillez sélectionner un fichier excel.",
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
@@ -1188,27 +1285,34 @@ public class Projet {
 			row.getCell(0).setCellValue("Réponses aux questions");
 
 			// Ecrire les réponses aux mémos
-			for (int ind = 0 ; ind < nbMemo ; ind++) {
+			for (int ind = 1 ; ind <= nbMemo ; ind++) {
 				row = sheet.createRow(i++);
 				row.createCell(1);
 				row.getCell(1).setCellValue("Mémo " + ind);
 
 				row.createCell(2);
-				row.getCell(2).setCellValue(this.reponses.get("memo" + ind));
+				int num = ind - 1;
+				row.getCell(2).setCellValue(this.reponses.get("memo" + num));
 			}
 
 			// Ecrire les réponses aux balises
-			for (int ind = 0 ; ind < nbBalise ; ind++) {
+			for (int ind = 1 ; ind <= nbBalise ; ind++) {
 				row = sheet.createRow(i++);
 				row.createCell(1);
 				row.getCell(1).setCellValue("Balise " + ind);
 
+				int num = ind - 1;
 				row.createCell(2);
-				row.getCell(2).setCellValue(this.reponses.get("balise" + ind));
+				row.getCell(2).setCellValue(this.reponses.get("balise" + num));
 			}
 
 
-			try {	
+			// Vrai si pas de problème faux sinon
+			boolean ok = true;
+			
+			// Ecriture dans le fichier
+			try {
+				ok = false;
 				FileOutputStream fos = new FileOutputStream(this.nomFichierCrit);
 				wb.write(fos);
 
@@ -1221,24 +1325,25 @@ public class Projet {
 						"fermer le fichier s'il est ouvert et recommencer");
 			}
 
+			if (ok) {
+				this.critEnreg = true;
 
-			this.critEnreg = true;
-
-			int ecart = 0;
-			if (this.fp.getAdmin().isVisible())
-				ecart = 250;
-			else 
-				ecart = 10;
-			Confirmation charg = new Confirmation("Enregistrement réussi", this.fp, ecart);
-			Thread thread = new Thread(charg);
-			thread.start();
+				int ecart = 0;
+				if (this.fp.getAdmin().isVisible())
+					ecart = 250;
+				else
+					ecart = 10;
+				Confirmation charg = new Confirmation("Enregistrement réussi", this.fp, ecart);
+				Thread thread = new Thread(charg);
+				thread.start();
+			}
 		}
 	}
 
 	////////////////
 	///CLASSEMENT///
 	////////////////
-
+	
 	/**
 	 * Faire le classement des jeunes et l'afficher.
 	 */
@@ -1248,6 +1353,16 @@ public class Projet {
 					"Impossible de calculer le classement car il n'y a aucun inscrits.");
 			return;
 		}
+
+		// Vérifier que les fiches scores des jeunes sont complémtement remplies
+		boolean ok = true;
+		for (Jeune j : this.lesInscrits) {
+			ok = ok && j.getFiche2().verifScore();
+		}
+		
+		if (!ok)
+			return;
+		
 		// Calculer le score de chaque inscrit
 		for (Jeune j : this.lesInscrits) {
 			j.modifierPoints(this.reponses, this.nbBalise, this.nbMemo,
@@ -1275,17 +1390,15 @@ public class Projet {
 		}
 
 		// Afficher les classements de chaque catégories et le classement général
-		FicheClassement fcVert = new FicheClassement();
-		fcVert.afficherCouleur(classement, ""); 
+		fcNoir = new FicheClassement(this);
+		fcRouge = new FicheClassement(this);
+		fcBleu = new FicheClassement(this);
+		fcVert = new FicheClassement(this);
 
-		FicheClassement fcBleu = new FicheClassement();
-		fcBleu.afficherCouleur(classement, "CHEMIN / MARCASSINS");
-
-		FicheClassement fcRouge = new FicheClassement();
-		fcRouge.afficherCouleur(classement, "PISTE / RENARDS");
-
-		FicheClassement fcNoir = new FicheClassement();
-		fcNoir.afficherCouleur(classement, "ENTIER / COYOTES");
+		fcVert.afficherCouleur(classement, Niveau.V);
+		fcBleu.afficherCouleur(classement, Niveau.B);
+		fcRouge.afficherCouleur(classement, Niveau.R);
+		fcNoir.afficherCouleur(classement, Niveau.N);
 
 		this.fp.getDesktop().add(fcNoir);
 		this.fp.getDesktop().add(fcRouge);
@@ -1388,8 +1501,8 @@ public class Projet {
 					row.getCell(9).setCellValue(j.getClub().getNom());
 					row.getCell(10).setCellValue(j.getNaissance().toString());
 					row.getCell(11).setCellValue(j.age());
-					row.getCell(12).setCellValue(j.getNiveau());
-					row.getCell(13).setCellValue(j.getNiveau());
+					row.getCell(12).setCellValue(j.getNiveau().getNom());
+					row.getCell(13).setCellValue(j.getNiveau().getNom());
 					row.getCell(14).setCellValue(j.getSexe());
 					row.getCell(15).setCellValue(j.getPoints());
 				}
@@ -1402,226 +1515,235 @@ public class Projet {
 	////////////////
 	///CHARGEMENT///
 	////////////////
-
+	
 	/**
 	 * Charger les inscrits à un critérium.
 	 * @param nomFichierInscrtis   Le nom du fichier duquel on charge les inscrits
 	 **/
 	public void chargerCrit(String nomFichierInscrtis) {
-		/*Workbook wb ;
-	
-		// Créer le fichier et la feuille de calcul
-		wb = WorkbookFactory.create(new File(nomFichierInscrtis));
-	
-		Sheet sheet = wb.getSheet("Feuill1");
+		Workbook wb = null;
 
-		int i = 0, j = 0;
+		// Créer le fichier et la feuille de calcul
+		try {
+			wb = WorkbookFactory.create(new File(nomFichierInscrtis));
+		} catch (Exception e) {
+			return;
+		}
+		Sheet sheet = wb.getSheet("Feuil1");
+
+		// Initialiser les indices et ligne et de colonne
+		int i = 1, j = 0;
 		Row row = sheet.getRow(i++);
 
-		while (row.getCell(j).getStringCellValue() != "") {
+		while (row != null) {
 
-			String lettre = row.getCell(0).getStringCellValue();
-			int numero = (int) row.getCell(1).getNumericCellValue();
-			int equipe = (int) row.getCell(3).getNumericCellValue();
-			String nom = row.getCell(4).getStringCellValue();
-			String prenom = row.getCell(5).getStringCellValue();
-			int licence = (int) row.getCell(6).getNumericCellValue();
-			int nomClub = (int) row.getCell(7).getNumericCellValue();
-			String club = row.getCell(8).getStringCellValue();
-		
-		
-		
-		// Récupérer le fichier
-		File fichierInscrits = new File(nomFichierInscrtis);
+			// Récupérer les inscrits
+			String id = row.getCell(0).getStringCellValue();
 
-		this.nomFichierCrit = fichierInscrits.getAbsolutePath();
-		int taille = this.nomFichierCrit.length();
-		this.nomFichierCrit = this.nomFichierCrit.substring(0, taille - 4);
+			// Créer la fiche du jeune
+			FicheJeune fj = new FicheJeune(this);
 
-		// Modifier le nom de la fenêtre
-		int tailleNom = fichierInscrits.getName().length() - 4;
-		this.fp.setTitle(fichierInscrits.getName().substring(0,  tailleNom));
+			// Récupérer le jeune avec son numéro
+			Jeune je = this.recupJeune(id);
+			
+			// Maj de la fiche du jeune
+			fj.setTitle(je.toString());
+			fj.setLicencie(je);
+			fj.invaliderModif();
 
+			// Récupérer les réponses dans le fichier
+			recupReponses(je, row);
+			
+			// Création et maj de la fiche score du jeune
+			FicheScore fs = new FicheScore(this.getFp());
+			fs.setLicencie(je);;
+			fs.setTitle(je.toString());
+			fs.invaliderModif();
+			
+			je.setFiche2(fs);
+			
+			// Ajouter le jeune à la liste des inscrits
+			this.ajouterInscrit(je);
+
+			this.fp.getDesktop().add(fj);
+			fj.hide();
+			row = sheet.getRow(i++);
+		}
 		// Mettre à jour les paramètres du critérium
-		File fichierParam = new File(this.nomFichierCrit + ".txt");
-		if (fichierParam.exists()) {
-			BufferedReader br;
-			try {
-				br = new BufferedReader(new FileReader(fichierParam));
+		sheet = wb.getSheet("Feuil2");
 
-				// Récupérer le nombre de balises
-				String line = br.readLine();
-				String[] mots = line.split(" ");
-				this.nbBalise = Integer.parseInt(mots[mots.length - 1]);
+		// Récupérer le nombre de balises
+		this.nbBalise = (int) sheet.getRow(0).getCell(1).getNumericCellValue();
 
-				// Récupérer le nombre de mémo
-				br.readLine();
-				line = br.readLine();
-				mots = line.split(" ");
-				this.nbMemo = Integer.parseInt(mots[mots.length - 1]);
+		// Récupérer le nombre de mémo
+		this.nbMemo = (int) sheet.getRow(1).getCell(1).getNumericCellValue();
 
-				// Récupérer les points pour une balise trouvée
-				br.readLine();
-				br.readLine();
-				line = br.readLine();
-				mots = line.split(" ");
-				this.gains.put("baliseTrouvee", Integer.parseInt(mots[mots.length - 1]));
+		// Récupérer les points pour une balise trouvée
+		this.gains.put("baliseTrouvee", (int) sheet.getRow(3).getCell(2).getNumericCellValue());
 
-				// Récupérer les points pour une réponse correcte à une balise
-				line = br.readLine();
-				mots = line.split(" ");
-				this.gains.put("baliseCorrecte", Integer.parseInt(mots[mots.length - 1]));
+		// Récupérer les points pour une réponse correcte à une balise
+		this.gains.put("baliseCorrecte", (int) sheet.getRow(4).getCell(2).getNumericCellValue());
 
-				// Récupérer les points pour un mémo trouvé
-				line = br.readLine();
-				mots = line.split(" ");
-				this.gains.put("memoTrouve", Integer.parseInt(mots[mots.length - 1]));
+		// Récupérer les points pour un mémo trouvé
+		this.gains.put("memoTrouve", (int) sheet.getRow(5).getCell(2).getNumericCellValue());
 
-				// Récupérer les points pour une question correcte à un mémo
-				line = br.readLine();
-				mots = line.split(" ");
-				this.gains.put("memoCorrect", Integer.parseInt(mots[mots.length - 1]));
+		// Récupérer les points pour une question correcte à un mémo
+		this.gains.put("memoCorrect", (int) sheet.getRow(6).getCell(2).getNumericCellValue());
 
-				// Récupérer les points pour une zone de manabilité réussie
-				line = br.readLine();
-				mots = line.split(" ");
-				this.gains.put("maniabilite", Integer.parseInt(mots[mots.length - 1]));
+		// Récupérer les points pour une zone de manabilité réussie
+		this.gains.put("maniabilite", (int) sheet.getRow(7).getCell(2).getNumericCellValue());
 
-				// Récupérer les réponses attendues
-				br.readLine();
-				br.readLine();
-				// Récupérer les réponses aux mémos orientations
-				for (int i = 0 ; i < nbMemo ; i++) {
-					line = br.readLine();
-					mots = line.split(" ");
-					this.reponses.put("memo" + i, mots[mots.length - 1]);
-				}				
-
-				// Récupérer les réponses aux balises
-				for (int i = 0 ; i < nbBalise ; i++) {
-					line = br.readLine();
-					mots = line.split(" ");
-					this.reponses.put("balise" + i, mots[mots.length - 1]);
-				}	
-
-				// Créer des fiches avec les bons nombre de mémo / balises
-				this.ficheReponse = new FicheReponse(this);
-				this.ficheGains = new FicheGains(this);
-
-				this.fp.getDesktop().add(this.ficheReponse);
-				this.fp.getDesktop().add(this.ficheGains);
-
-				// Remplir les fiches de points et de réponses
-				this.ficheReponse.invaliderModif();
-
-				this.ficheGains.invaliderModif();
-			} catch (IOException | NumberFormatException e) {
-				try {
-					Projet.fwLog = new FileWriter(new File("log.txt"), true);
-					Projet.fwLog.write(e + "");
-					Projet.fwLog.close();
-				} catch (IOException e1) {}
-			}
+		// Récupérer les réponses aux mémos orientations
+		for (int ind = 0; ind < nbMemo; ind++) {
+			this.reponses.put("memo" + ind,
+					sheet.getRow(9 + ind).getCell(2).getStringCellValue());
 		}
 
-		if (fichierInscrits.exists()) {
-			try {
-				FileReader fr = new FileReader(fichierInscrits);
-
-				BufferedReader br = new BufferedReader(fr);
-				br.readLine();
-				String line;
-
-				// Lire chaque ligne et créer un jeune
-				while ((line = br.readLine()) != null) {
-					// Créer une fiche score
-					FicheScore fs = new FicheScore(this.getFp());
-
-					// Récupérer les données enrgistrées
-					String[] donnes = line.split("\t");
-
-					// Récupérer le jeune lu
-					Jeune j = this.recupJeune(donnes[0]);
-
-					if (j == null) {
-						javax.swing.JOptionPane.showMessageDialog(this.getFp(),
-								"Le fichier sélectionné n'est pas valide.");
-						return;
-					}
-
-					// Mettre à jour les attributs du jeune
-					j.setScore(donnes, this.getNbBalise(), this.getNbMemo());
-					j.setFiche2(fs);
-					fs.setTitle(j.toString());
-					fs.setLicencie(j);
-					fs.invaliderModif();
-
-					// Ajouter le jeune à la liste des isncrits
-					this.ajouterInscrits(j);
-				}
-
-				// Fermer le br
-				br.close();
-
-				// Mettre à jour le nombre des jeunes sur chaque circuit
-				for (Jeune j : this.lesInscrits) {
-					Boolean finiMemo = true;
-					Boolean baliseFinie = true;
-
-					for (int i = 0; i < this.nbMemo ; i++) {
-						if (j.getLesReponses().get("memo" + i).equals("XX")) {
-							finiMemo = false;
-							break;
-						}
-					}
-
-					if (finiMemo) {
-						this.fp.getProjet().arriveMemo(j);
-					}
-
-					for (int i = 0; i < this.nbBalise ; i++) {
-						if (j.getLesReponses().get("balise" + i).equals("XX")) {
-							baliseFinie = false;
-							break;
-						}
-					}
-
-					if (baliseFinie) {
-						this.fp.getProjet().arriveBalise(j);
-					}
-				}
-				br.close();
-				fr.close();
-			} catch (IOException e) {
-				javax.swing.JOptionPane.showMessageDialog(this.getFp(),
-						"Erreur dans la lecture du fichier d'enregistrement");
-				try {
-					Projet.fwLog = new FileWriter(new File("log.txt"), true);
-					Projet.fwLog.write(e + "");
-					Projet.fwLog.close();
-				} catch (IOException e1) {}
-			}
+		// Récupérer les réponses aux balises
+		for (int ind = 0; ind < nbBalise; ind++) {
+			this.reponses.put("balise" + ind,
+					sheet.getRow(9 + ind + nbMemo).getCell(2).getStringCellValue());
 		}
 
-		this.barreMemo.setMaximum(this.lesInscrits.size());
-		this.barreBalise.setMaximum(this.lesInscrits.size());
+		// Créer des fiches avec les bons nombre de mémo / balises
+		this.ficheReponse = new FicheReponse(this);
+		this.ficheGains = new FicheGains(this);
 
+		this.fp.getDesktop().add(this.ficheReponse);
+		this.fp.getDesktop().add(this.ficheGains);
 
-		int ecart = 0;
-		if (this.fp.getAdmin().isVisible()) 
-			ecart = 250;
-		else 
-			ecart = 10;
-		Confirmation charg = new Confirmation("Chargement réussi", this.fp, ecart);
-		Thread thread = new Thread(charg);
-		thread.start();*/
+		// Remplir les fiches de points et de réponses
+		this.ficheReponse.invaliderModif();
+
+		this.ficheGains.invaliderModif();
+
+		// Mettre à jour le nombre des jeunes sur chaque circuit
+		for (Jeune je : this.lesInscrits) {
+			Boolean finiMemo = true;
+			Boolean baliseFinie = true;
+
+			for (int ind = 0; ind < this.nbMemo; ind++) {
+				if (je.getLesReponses().get("memo" + ind).equals("")) {
+					finiMemo = false;
+					break;
+				}
+			}
+
+			if (finiMemo)
+				this.fp.getProjet().arriveMemo(je);
+
+			for (int ind = 0; ind < this.nbBalise; ind++) {
+				if (je.getLesReponses().get("balise" + ind).equals("")) {
+					baliseFinie = false;
+					break;
+				}
+			}
+
+			if (baliseFinie)
+				this.fp.getProjet().arriveBalise(je);
+
+			this.barreMemo.setMaximum(this.lesInscrits.size());
+			this.barreBalise.setMaximum(this.lesInscrits.size());
+
+			int ecart = 0;
+			if (this.fp.getAdmin().isVisible())
+				ecart = 250;
+			else
+				ecart = 10;
+			Confirmation charg = new Confirmation("Chargement réussi", this.fp, ecart);
+			Thread thread = new Thread(charg);
+			thread.start();
+		}
+		
+	}
+
+	/**
+	 * Récupérer les jeunes inscrits dans le fichier.
+	 * @param f Le fichier d'inscription d'un club
+	 */
+	public void inscription(File f) {
+
+		Workbook wb ;
+		
+		try {
+			// Créer le fichier et la feuille de calcul
+			wb = WorkbookFactory.create(f);
+
+			Sheet sheet = wb.getSheet("Inscriptions");
+
+			int index = 4;
+			Row row = sheet.getRow(index++);
+
+			while (row != null) {
+
+				String lettre = row.getCell(0).getStringCellValue();
+				int numero = (int) row.getCell(1).getNumericCellValue();
+			//	int equipe = (int) row.getCell(3).getNumericCellValue();
+				String nom = row.getCell(4).getStringCellValue();
+				String prenom = row.getCell(5).getStringCellValue();
+				int licence = (int) row.getCell(6).getNumericCellValue();
+				int naissance = (int) row.getCell(9).getNumericCellValue();
+				Niveau niveau = Niveau.get(row.getCell(12).getStringCellValue());
+				char sexe = row.getCell(13).getStringCellValue().charAt(0);
+				row = sheet.getRow(index++);
+
+				FicheJeune fj = new FicheJeune(this);
+
+				Jeune j = new Jeune(nom, prenom, recupClub(lettre), numero,
+						convertir(naissance), licence, niveau, sexe, fj, null);
+				fj.setTitle(j.toString());
+				fj.setLicencie(j);
+				fj.invaliderModif();
+
+				// Initialiser les réponses 
+				j.initialiserReponses(this.nbBalise, this.nbMemo);
+
+				this.ajouterLicencie(j);
+
+				this.fp.getDesktop().add(fj);
+				fj.hide();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
+					"Erreur dans l'ouverture du fichier des licenciés.");
+		}
+	}
+
+	/**
+	 * Dmeander quels sont à charger et les charger.
+	 */
+	public void chargerFichierInscription() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm"));
+
+		// Dossier 
+		chooser.setCurrentDirectory(new File("C:" + File.separator + "Users" + File.separator));
+		chooser.setMultiSelectionEnabled(true);
+
+		// Si validation du fichier
+		if (chooser.showDialog(chooser, "Ouvrir") == 0) {
+			File files[] = chooser.getSelectedFiles();
+
+			for (int ind = 0 ; ind < files.length ; ind++) {
+				File f = files[ind];
+				inscription(f);
+			}
+			
+			this.affichage();
+			this.licenciesEnreg = true;
+		} else {
+			this.fp.dispose();
+			System.exit(0);
+		}
 	}
 
 	/////////////////////////////////////
 	///GERER LES BARRES DE PROGRESSION///
 	/////////////////////////////////////
 
-	/** 
+	/**
 	 * Signaler qu'un jeune est revenu des mémos.
 	 * @param j Le jeune qui est revenu des mémos
 	 */
@@ -1635,17 +1757,17 @@ public class Projet {
 	 * Mettre à jour la barre de progression des mémos.
 	 * @param couleur La couleur de la barre à mettre à jour
 	 */
-	public void majBarreMemo(String couleur) {
+	public void majBarreMemo(Niveau niveau) {
 		// Calculer le nombre de jeunes dans cette catégorie
 		int nb = 0;
 		for (Jeune jj : revenuMemo)
-			if (jj.getNiveau().equals(couleur))
+			if (jj.getNiveau() == niveau)
 				nb++;
 
 		// Calculer le nombre total de jeunes inscrits dans cette catégorie
 		int total = 0;
 		for (Jeune jj : lesInscrits)
-			if (jj.getNiveau().equals(couleur))
+			if (jj.getNiveau() == niveau)
 				total++;
 
 		// Mettre à jour la barre de progression et le label
@@ -1669,17 +1791,17 @@ public class Projet {
 	 * Mettre à jour la barre de progression.
 	 * @param couleur La couleur de la barre de progression
 	 */
-	public void majBarreBalise(String couleur) {
+	public void majBarreBalise(Niveau niveau) {
 		// Calculer le nombre de jeunes dans cette catégorie
 		int nb = 0;
 		for (Jeune jj : revenuBalises)
-			if (jj.getNiveau().equals(couleur))
+			if (jj.getNiveau() == niveau)
 				nb++;
 
 		// Calculer le nombre total de jeunes inscrits dans cette catégorie
 		int total = 0;
 		for (Jeune jj : lesInscrits)
-			if (jj.getNiveau().equals(couleur))
+			if (jj.getNiveau() == niveau)
 				total++;
 
 		// Mettre à jour la barre de progression et le label
@@ -1705,6 +1827,88 @@ public class Projet {
 		}
 	}
 
+	/**
+	 * Récupérer les réponses inscrites dans une ligne de fichier et 
+	 * les affectées à un jeune.
+	 * @param j Le jeune dont ce sont les réponses
+	 * @param row La ligne du fichier excel qui contient les réponses
+	 */
+	private void recupReponses(Jeune j, Row row) {
+		for (int i = 0 ; i < this.nbMemo ; i++) {
+			String rep = row.getCell(i+1).getStringCellValue();
+			j.getLesReponses().put("memo"  + i, rep);
+		}
+		
+		for (int i = 0 ; i < this.nbBalise ; i++) {
+			String rep = row.getCell(i+1+this.nbMemo).getStringCellValue();
+			j.getLesReponses().put("balise" + i, rep);
+		}
+		
+		for (int i = 0 ; i < this.nbBalise ; i++) {
+			String rep = row.getCell(i+1+this.nbMemo+this.nbBalise).getStringCellValue();
+			j.getLesReponses().put("maniabilite" + i, rep);
+		}
+	}
+	
+	/**
+	 * Initialiser un projet.
+	 * @param fp La fenêtre principale
+	 */
+	private void initialiserProjet(FenetrePrincipale fp) {
+		this.fp = fp;
+		this.nbBalise = 4;
+		this.nbMemo = 2;
+		this.reponses = new HashMap<>();
+		this.lesLicencies = new ArrayList<>();
+		this.lesInscrits = new ArrayList<>();
+		this.gains = new HashMap<>();
+		this.ficheGains = new FicheGains(this);
+		this.ficheParametre = new FicheParam(this);
+		this.ficheReponse = new FicheReponse(this);
+		this.conforme = true;
+		this.licenciesEnreg = true;
+		this.critEnreg = true;
+		this.barreMemo = new JProgressBar();
+		this.barreBalise = new JProgressBar();
+		this.revenuMemo = new ArrayList<>();
+		this.revenuBalises = new ArrayList<>();
+		this.nombreArriveBalise = new JLabel("");
+		this.nombreArriveMemo = new JLabel("");
+
+		this.fp.getDesktop().add(this.ficheGains);
+		this.fp.getDesktop().add(this.ficheParametre);
+		this.fp.getDesktop().add(this.ficheReponse);
+	}
+	
+	/**
+	 * Initialiser la HashMap alphabet.
+	 */
+	private void initialiserAlphabet() {
+		alphabet.put("A", 0);
+		alphabet.put("B", 1);
+		alphabet.put("C", 2);
+		alphabet.put("D", 3);
+		alphabet.put("E", 4);
+		alphabet.put("F", 5);
+		alphabet.put("G", 6);
+		alphabet.put("H", 7);
+		alphabet.put("I", 8);
+		alphabet.put("J", 9);
+		alphabet.put("K", 10);
+		alphabet.put("L", 11);
+		alphabet.put("M", 12);
+		alphabet.put("N", 13);
+		alphabet.put("O", 14);
+	}
+	
+	
+	private boolean dejaLicencie(Jeune j) {
+		for (Jeune je : this.lesLicencies) {
+			if (je.getNumero() == j.getNumero())
+				return true;
+		}
+		return false;
+	}
 	////////////////////////
 	///METHODES STATIQUES///
 	////////////////////////
@@ -1716,31 +1920,31 @@ public class Projet {
 	 */
 	protected static Club recupClub(String lettre) {
 		switch (lettre) {
-		case "A" : 
+		case "A" :
 			return Club.A;
-		case "B" : 
+		case "B" :
 			return Club.B;
-		case "C" : 
+		case "C" :
 			return Club.C;
-		case "D" : 
+		case "D" :
 			return Club.D;
-		case "E" : 
+		case "E" :
 			return Club.E;
-		case "F" : 
+		case "F" :
 			return Club.F;
-		case "G" : 
+		case "G" :
 			return Club.G;
-		case "H" : 
+		case "H" :
 			return Club.H;
-		case "I" : 
+		case "I" :
 			return Club.I;
-		case "J" : 
+		case "J" :
 			return Club.J;
-		case "K" : 
+		case "K" :
 			return Club.K;
-		case "L" : 
+		case "L" :
 			return Club.L;
-		default : 
+		default :
 			System.exit(0);
 			return Club.A;
 		}
@@ -1753,31 +1957,31 @@ public class Projet {
 	 */
 	protected static Club toClub(String nom) {
 		switch (nom) {
-		case "C S MUNICIPAL SEYNOIS" : 
+		case "C S MUNICIPAL SEYNOIS" :
 			return Club.A;
-		case "UNION CYCLISTE PEDESTRE LONDAISE" : 
+		case "UNION CYCLISTE PEDESTRE LONDAISE" :
 			return Club.B;
-		case "CYCLO CLUB ARCOIS" : 
+		case "CYCLO CLUB ARCOIS" :
 			return Club.C;
-		case "CYCLO CLUB LUCOIS" : 
+		case "CYCLO CLUB LUCOIS" :
 			return Club.D;
-		case "VELO RANDONNEUR CANTONAL" : 
+		case "VELO RANDONNEUR CANTONAL" :
 			return Club.E;
-		case "VELO VERT FLAYOSCAIS" : 
+		case "VELO VERT FLAYOSCAIS" :
 			return Club.F;
-		case "VELO SPORT CYCLO HYEROIS" : 
+		case "VELO SPORT CYCLO HYEROIS" :
 			return Club.G;
-		case "LA VALETTE CYCLOTOURISME" : 
+		case "LA VALETTE CYCLOTOURISME" :
 			return Club.H;
-		case "VELO CLUB SIX-FOURS" : 
+		case "VELO CLUB SIX-FOURS" :
 			return Club.I;
-		case "CRO ROIS TEAM" : 
+		case "CRO ROIS TEAM" :
 			return Club.J;
-		case "UFOLEP VELO CLUB FARLEDOIS" : 
+		case "UFOLEP VELO CLUB FARLEDOIS" :
 			return Club.K;
-		case "VELO CLUB NANS LES PINS LA STE BAUME" : 
+		case "VELO CLUB NANS LES PINS LA STE BAUME" :
 			return Club.L;
-		default : 
+		default :
 			System.exit(0);
 			return null;
 		}
@@ -1804,7 +2008,7 @@ public class Projet {
 		int m = 0;
 		int b = 0;
 		int j = 0;
-		if (a%4 == 0) 
+		if (a%4 == 0)
 			b = 1;
 
 		if (reste < 32) {
@@ -1847,5 +2051,21 @@ public class Projet {
 
 		return new Date(a, m, j);
 	}
+
+	/**
+	 * Convertir une date (chaine de caractères) en date.
+	 * @param date La date à convertir.
+	 * @return
+	 */
+	protected static Date convertir(String date) {
+		String[] param = date.split("/");
+		return new Date(
+				Integer.parseInt(param[2]),
+				Integer.parseInt(param[1]),
+				Integer.parseInt(param[0]));
+	}
+	
+	
+
 }
 

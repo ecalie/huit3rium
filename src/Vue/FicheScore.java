@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+import Controleur.Score.ActionDeselectionner;
 import Controleur.Score.ActionValiderScore;
 import Modele.Jeune;
 import Modele.Projet;
@@ -46,54 +47,66 @@ public class FicheScore extends JInternalFrame {
 		JPanel contenu3 = new JPanel(new FlowLayout());
 		this.getContentPane().add(contenu3, BorderLayout.SOUTH);
 
-		String[] data1 = {"        O", "        N", "        XX"};
-		String[] data2 = {"        A", "        B", "        C", "        D", "        XX"};
+		String[] data1 = {"O", "N", "XX"};
+		String[] data2 = {"A", "B", "C", "D", "XX"};
 
 		for (int i = 1; i <= this.fp.getProjet().getNbMemo(); i++) {
-			JLabel btnMemo = new JLabel("Mémo " + i);
+			JButton btnMemo = new JButton("Mémo " + i);
 			contenu1.add(btnMemo);
 
 			// Ajouter les réponses possibles
 			JList<String> memo = new JList<>(data2);
 			memo.setForeground(Color.BLUE);
 			memo.setBackground(Color.LIGHT_GRAY);
-			memo.setSelectedIndex(4);
+			memo.setSelectedIndex(-1);
 			this.lesMemos.add(memo);
 
 			// modifier l'action du bouton
+			btnMemo.addActionListener(new ActionDeselectionner(memo, this.fp.getProjet()));
+			btnMemo.setFocusPainted(false);
+			btnMemo.setBorderPainted(false);
+			btnMemo.setContentAreaFilled(false);
 			btnMemo.setBackground(Color.LIGHT_GRAY);
 			
 			contenu2.add(memo);
 		}
 
 		for (int i = 1; i <= this.fp.getProjet().getNbBalise(); i++) {
-			JLabel btnBalise = new JLabel("Balise " + i);
+			JButton btnBalise = new JButton("Balise " + i);
 			contenu1.add(btnBalise);
 
 			JList<String> balise = new JList<>(data2);
 			balise.setForeground(Color.BLUE);
 			balise.setBackground(Color.LIGHT_GRAY);
-			balise.setSelectedIndex(4);
+			balise.setSelectedIndex(-1);
 			this.lesBalises.add(balise);
 
 			// modifier l'action du bouton
+			btnBalise.addActionListener(new ActionDeselectionner(balise, this.fp.getProjet()));
+			btnBalise.setFocusPainted(false);
+			btnBalise.setBorderPainted(false);
+			btnBalise.setContentAreaFilled(false);
 			btnBalise.setBackground(Color.LIGHT_GRAY);
 			
 			contenu2.add(balise);
 		}
 
 		for (int i = 1; i <= this.fp.getProjet().getNbBalise(); i++) {
-			JLabel btnZone = new JLabel("Zone " + i);
+			JButton btnZone = new JButton("Zone " + i);
 			contenu1.add(btnZone);
 
 			JList<String> zone = new JList<>(data1);
 			zone.setPreferredSize(new Dimension(10, 20));
 			zone.setForeground(Color.BLUE);
 			zone.setBackground(Color.LIGHT_GRAY);
-			zone.setSelectedIndex(2);
+			zone.setSelectedIndex(-1);
 			this.lesZones.add(zone);
 
 			// modifier l'action du bouton
+			btnZone.addActionListener(new ActionDeselectionner(zone, this.fp.getProjet()));
+			btnZone.setFocusPainted(false);
+			btnZone.setBorderPainted(false);
+			btnZone.setContentAreaFilled(false);
 			btnZone.setBackground(Color.LIGHT_GRAY);
 
 			contenu2.add(zone);
@@ -131,17 +144,23 @@ public class FicheScore extends JInternalFrame {
 	}
 
 	public void invaliderReponse(String reponse, JList<String> list) {
-		if (!reponse.equals("XX")) {
+		if (reponse.equals("XX"))
+			list.setSelectedIndex(list.getMaxSelectionIndex());
+		else if (reponse.equals(""))
+			list.setSelectedIndex(-1);
+		else
 			list.setSelectedIndex(Projet.alphabet.get(reponse));
-		}
 	}
 
 	public void invaliderZone(String resultat, JList<String> list) {
-		if (resultat.equals("O")) {
+		if (resultat.equals("O"))
 			list.setSelectedIndex(0);
-		} else if (resultat.equals("N")) {
+		else if (resultat.equals("N"))
 			list.setSelectedIndex(1);
-		}
+		else if (resultat.equals(""))
+			list.setSelectedIndex(-1);
+		else
+			list.setSelectedIndex(2);
 	}
 
 	/**
@@ -163,7 +182,7 @@ public class FicheScore extends JInternalFrame {
 			Boolean finiMemo = true;
 			// Mettre à jour le nombre des jeunes sur chaque circuit
 			for (int i = 0; i < this.lesMemos.size(); i++) {
-				if (this.lesMemos.get(i).getSelectedIndex() == 4) {
+				if (this.lesMemos.get(i).getSelectedIndex() == -1) {
 					finiMemo = false;
 					break;
 				}
@@ -175,7 +194,7 @@ public class FicheScore extends JInternalFrame {
 
 			Boolean baliseFinie = true;
 			for (int i = 0; i < this.lesBalises.size(); i++) {
-				if (this.lesBalises.get(i).getSelectedIndex() == 4) {
+				if (this.lesBalises.get(i).getSelectedIndex() == -1) {
 					baliseFinie = false;
 					break;
 				}
@@ -211,7 +230,7 @@ public class FicheScore extends JInternalFrame {
 		// regarger si un mémo est rempli
 		Boolean memo = false;
 		for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
-			if (lesMemos.get(i).getSelectedIndex() != 4) {
+			if (lesMemos.get(i).getSelectedIndex() != -1) {
 				memo = true;
 				break;
 			}
@@ -221,19 +240,21 @@ public class FicheScore extends JInternalFrame {
 		if (memo) {
 			// vérifier que les mémos ont une réponse sélectionnée
 			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
-				if (lesMemos.get(i).getSelectedIndex() == 4) {
+				if (lesMemos.get(i).getSelectedIndex() == -1) {
 					lesMemos.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {
 					lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
 				}
 			}
-		}
+		} else
+			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++)
+				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
 
 		// regarder si une balise ou une maniabilité est remplie
 		Boolean balise = false;
 		for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-			if (lesBalises.get(i).getSelectedIndex() != 4 || lesZones.get(i).getSelectedIndex() != 2) {
+			if (lesBalises.get(i).getSelectedIndex() != -1 || lesZones.get(i).getSelectedIndex() != -1) {
 				balise = true;
 				break;
 			}
@@ -243,7 +264,7 @@ public class FicheScore extends JInternalFrame {
 		if (balise) {
 			// vérifier que les balises ont une réponse enregistrée
 			for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-				if (lesBalises.get(i).getSelectedIndex() == 4) {
+				if (lesBalises.get(i).getSelectedIndex() == -1) {
 					lesBalises.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {
@@ -253,15 +274,72 @@ public class FicheScore extends JInternalFrame {
 
 			// vérifier que les maniabilité sont renseignées
 			for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
-				if (lesZones.get(i).getSelectedIndex() == 2) {
+				if (lesZones.get(i).getSelectedIndex() == -1) {
 					lesZones.get(i).setBackground(Color.RED);
 					ok = false;
 				} else {
 					lesZones.get(i).setBackground(Color.LIGHT_GRAY);
 				}
 			}
+		} else
+			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
+				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
+				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
+			}
+
+		if (!ok)
+			return ok;
+
+			System.out.println(balise);
+		if (balise) {		
+			// Si une balise est trouvée, la zone l'est aussi et inversement
+			for (int i = 0 ; i < this.fp.getProjet().getNbBalise(); i++) {
+				if (lesBalises.get(i).getSelectedIndex() == 4 &&
+						lesZones.get(i).getSelectedIndex() != 2) {
+					lesZones.get(i).setBackground(Color.RED);
+					lesBalises.get(i).setBackground(Color.RED);
+					return false;
+				}
+
+				if (lesBalises.get(i).getSelectedIndex() != 4 &&
+						lesZones.get(i).getSelectedIndex() == 2) {
+					lesZones.get(i).setBackground(Color.RED);
+					lesBalises.get(i).setBackground(Color.RED);
+					return false;
+				}
+			}
 		}
 
 		return ok;
 	}
+
+	public boolean verifScore() {
+		boolean ok = true;
+		for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
+			if (lesMemos.get(i).getSelectedIndex() == -1) {
+				ok = false;
+				lesMemos.get(i).setBackground(Color.RED);
+				this.setVisible(true);
+			} else
+				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
+		}
+
+		for (int i = 0 ; i < this.fp.getProjet().getNbBalise() ; i++) {
+			if (lesBalises.get(i).getSelectedIndex() == -1) {
+				ok = false;
+				lesBalises.get(i).setBackground(Color.RED);
+				this.setVisible(true);
+			} else
+				lesBalises.get(i).setBackground(Color.LIGHT_GRAY);
+
+			if (lesZones.get(i).getSelectedIndex() == -1) {
+				ok = false;
+				this.setVisible(true);
+				lesZones.get(i).setBackground(Color.RED);
+			} else
+				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
+		}
+		return ok;
+	}
+
 }

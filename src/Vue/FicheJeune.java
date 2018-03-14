@@ -167,7 +167,7 @@ public class FicheJeune extends JInternalFrame {
         this.licencie.setNom(this.getPrenom2().getText());
         this.licencie.setClub(recupClub(this.getClub2().getSelectedItem().toString()));
         this.licencie.setNumero(Integer.parseInt(this.getNumero2().getText()));
-        this.licencie.setNiveau(this.getCate2().getSelectedItem().toString());
+        this.licencie.setNiveau(Niveau.get(this.getCate2().getSelectedItem().toString()));
 
         this.setTitle(this.licencie.getClub().toString() + this.licencie.getNumero());
     }

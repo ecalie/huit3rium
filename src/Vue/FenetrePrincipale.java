@@ -6,9 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
@@ -22,9 +19,10 @@ import Controleur.Administrateur.ActionAdministrateur;
 import Controleur.Administrateur.ActionModifierFichierLicencies;
 import Controleur.Administrateur.ActionQuitterAdministrateur;
 import Controleur.Ajout.ActionAjouter;
+import Controleur.Charger.ActionChargerFichierInscription;
+import Controleur.Charger.ActionChargerInscrits;
 import Controleur.Classement.ActionClasser;
 import Controleur.Classement.ActionExporterClassement;
-import Controleur.Demarrer.ActionChargerInscrits;
 import Controleur.Demarrer.ActionDemarrerBleu;
 import Controleur.Demarrer.ActionDemarrerNoir;
 import Controleur.Demarrer.ActionDemarrerRouge;
@@ -76,13 +74,7 @@ public class FenetrePrincipale extends JFrame {
 		super("Huit3rium");
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-		} catch(Exception e) {
-			try {
-				Projet.fwLog = new FileWriter(new File("log.txt"), true);
-				Projet.fwLog.write(e + "");
-				Projet.fwLog.close();
-			} catch (IOException e1) {}
-		}
+		} catch(Exception e) {}
 
 		/* Mise en forme de la fenêtre */
 		this.setLayout(new BorderLayout());
@@ -268,7 +260,7 @@ public class FenetrePrincipale extends JFrame {
 	 **/
 	private void boutonsAdmin() {
 		/* Le panel des boutons administrateur */
-		this.admin = new JPanel(new GridLayout(20, 1));
+		this.admin = new JPanel(new GridLayout(22, 1));
 
 		JLabel separation = new JLabel("- - -");
 		separation.setHorizontalAlignment(SwingConstants.CENTER);
@@ -287,6 +279,9 @@ public class FenetrePrincipale extends JFrame {
 
 		JLabel separation6 = new JLabel("- - -");
 		separation6.setHorizontalAlignment(SwingConstants.CENTER);
+
+		JLabel separation7 = new JLabel("- - -");
+		separation7.setHorizontalAlignment(SwingConstants.CENTER);
 
 		/* Boutons admin */
 		JButton btnQuitter = new JButton("Quitter le mode administrateur");
@@ -359,6 +354,11 @@ public class FenetrePrincipale extends JFrame {
 		exporterClassement.setBackground(Color.DARK_GRAY);
 		exporterClassement.setForeground(Color.WHITE);
 		
+		JButton btnChargerInscritClub = new JButton("Charger un fichier d'inscription");
+		btnChargerInscritClub.addActionListener(new ActionChargerFichierInscription(this.projet));
+		btnChargerInscritClub.setBackground(Color.DARK_GRAY);
+		btnChargerInscritClub.setForeground(Color.WHITE);
+		
 		/* Ajouter les boutons */
 		this.admin.add(btnQuitter);
 
@@ -367,6 +367,10 @@ public class FenetrePrincipale extends JFrame {
 		this.admin.add(btnAjouter);
 		this.admin.add(btnSupprimer);
 
+		this.admin.add(separation7);
+		
+		this.admin.add(btnChargerInscritClub);
+		
 		this.admin.add(separation5);
 		
 		this.admin.add(btnEnregistrerLicencies);

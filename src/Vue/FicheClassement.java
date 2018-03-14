@@ -9,16 +9,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import Modele.Jeune;
+import Modele.Niveau;
+import Modele.Projet;
 
 public class FicheClassement extends JInternalFrame {
 
+	private Projet projet;
+	
 	/**
 	 * Construire une fiche de classement.
 	 * @param titre  Le titre de la fenêtre
 	 */
-	public FicheClassement() {
+	public FicheClassement(Projet projet) {
 		super("", true, true, false, true);
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.projet = projet;
 		this.pack();
 		this.hide();
 	}
@@ -27,14 +31,14 @@ public class FicheClassement extends JInternalFrame {
 	 * Afficher la fenêtre interne.
 	 * @param nbInscrit    Le nombre d'inscrits
 	 * @param lesInscrits  L'ensembles des jeunes à afficher
-	 * @param couleur      La catégorie àa afficher
+	 * @param couleur      La catégorie à afficher
 	 */
-	public void afficherCouleur(ArrayList<Jeune> lesInscrits, String couleur) {
-		this.setTitle("Classement des " + couleur);
+	public void afficherCouleur(ArrayList<Jeune> lesInscrits, Niveau niveau) {
+		this.setTitle("Classement des " + niveau.getNom());
 
 		int nb = 0;
 		for (Jeune j : lesInscrits)
-			if (j.getNiveau().equals(couleur))
+			if (j.getNiveau() == niveau)
 				nb++;	
 
 		this.getContentPane().setLayout(new GridLayout(nb, 1));
@@ -43,7 +47,7 @@ public class FicheClassement extends JInternalFrame {
 		int k = 0;
 		int nbPoints = 0;
 		for (Jeune j : lesInscrits) {
-			if (j.getNiveau().equals(couleur)) {
+			if (j.getNiveau() == niveau) {
 				JPanel panel = new JPanel(new GridLayout(1,5));
 				i++;
 				if (nbPoints != j.getPoints())
@@ -89,5 +93,15 @@ public class FicheClassement extends JInternalFrame {
 		}
 		this.pack();
 		this.show();
+	}
+	
+	@Override 
+	public void dispose() {
+		for (FicheClassement fc : this.projet.getfc())
+			fc.fermer();
+	}
+	
+	public void fermer() {
+		super.dispose();
 	}
 }

@@ -51,7 +51,7 @@ public class FicheReponse extends JInternalFrame {
 		contenu2.setBackground(Color.DARK_GRAY);
 		contenu3.setBackground(Color.DARK_GRAY);
 
-		String[] data2 = {"        A", "        B", "        C", "        D"};
+		String[] data2 = {"A", "B", "C", "D"};
 
 		// Initialiser les en-têtes
 		for (int i = 1 ; i <= this.projet.getNbMemo() ; i++) {

@@ -31,7 +31,7 @@ public class Jeune {
 	private char sexe;
 	
 	/** Le niveau. */
-	private String niveau;
+	private Niveau niveau;
 	
 	/** La date de naissance. */
 	private Date naissance;
@@ -59,7 +59,7 @@ public class Jeune {
 	 * @param fiche2  La fiche répertoriant les scores du jeunes au critérium
 	 */
 	public Jeune(String nom, String prenom, Club club, int numero,
-			Date naissance, int numLicence, String niveau, char sexe,
+			Date naissance, int numLicence, Niveau niveau, char sexe,
 			FicheJeune fiche, FicheScore fiche2) {
 		this.nom = nom;
 		this.prenom = prenom;
@@ -227,11 +227,11 @@ public class Jeune {
 		this.naissance = naissance;
 	}
 	
-	public String getNiveau() {
+	public Niveau getNiveau() {
 		return niveau;
 	}
 
-	public void setNiveau(String niveau) {
+	public void setNiveau(Niveau niveau) {
 		this.niveau = niveau;
 	}
 
@@ -363,10 +363,10 @@ public class Jeune {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))
 				this.points += points.get("baliseCorrecte");
 
-			if (!this.lesReponses.get("balise" + i).equals("        XX"))
+			if (!this.lesReponses.get("balise" + i).equals("XX"))
 				this.points += points.get("baliseTrouvee");
 
-			if (this.lesReponses.get("maniabilite" + i).equals("        O"))
+			if (this.lesReponses.get("maniabilite" + i).equals("O"))
 				this.points += points.get("maniabilite");
 		}
 
@@ -375,10 +375,9 @@ public class Jeune {
 			if (reponses.get("memo" + i).equals(this.lesReponses.get("memo" + i)))
 				this.points += points.get("memoCorrect");
 
-			if (!this.lesReponses.get("memo" + i).equals("        XX")) 
+			if (!this.lesReponses.get("memo" + i).equals("XX")) 
 				this.points += points.get("memoTrouve");
 		}
-
 	}
 	
 	public void initialiserReponses(int nbBalise, int nbMemo) {

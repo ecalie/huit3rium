@@ -1,10 +1,11 @@
 package Controleur.Demarrer;
 
+import Modele.Niveau;
 import Modele.Projet;
 
 public class ActionDemarrerRouge extends ActionDemarrerCouleur {
     public ActionDemarrerRouge(Projet projet) {
-        this.couleur = "PISTE / RENARDS";
+        this.niveau = Niveau.R;
         this.projet = projet;
     }
 }
