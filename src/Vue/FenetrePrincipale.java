@@ -432,7 +432,7 @@ public class FenetrePrincipale extends JFrame {
 			// Si oui
 			if (resultatCrit == 0) {
 				// Enregistrer le critérium
-				this.projet.enregistrerCrit();
+				this.projet.enregistrerResultats();
 			}
 
 			// Si oui ou non 

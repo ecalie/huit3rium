@@ -22,7 +22,7 @@ public class ActionQuitterAdministrateur implements ActionListener {
 			// Si oui
 			if (resultatLicencie == 0) {
 				// Enregistrer les modifications
-				this.fp.getProjet().enregistrerLicencies();
+				this.fp.getProjet().enregistrerInscrit();
 			} 
 
 			// Si modification du crit
@@ -33,7 +33,7 @@ public class ActionQuitterAdministrateur implements ActionListener {
 				// Si oui
 				if (resultatCrit == 0) {
 					// Enregistrer le critérium
-					this.fp.getProjet().enregistrerCrit();
+					this.fp.getProjet().enregistrerResultats();
 				}
 
 				// Si oui ou non 
@@ -56,7 +56,7 @@ public class ActionQuitterAdministrateur implements ActionListener {
 			// Si oui
 			if (resultatCrit == 0) {
 				// Enregistrer le critérium
-				this.fp.getProjet().enregistrerCrit();
+				this.fp.getProjet().enregistrerResultats();
 			}
 
 			// Si oui ou non 

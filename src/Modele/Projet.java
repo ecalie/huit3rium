@@ -51,9 +51,6 @@ import Vue.FicheScore;
 
 public class Projet {
 
-	/** La liste ds licenciés. */
-	private ArrayList<Jeune> lesLicencies;
-
 	/** La fenêrte principale associée. */
 	private FenetrePrincipale fp;
 
@@ -62,9 +59,6 @@ public class Projet {
 
 	/** Le nom du fichier du critérium. */
 	private String nomFichierCrit;
-
-	/** Le nom du fichier des licenciés. */
-	private String nomFichierLicencie;
 
 	/** La liste des gains pour chaque épreuve. */
 	private HashMap<String, Integer> gains;
@@ -89,9 +83,6 @@ public class Projet {
 
 	/** Vrai tant que le projet est conforme. */
 	private Boolean conforme;
-
-	/** Vrai tant que les licenciés n'ont pas été modifiés. */
-	private Boolean licenciesEnreg;
 
 	/** Vrai tant que le critérium n'a pas été modifié. */
 	private Boolean critEnreg;
@@ -142,49 +133,6 @@ public class Projet {
 		panel.add(this.nombreArriveMemo);
 		panel.add(this.barreMemo);
 
-		/*
-		File param = new File(".fichierConfiguration.txt");
-		if (param.exists()) {
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(param));
-				String line = br.readLine();
-				this.nomFichierLicencie = line;
-				br.close();
-			} catch (Exception e) {}
-		}
-		if (!param.exists() || !(new File(this.nomFichierLicencie).exists())) {
-			JFileChooser chooser = new JFileChooser();
-			chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm"));
-
-			// Dossier Courant
-			chooser.setCurrentDirectory(new File("C:" + File.separator + "Users" + File.separator));
-
-			// Si validation du fichier
-			if (chooser.showDialog(chooser, "Ouvrir") == 0) {
-				File f= chooser.getSelectedFile();
-
-					String nom = f.getAbsolutePath();
-
-					if (!nom.contains("."))
-						this.nomFichierLicencie = nom + ".xls";
-					else if (nom.endsWith(".xlsm"))
-						this.nomFichierLicencie = nom;
-				}
-			} else {
-				this.fp.dispose();
-				System.exit(0);
-			}
-
-			File config = new File(".fichierConfiguration.txt");
-			try {
-				config.createNewFile();
-				FileWriter fw = new FileWriter(config);
-				fw.write(this.nomFichierLicencie);
-				fw.close();
-			} catch (IOException e) {}
-		}
-		 */
-
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm"));
 
@@ -200,7 +148,7 @@ public class Projet {
 				File f = files[ind];
 				inscription(f);
 			}
-			this.licenciesEnreg = true;
+			this.critEnreg = true;
 		} else {
 			System.exit(0);
 		}
@@ -240,14 +188,6 @@ public class Projet {
 	 */
 	public void setNbMemo(int mémo) {
 		this.nbMemo = mémo;
-	}
-
-	/**
-	 * Récupérer la liste des licencies.
-	 * @return La liste des licenciés
-	 **/
-	public ArrayList<Jeune> getLesLicencies() {
-		return lesLicencies;
 	}
 
 	/**
@@ -330,22 +270,6 @@ public class Projet {
 	}
 
 	/**
-	 * Modifier le bouléen d'enregistrement des licenciés.
-	 * @param enreg Le bouléen d'enregsitrement des licenciés
-	 */
-	public void setLicencieEnreg(Boolean enreg) {
-		this.licenciesEnreg = enreg;
-	}
-
-	/**
-	 * Récupérer le bouléen d'enregistrement des licenciés
-	 * @return Le bouléen d'enregistrement des licenciés
-	 */
-	public Boolean getLicencieEnreg() {
-		return this.licenciesEnreg;
-	}
-
-	/**
 	 * Modifier le bouléen d'enregistrement du crit.
 	 * @param enreg Le nouveau bouléen d'enregistrement du crit
 	 */
@@ -359,22 +283,6 @@ public class Projet {
 	 */
 	public Boolean getCritEnreg() {
 		return this.critEnreg;
-	}
-
-	/**
-	 * Modifier le nom du fichier des licenciés
-	 * @param nomFichierLicencie Le nouveau nom du fichier des licenciés
-	 */
-	public void setNomFichierLicencie(String nomFichierLicencie) {
-		this.nomFichierLicencie = nomFichierLicencie;
-	}
-
-	/**
-	 * Récupérer le nom du fichier d'enregistrement des licenciés.
-	 * @return Le nom du fichier d'enregistrement des licenciés
-	 */
-	public String getNomFichierLicencie() {
-		return this.nomFichierLicencie;
 	}
 
 	/**
@@ -442,7 +350,7 @@ public class Projet {
 					"Sélectionner les participants " + niveau.getNom(), true, false, false);
 
 			// Afficher tous les numéros de la couleur
-			for (Jeune licencie : this.lesLicencies) {
+			for (Jeune licencie : this.lesInscrits) {
 				if (licencie.getNiveau() == niveau) {
 					JCheckBox btn = new JCheckBox(licencie.toString());
 					// Cocher les cases des incrits
@@ -485,7 +393,7 @@ public class Projet {
 	 * Afficher la fenêtre de suppression des licenciés.
 	 */
 	public void afficherFenetreSuppression() {
-		if (this.lesLicencies.size() > 0) {
+		if (this.lesInscrits.size() > 0) {
 			// Créer la fenêtre interne
 			JInternalFrame jif = new JInternalFrame("Supprimer des licenciés");
 			this.fp.getDesktop().add(jif);
@@ -496,7 +404,7 @@ public class Projet {
 
 			// Afficher les numéros de tous les licenciés
 			ArrayList<JCheckBox> list = new ArrayList<>();
-			for (Jeune licencie : lesLicencies) {
+			for (Jeune licencie : lesInscrits) {
 				JCheckBox btn = new JCheckBox(licencie.toString());
 				panel1.add(btn);
 				list.add(btn);
@@ -551,7 +459,7 @@ public class Projet {
 		this.fp.getGrilleLicencies().removeAll();
 
 		/* afficher la grille des licenciés */
-		for (Jeune licencie : this.lesLicencies) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.getNiveau() == Niveau.V) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
@@ -561,7 +469,7 @@ public class Projet {
 			}
 		}
 
-		for (Jeune licencie : this.lesLicencies) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.getNiveau() == Niveau.B) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
@@ -571,7 +479,7 @@ public class Projet {
 			}
 		}
 
-		for (Jeune licencie : this.lesLicencies) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.getNiveau() == Niveau.R) {
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
@@ -581,7 +489,7 @@ public class Projet {
 			}
 		}
 
-		for (Jeune licencie : this.lesLicencies) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.getNiveau() == Niveau.N){
 				JButton btn = new JButton(licencie.toString());
 				btn.addActionListener(new ActionModifierFiche(licencie));
@@ -598,7 +506,11 @@ public class Projet {
 	 **/
 	public void affichageSelectionnes(Niveau niveau) {
 		ArrayList<Jeune> inscrits = new ArrayList<Jeune>();
+		
+		System.out.println(lesInscrits.size());
+		
 		for (Jeune licencie : this.getLesInscrits()) {
+			System.out.println(licencie);
 			if (licencie.getNiveau() == niveau) {
 				inscrits.add(licencie);
 			}
@@ -606,7 +518,7 @@ public class Projet {
 
 		if (inscrits.isEmpty()) {
 			javax.swing.JOptionPane.showMessageDialog(this.fp,
-					"Aucun inscrit dans cette catégorie.");
+					"Aucun inscrit dans cette catégorieeeee.");
 			return;
 		}
 
@@ -657,44 +569,35 @@ public class Projet {
 	///////////////////////////////////////
 
 	/**
-	 * Ajouter un licencie à la liste triée.
+	 * Ajouter un inscrit à la liste triée.
 	 * @param Le licencié que l'on ajoute 
 	 **/
-	public void ajouterLicencie(Jeune licencie) {
+	public void ajouterInscrit(Jeune licencie) {
 		// Si le jeune est déjà dans la liste, rien à faire
-		if (this.dejaLicencie(licencie))
+		if (this.dejaIscrit(licencie))
 			return;
 		
 		// Si c'est le permier, pas besoin de trier
-		if (this.lesLicencies.size() == 0) {
-			this.lesLicencies.add(licencie);
+		if (this.lesInscrits.size() == 0) {
+			this.lesInscrits.add(licencie);
 		} else {
 			int i;
-			for (i = 0; i < this.lesLicencies.size(); i++) {
+			for (i = 0; i < this.lesInscrits.size(); i++) {
 				// Chercher l'emplacement
-				if (licencie.inferieur(this.lesLicencies.get(i))) {
+				if (licencie.inferieur(this.lesInscrits.get(i))) {
 					// Faire une place
-					this.decaler(this.lesLicencies, i);
+					this.decaler(this.lesInscrits, i);
 					// Ajouter
-					this.lesLicencies.set(i, licencie);
+					this.lesInscrits.set(i, licencie);
 					break;
 				}
 			}
 			// Ou l'ajouter à la fin
-			if (i == this.lesLicencies.size()) {
-				this.lesLicencies.add(licencie);
+			if (i == this.lesInscrits.size()) {
+				this.lesInscrits.add(licencie);
 			}
 		}
-		this.licenciesEnreg = false;
-	}
-
-	/**
-	 * Ajouter un sélectioné à la liste des inscrits.
-	 * @param Le jeune à ajouter à la liste
-	 **/
-	public void ajouterInscrit(Jeune licencie) {
-		if (!this.lesInscrits.contains(licencie))
-			this.lesInscrits.add(licencie);
+		this.critEnreg = false;
 	}
 
 	/**
@@ -711,10 +614,10 @@ public class Projet {
 	 * Supprimer un licencié.
 	 * @param numero   Le numéro du jeune à supprimer
 	 **/
-	public void supprimerLicencie(int numero) {
-		for (Jeune licencie : this.lesLicencies) {
+	public void supprimerInscrit(int numero) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.getNumero() == numero) {
-				this.lesLicencies.remove(licencie);
+				this.lesInscrits.remove(licencie);
 				break;
 			}
 		}
@@ -727,7 +630,7 @@ public class Projet {
 	 **/
 	public Jeune recupJeune(String numero) {
 		Jeune res = null;
-		for (Jeune licencie : this.lesLicencies) {
+		for (Jeune licencie : this.lesInscrits) {
 			if (licencie.toString().equals(numero)) {
 				res = licencie;
 				break;
@@ -744,45 +647,23 @@ public class Projet {
 	public void validerSuppression(ArrayList<JCheckBox> list, JInternalFrame jif) {
 		for (JCheckBox checkBox : list) {
 			if (checkBox.isSelected()) {
-				this.supprimerLicencie(Integer.parseInt(checkBox.getText()));
-				this.licenciesEnreg = false;
+				this.supprimerInscrit(Integer.parseInt(checkBox.getText()));
+				this.critEnreg = false;
 			}
 		}
 		jif.dispose();
 		this.affichage();
 	}
 
-	/**
-	 * Enregistrer la sélection des inscrits.
-	 * @param list  La liste des boutons
-	 * @param jif   La fiche de sélection d'une couleur donnée
-	 */
-	public void validerSelection(ArrayList<JCheckBox> list, JInternalFrame jif) {
-		for (JCheckBox btn : list) {
-			if (btn.isSelected()) {
-				// Signaler une modification
-				this.critEnreg = false;
-				// Ajouter les inscrits à la liste
-				this.ajouterInscrits(btn.getText());
-				// Créer une ficher score
-				FicheScore fs = new FicheScore(this.fp);
-				// Associer la fiche au jeune
-				Jeune j = this.recupJeune(btn.getText());
-				j.setFiche2(fs);
-				fs.setLicencie(j);
-			}
-		}
-		jif.dispose();
-	}
 
 	////////////////////
 	///ENREGSITREMENT///
 	////////////////////
 
 	/**
-	 * Enregistrer l'ensemble des licenciées dans un fichier excel.
+	 * Enregistrer l'ensemble des inscrits dans un fichier excel.
 	 */
-	public void enregistrerLicencies() {
+	public void enregistrerInscrit() {
 		// Création du wokrbook
 		XSSFWorkbook wb = new XSSFWorkbook();
 
@@ -911,7 +792,7 @@ public class Projet {
 		int colonne = 0;
 		
 		// Ecrire pour chaque jeune, une ligne dans le fichier
-		for (Jeune j : this.getLesLicencies()) {
+		for (Jeune j : this.getLesInscrits()) {
 
 			// Réinitialiser le numéro de la colonne
 			colonne = 0;
@@ -1010,7 +891,7 @@ public class Projet {
 		}
 		
 		// Les colonnes 1, 2, 3, 9, 11, 12
-		for (int ind = 4; ind < this.lesLicencies.size() + 4 ; ind++) {
+		for (int ind = 4; ind < this.lesInscrits.size() + 4 ; ind++) {
 			row = sheet.getRow(ind);
 			row.getCell(0).setCellStyle(style3);
 			row.getCell(1).setCellStyle(style3);
@@ -1021,7 +902,7 @@ public class Projet {
 		}
 		
 		// Les autres colonnes
-		for (int ind = 4; ind < this.lesLicencies.size() + 4 ; ind++) {
+		for (int ind = 4; ind < this.lesInscrits.size() + 4 ; ind++) {
 			row = sheet.getRow(ind);
 			row.getCell(3).setCellStyle(style4);
 			row.getCell(4).setCellStyle(style4);
@@ -1043,7 +924,7 @@ public class Projet {
 		
 		// Ecrire le fichier excel
 		try {
-			FileOutputStream fos = new FileOutputStream(this.nomFichierLicencie);
+			FileOutputStream fos = new FileOutputStream(this.nomFichierCrit);
 			wb.write(fos);
 
 			fos.close();
@@ -1057,7 +938,7 @@ public class Projet {
 		}
 		
 		if (ok) {
-			this.licenciesEnreg = true;
+			this.critEnreg = true;
 
 			int ecart = 0;
 			if (this.fp.getAdmin().isVisible())
@@ -1073,7 +954,7 @@ public class Projet {
 	/**
 	 * Enregistrer l'ensemble des licenciées dans un fichier excel dans un nouveau fichier.
 	 */
-	public void enregistrerSousLicencies() {
+	public void enregistrerSousInscrits() {
 		JFileChooser chooser = new JFileChooser();
 
 		// Dossier Courant
@@ -1086,18 +967,18 @@ public class Projet {
 			String nom = fichier.getAbsolutePath();
 
 			if (!nom.contains(".")) {
-				this.nomFichierLicencie = nom + ".xls";
-				this.enregistrerLicencies();
+				this.nomFichierCrit = nom + ".xls";
+				this.enregistrerInscrit();
 			} else if (nom.endsWith(".xls") || nom.endsWith(".xlsx")){
-				this.nomFichierLicencie = nom;
-				this.enregistrerLicencies();
+				this.nomFichierCrit = nom;
+				this.enregistrerInscrit();
 			} else {
 				javax.swing.JOptionPane.showMessageDialog(this.fp,
 						"Veuillez sélectionner un fichier excel (extension .xls).",
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
-				this.enregistrerSousLicencies();
+				this.enregistrerSousInscrits();
 			}
 		}
 
@@ -1105,7 +986,7 @@ public class Projet {
 		try {
 			config.createNewFile();
 			FileWriter fw = new FileWriter(config);
-			fw.write(this.nomFichierLicencie);
+			fw.write(this.nomFichierCrit);
 			fw.close();
 		} catch (IOException e) {}
 	}
@@ -1113,7 +994,7 @@ public class Projet {
 	/**
 	 * Enregistrer les inscrits; les scores et les paramètres dans deux fichiers.
 	 */
-	public void enregistrerSousCrit() {
+	public void enregistrerSousResultats() {
 		JFileChooser chooser = new JFileChooser();
 
 		// Dossier Courant
@@ -1127,18 +1008,18 @@ public class Projet {
 
 			if (!nom.contains(".")) {
 				this.nomFichierCrit = nom + ".xlsx";
-				this.enregistrerCrit();
+				this.enregistrerResultats();
 			}
 			else if (nom.endsWith(".xlsx")){
 				this.nomFichierCrit = nom;
-				this.enregistrerCrit();
+				this.enregistrerResultats();
 			} else {
 				javax.swing.JOptionPane.showMessageDialog(this.getFp(),
 						"Veuillez sélectionner un fichier excel.",
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
-				this.enregistrerSousCrit();
+				this.enregistrerSousResultats();
 			}
 		}
 	}
@@ -1146,9 +1027,9 @@ public class Projet {
 	/**
 	 * Enregistrer le critérium avec le nom de fichier en attribut.
 	 */
-	public void enregistrerCrit() {
+	public void enregistrerResultats() {
 		if (this.nomFichierCrit == null) {
-			this.enregistrerSousCrit();
+			this.enregistrerSousResultats();
 		} else {
 			// Création du wokrbook
 			XSSFWorkbook wb = new XSSFWorkbook();
@@ -1447,7 +1328,7 @@ public class Projet {
 
 			if (!nom.contains(".")) {
 				this.nomFichierCrit = nom + ".xlsx";
-				this.enregistrerCrit();
+				this.enregistrerResultats();
 			}
 		}
 
@@ -1532,7 +1413,7 @@ public class Projet {
 		Sheet sheet = wb.getSheet("Feuil1");
 
 		// Initialiser les indices et ligne et de colonne
-		int i = 1, j = 0;
+		int i = 1;
 		Row row = sheet.getRow(i++);
 
 		while (row != null) {
@@ -1698,7 +1579,7 @@ public class Projet {
 				// Initialiser les réponses 
 				j.initialiserReponses(this.nbBalise, this.nbMemo);
 
-				this.ajouterLicencie(j);
+				this.ajouterInscrit(j);
 
 				this.fp.getDesktop().add(fj);
 				fj.hide();
@@ -1732,7 +1613,7 @@ public class Projet {
 			}
 			
 			this.affichage();
-			this.licenciesEnreg = true;
+			this.critEnreg = true;
 		} else {
 			this.fp.dispose();
 			System.exit(0);
@@ -1859,14 +1740,12 @@ public class Projet {
 		this.nbBalise = 4;
 		this.nbMemo = 2;
 		this.reponses = new HashMap<>();
-		this.lesLicencies = new ArrayList<>();
 		this.lesInscrits = new ArrayList<>();
 		this.gains = new HashMap<>();
 		this.ficheGains = new FicheGains(this);
 		this.ficheParametre = new FicheParam(this);
 		this.ficheReponse = new FicheReponse(this);
 		this.conforme = true;
-		this.licenciesEnreg = true;
 		this.critEnreg = true;
 		this.barreMemo = new JProgressBar();
 		this.barreBalise = new JProgressBar();
@@ -1901,9 +1780,8 @@ public class Projet {
 		alphabet.put("O", 14);
 	}
 	
-	
-	private boolean dejaLicencie(Jeune j) {
-		for (Jeune je : this.lesLicencies) {
+	private boolean dejaIscrit(Jeune j) {
+		for (Jeune je : this.lesInscrits) {
 			if (je.getNumero() == j.getNumero())
 				return true;
 		}

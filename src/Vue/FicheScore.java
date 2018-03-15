@@ -67,7 +67,7 @@ public class FicheScore extends JInternalFrame {
 			btnMemo.setBorderPainted(false);
 			btnMemo.setContentAreaFilled(false);
 			btnMemo.setBackground(Color.LIGHT_GRAY);
-			
+
 			contenu2.add(memo);
 		}
 
@@ -87,7 +87,7 @@ public class FicheScore extends JInternalFrame {
 			btnBalise.setBorderPainted(false);
 			btnBalise.setContentAreaFilled(false);
 			btnBalise.setBackground(Color.LIGHT_GRAY);
-			
+
 			contenu2.add(balise);
 		}
 
@@ -247,9 +247,10 @@ public class FicheScore extends JInternalFrame {
 					lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
 				}
 			}
-		} else
+		} else {
 			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++)
 				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
+		}
 
 		// regarder si une balise ou une maniabilité est remplie
 		Boolean balise = false;
@@ -260,6 +261,7 @@ public class FicheScore extends JInternalFrame {
 			}
 		}
 
+		System.out.println(balise);
 		// Si au moins une zone ou une balise est remplie, les autres doivent l'être aussi
 		if (balise) {
 			// vérifier que les balises ont une réponse enregistrée
@@ -281,16 +283,14 @@ public class FicheScore extends JInternalFrame {
 					lesZones.get(i).setBackground(Color.LIGHT_GRAY);
 				}
 			}
-		} else
+		} else {
 			for (int i = 0 ; i < this.fp.getProjet().getNbMemo() ; i++) {
 				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
 				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
 			}
+		}
 
-		if (!ok)
-			return ok;
 
-			System.out.println(balise);
 		if (balise) {		
 			// Si une balise est trouvée, la zone l'est aussi et inversement
 			for (int i = 0 ; i < this.fp.getProjet().getNbBalise(); i++) {

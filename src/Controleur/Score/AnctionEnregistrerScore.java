@@ -21,6 +21,6 @@ public class AnctionEnregistrerScore implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.fp.getProjet().enregistrerCrit();
+        this.fp.getProjet().enregistrerResultats();
     }
 }

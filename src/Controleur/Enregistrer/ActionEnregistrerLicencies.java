@@ -15,6 +15,6 @@ public class ActionEnregistrerLicencies implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.projet.enregistrerLicencies();
+        this.projet.enregistrerInscrit();
     }
 }

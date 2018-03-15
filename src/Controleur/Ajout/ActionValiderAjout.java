@@ -59,7 +59,7 @@ public class ActionValiderAjout implements ActionListener {
 			// Si création 
 			if (this.fiche.getTitle().equals("Ajout d'un licencié")) {
 				// Ajout du licencié et mise à jour des données 
-				this.projet.ajouterLicencie(licencie);
+				this.projet.ajouterInscrit(licencie);
 				this.fiche.setTitle(licencie.toString());
 				this.fiche.setLicencie(licencie);
 			} else {

@@ -15,6 +15,6 @@ public class ActionEnregistrerCrit implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.projet.enregistrerCrit();
+        this.projet.enregistrerResultats();
     }
 }
