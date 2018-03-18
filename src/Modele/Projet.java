@@ -483,6 +483,9 @@ public class Projet {
 				this.fp.getGrilleLicencies().add(btn);
 			}
 		}
+		
+		this.fp.fermerModeAdmin();
+		this.fp.ouvrirModeAdmin();
 	}
 
 	/**
