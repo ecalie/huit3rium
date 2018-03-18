@@ -2125,7 +2125,7 @@ public class Projet {
 	 * @param lettre La lettre du club
 	 * @return Le club correspondant
 	 */
-	protected static Club recupClub(String lettre) {
+	public static Club recupClub(String lettre) {
 		switch (lettre) {
 		case "A" :
 			return Club.A;
@@ -2162,7 +2162,7 @@ public class Projet {
 	 * @param nom Le nom du club
 	 * @return Le club correspondant
 	 */
-	protected static Club toClub(String nom) {
+	public static Club toClub(String nom) {
 		switch (nom) {
 		case "C S MUNICIPAL SEYNOIS" :
 			return Club.A;
@@ -2264,7 +2264,7 @@ public class Projet {
 	 * @param date La date à convertir.
 	 * @return
 	 */
-	protected static Date convertir(String date) {
+	public static Date convertir(String date) {
 		String[] param = date.split("/");
 		return new Date(
 				Integer.parseInt(param[2]),

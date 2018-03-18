@@ -30,10 +30,12 @@ public class FicheJeune extends JInternalFrame {
     private JTextField numero2;
     private JComboBox<String> niveau2;
     private Jeune licencie;
+    private Projet projet;
 
     public FicheJeune(Projet projet) {
         super("Ajout d'un licencié",  true, false, false, true);
 
+        this.projet = projet;
         this.getContentPane().setLayout(new BorderLayout());
 
         JPanel panel1 = new JPanel(new GridLayout(8,1));
@@ -58,8 +60,9 @@ public class FicheJeune extends JInternalFrame {
         panel1.add(naissance1);
         panel2.add(this.naissance2);
 
-        JLabel sexe1 = new JLabel("Prénom", JLabel.CENTER);
+        JLabel sexe1 = new JLabel("Sexe", JLabel.CENTER);
         this.sexe2 = new JComboBox<Character>();
+        this.sexe2.addItem(' ');
         this.sexe2.addItem('F');
         this.sexe2.addItem('G');
         sexe1.setLabelFor(this.sexe2);
@@ -99,9 +102,10 @@ public class FicheJeune extends JInternalFrame {
         panel2.add(this.niveau2);
 
         JButton valider = new JButton("Valider");
-        valider.addActionListener(new ActionValiderAjout(projet, this));
+        valider.addActionListener(new ActionValiderAjout(this));
         JButton annuler = new JButton("Annuler");
         annuler.addActionListener(new ActionAnnulerAjout(this));
+        
         valider.setBackground(Color.DARK_GRAY);
         valider.setForeground(Color.LIGHT_GRAY);
         annuler.setBackground(Color.DARK_GRAY);
@@ -138,11 +142,15 @@ public class FicheJeune extends JInternalFrame {
         return club2;
     }
 
+    public JComboBox<Character> getSexe2() {
+        return sexe2;
+    }
+    
     public JTextField getNumero2() {
         return numero2;
     }
 
-    public JComboBox<String> getCate2() {
+    public JComboBox<String> getniveau2() {
         return niveau2;
     }
 
@@ -154,7 +162,7 @@ public class FicheJeune extends JInternalFrame {
         this.prenom2.setText(this.licencie.getPrenom());
         this.numero2.setText("" + this.licencie.getNumero());
         this.club2.setSelectedItem(this.licencie.getClub().getNom());
-        this.niveau2.setSelectedItem(this.licencie.getNiveau());
+        this.niveau2.setSelectedItem(this.licencie.getNiveau().getNom());
         this.sexe2.setSelectedItem(this.licencie.getSexe());
         this.licence2.setText("" + this.licencie.getNumLicence());
         this.naissance2.setText("" + this.licencie.getNaissance());
@@ -164,44 +172,79 @@ public class FicheJeune extends JInternalFrame {
      * Mettre à jour le jeune asocié en fonction de la fiche
      **/
     public void validerModif() {
-        this.licencie.setNom(this.getPrenom2().getText());
-        this.licencie.setClub(recupClub(this.getClub2().getSelectedItem().toString()));
-        this.licencie.setNumero(Integer.parseInt(this.getNumero2().getText()));
-        this.licencie.setNiveau(Niveau.get(this.getCate2().getSelectedItem().toString()));
-
-        this.setTitle(this.licencie.getClub().toString() + this.licencie.getNumero());
+    	if (verif()) {
+        	if (licencie == null)
+        		this.licencie = new Jeune(this, null);
+	        this.licencie.setNom(this.getNom2().getText());
+	        this.licencie.setPrenom(this.getPrenom2().getText());
+	        this.licencie.setClub(Projet.toClub(this.getClub2().getSelectedItem().toString()));
+	        this.licencie.setSexe(this.getSexe2().getSelectedItem().toString().charAt(0));
+	        this.licencie.setNaissance(Projet.convertir(this.naissance2.getText()));
+	        this.licencie.setNumLicence(Integer.parseInt(this.licence2.getText()));
+	        this.licencie.setNumero(Integer.parseInt(this.numero2.getText()));
+	        this.licencie.setNiveau(Niveau.get(this.getniveau2().getSelectedItem().toString()));
+	
+	        this.setTitle(this.licencie.getClub().toString() + this.licencie.getNumero());
+	        this.projet.ajouterInscrit(this.licencie);
+	        this.hide();
+	        this.projet.affichage();
+    	}
     }
     
-    
-    private Club recupClub(String nom) {
-		switch (nom) {
-		case "A" : 
-			return Club.A;
-		case "B" : 
-			return Club.B;
-		case "C" : 
-			return Club.C;
-		case "D" : 
-			return Club.D;
-		case "E" : 
-			return Club.E;
-		case "F" : 
-			return Club.F;
-		case "G" : 
-			return Club.G;
-		case "H" : 
-			return Club.H;
-		case "I" : 
-			return Club.I;
-		case "J" : 
-			return Club.J;
-		case "K" : 
-			return Club.K;
-		case "L" : 
-			return Club.L;
-		default : 
-			return Club.A;
+    /**
+     * Vérifier si la fiche est bien remplie. Colorer en rouge les cases mal remplies.
+     * @return Vrai si elle bien remplie, faux sinon
+     */
+    private boolean verif() {
+    	Boolean stop = false;
+		if (this.nom2.getText().equals("")) {
+			this.nom2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.nom2.setBackground(Color.WHITE);
 		}
-	}
-
+		if (this.prenom2.getText().equals("")) {
+			this.prenom2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.prenom2.setBackground(Color.WHITE);
+		}
+		if (this.naissance2.getText().equals("")) {
+			this.naissance2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.naissance2.setBackground(Color.WHITE);
+		}
+		if (this.licence2.getText().equals("")) {
+			this.licence2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.licence2.setBackground(Color.WHITE);
+		}
+		if (this.numero2.getText().equals("")) {
+			this.numero2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.numero2.setBackground(Color.WHITE);
+		}
+		if (this.club2.getSelectedIndex() == 0) {
+			this.club2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.club2.setBackground(Color.WHITE);
+		}
+		if (this.niveau2.getSelectedIndex() == 0) {
+			this.niveau2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.niveau2.setBackground(Color.WHITE);
+		}
+		if (this.sexe2.getSelectedIndex() == 0) {
+			this.sexe2.setBackground(Color.RED);
+			stop = true;
+		} else {
+			this.sexe2.setBackground(Color.WHITE);
+		}
+		return !stop;
+    }
 }
