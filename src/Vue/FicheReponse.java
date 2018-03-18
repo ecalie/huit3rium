@@ -153,6 +153,8 @@ public class FicheReponse extends JInternalFrame {
 		}
 		for (String key : this.lesOrientations.keySet())
 			this.lesOrientations.get(key).setText(this.projet.getReponses().get(key));
+		
+		this.hide();
 	}
 
 
@@ -188,10 +190,12 @@ public class FicheReponse extends JInternalFrame {
 
 		// Vérifier que toutes les balises d'orientation sur tous les circuits ont nue réponse
 		for (String key : this.lesOrientations.keySet()) {
-			if (this.lesOrientations.get(key).getText().equals(""))
+			if (this.lesOrientations.get(key).getText().equals("")) {
+				this.lesOrientations.get(key).setBackground(Color.RED);
 				continuer = false;
+			}
 			else
-				this.lesOrientations.get(key).setBackground(Color.DARK_GRAY);
+				this.lesOrientations.get(key).setBackground(Color.LIGHT_GRAY);
 		}
 
 		// si pas de problème
