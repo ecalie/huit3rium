@@ -1831,7 +1831,6 @@ public class Projet {
 			Row row = sheet.getRow(index++);
 
 			while (row != null  && !row.getCell(0).getStringCellValue().equals("")) {
-
 				String lettre = row.getCell(0).getStringCellValue();	
 				int numero = (int) row.getCell(1).getNumericCellValue();
 			//	int equipe = (int) row.getCell(3).getNumericCellValue();
@@ -1847,7 +1846,7 @@ public class Projet {
 					int naissance = (int) row.getCell(9).getNumericCellValue();
 					j = new Jeune(nom, prenom, recupClub(lettre), numero,
 							convertir(naissance), licence, niveau, sexe, fj, fs);
-				} catch (NumberFormatException e) {
+				} catch (Exception e) {
 					String naissance = row.getCell(9).getStringCellValue();
 					j = new Jeune(nom, prenom, recupClub(lettre), numero,
 							convertir(naissance), licence, niveau, sexe, fj, fs);
