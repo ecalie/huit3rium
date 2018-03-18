@@ -98,7 +98,8 @@ public class FicheClassement extends JInternalFrame {
 	@Override 
 	public void dispose() {
 		for (FicheClassement fc : this.projet.getfc())
-			fc.fermer();
+			if (fc != null)
+				fc.fermer();
 	}
 	
 	public void fermer() {

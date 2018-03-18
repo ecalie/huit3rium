@@ -12,16 +12,16 @@ import javax.swing.JList;
 /**
  * Created by Aurélie on 31/10/2017.
  */
-public class ActionValiderReponse implements ActionListener {
+public class ActionAnnulerReponse implements ActionListener {
 
     private FicheReponse ficheReponse;
 
-    public ActionValiderReponse(FicheReponse ficheReponse) {
+    public ActionAnnulerReponse(FicheReponse ficheReponse) {
         this.ficheReponse = ficheReponse;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.ficheReponse.validerModif();
+        this.ficheReponse.invaliderModif();
     }
 }

@@ -14,8 +14,13 @@ public class FicheParam extends JInternalFrame {
 
 	private JTextField nbBalises;
 	private JTextField nbMemos;
+	private JTextField nbOrientation;
 	private Projet projet;
 
+	//////////////////
+	///CONSTRUCTEUR///
+	//////////////////
+	
 	public FicheParam(Projet projet) {
 		// Créer la fenêtre
 		super("Modifer les paramètres", true, false, false, true);
@@ -26,7 +31,7 @@ public class FicheParam extends JInternalFrame {
 		this.getContentPane().setLayout(new BorderLayout());
 
 		// Créer des panels pour les boutons et les paramètres
-		JPanel panel1 = new JPanel(new FlowLayout());
+		JPanel panel1 = new JPanel(new GridLayout(3,2));
 		JPanel panel2 = new JPanel(new FlowLayout());
 
 		// Modifier la couleur de fond de la fenêtre
@@ -34,7 +39,8 @@ public class FicheParam extends JInternalFrame {
 		panel2.setBackground(Color.DARK_GRAY);
 
 		// Ajouter un champs pour le nombre de mémos 
-		JLabel memo = new JLabel("Nombre de mémos", JLabel.CENTER);
+		JLabel memo = new JLabel("Mémos", JLabel.CENTER);
+		memo.setForeground(Color.LIGHT_GRAY);
 		nbMemos = new JTextField(3);
 		nbMemos.setBackground(Color.LIGHT_GRAY);
 		memo.setLabelFor(nbMemos);
@@ -42,13 +48,23 @@ public class FicheParam extends JInternalFrame {
 		panel1.add(nbMemos);
 
 		// ajouter un champs pour le nombre de balises
-		JLabel balise = new JLabel("Nombre de balises", JLabel.CENTER);
+		JLabel balise = new JLabel("Balises", JLabel.CENTER);
+		balise.setForeground(Color.LIGHT_GRAY);
 		nbBalises = new JTextField(3);
 		nbBalises.setBackground(Color.LIGHT_GRAY);
 		balise.setLabelFor(nbBalises);
 		panel1.add(balise);
 		panel1.add(nbBalises);
 
+		// ajouter un champs pour le nombre de balises d'orientation
+		JLabel orientation = new JLabel("Orientation", JLabel.CENTER);
+		orientation.setForeground(Color.LIGHT_GRAY);
+		nbOrientation = new JTextField(3);
+		nbOrientation.setBackground(Color.LIGHT_GRAY);
+		orientation.setLabelFor(nbOrientation);
+		panel1.add(orientation);
+		panel1.add(nbOrientation);
+		
 		// ajouter les boutons
 		JButton valider = new JButton("Valider");
 		valider.addActionListener(new ActionValiderParam(this));
@@ -67,7 +83,11 @@ public class FicheParam extends JInternalFrame {
 		this.pack();
 		this.setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 	}
-
+	
+	////////////////////////
+	///GETTERS ET SETTERS///
+	////////////////////////
+	
 	public JTextField getNbBalises() {
 		return nbBalises;
 	}
@@ -76,6 +96,10 @@ public class FicheParam extends JInternalFrame {
 		return nbMemos;
 	}
 
+	public JTextField getNbOrientation() {
+		return nbOrientation;
+	}
+	
 	public Projet getProjet() {
 		return projet;
 	}
@@ -92,12 +116,21 @@ public class FicheParam extends JInternalFrame {
 		this.nbMemos.setText(nbMemos);
 	}
 
+	public void setNbOrientation(String nbOrientation) {
+		this.nbOrientation.setText(nbOrientation);
+	}
+
+	////////////////////////
+	///METHODES PUBLIQUES///
+	////////////////////////
+	
 	/** 
 	 * Annuler les modifications sur les paramètres.
 	 */
 	public void annulerModifier() {
 		this.setNbBalises("" + projet.getNbBalise());
 		this.setNbMemos("" + projet.getNbMemo());
+		this.setNbOrientation("" + projet.getNbOrientation());
 		this.hide();
 	}
 
@@ -118,6 +151,10 @@ public class FicheParam extends JInternalFrame {
 			this.getNbMemos().setBackground(Color.RED);
 			stop = true;
 		}
+		if (this.getNbOrientation().getText().equals("")) {
+			this.getNbOrientation().setBackground(Color.RED);
+			stop = true;
+		}
 
 		// on vérifie que c'est un entier
 		try {
@@ -136,10 +173,19 @@ public class FicheParam extends JInternalFrame {
 			stop = true;
 		}
 
+		try {
+			Integer.parseInt(this.getNbOrientation().getText());
+			this.getNbOrientation().setBackground(Color.LIGHT_GRAY);
+		} catch(NumberFormatException e) {
+			this.getNbOrientation().setBackground(Color.RED);
+			stop = true;
+		}
+
 		// Si pas de problème, en enregistre
 		if (!stop) {
 			this.projet.setNbBalise(Integer.parseInt(this.getNbBalises().getText()));
 			this.projet.setNbMemo(Integer.parseInt(this.getNbMemos().getText()));
+			this.projet.setNbOrientation(Integer.parseInt(this.getNbOrientation().getText()));
 
 			// Signaler une modification
 			this.projet.setCritEnreg(false);

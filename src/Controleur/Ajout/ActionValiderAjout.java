@@ -65,7 +65,7 @@ public class ActionValiderAjout implements ActionListener {
 			} else {
 				// sinon mise à jour de la fiche
 				this.fiche.validerModif();
-				this.projet.setLicencieEnreg(false);
+				this.projet.setCritEnreg(false);
 			}
 			// Mettre à jour la fenêtre principale et masquer la fiche
 			this.projet.affichage();

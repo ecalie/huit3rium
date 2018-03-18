@@ -10,32 +10,28 @@ import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import Controleur.Administrateur.ActionAdministrateur;
-import Controleur.Administrateur.ActionModifierFichierLicencies;
 import Controleur.Administrateur.ActionQuitterAdministrateur;
 import Controleur.Ajout.ActionAjouter;
+import Controleur.Charger.ActionChargerCrit;
 import Controleur.Charger.ActionChargerFichierInscription;
-import Controleur.Charger.ActionChargerInscrits;
 import Controleur.Classement.ActionClasser;
 import Controleur.Classement.ActionExporterClassement;
 import Controleur.Demarrer.ActionDemarrerBleu;
 import Controleur.Demarrer.ActionDemarrerNoir;
 import Controleur.Demarrer.ActionDemarrerRouge;
 import Controleur.Demarrer.ActionDemarrerVert;
-import Controleur.Enregistrer.ActionEnregistrerCrit;
-import Controleur.Enregistrer.ActionEnregistrerLicencies;
+import Controleur.Enregistrer.ActionEnregistrer;
 import Controleur.Enregistrer.ActionEnregistrerSous;
-import Controleur.Enregistrer.ActionEnregistrerSousLicencies;
 import Controleur.Gains.ActionDefinirGains;
 import Controleur.Parametres.ActionModifParam;
 import Controleur.Reponse.ActionDefinirReponses;
-import Controleur.Score.AnctionEnregistrerScore;
-import Controleur.Selectionner.ActionSelectionner;
 import Controleur.Supprimer.ActionSupprimer;
 import Modele.Projet;
 
@@ -169,7 +165,7 @@ public class FenetrePrincipale extends JFrame {
 
 	/**
 	 * Récupérer la zone des boutons.
-	 * @return : la zone des boutons
+	 * @return La zone des boutons
 	 */
 	public JPanel getBtnsDem() {
 		return this.btnsDem;
@@ -177,7 +173,7 @@ public class FenetrePrincipale extends JFrame {
 
 	/**
 	 * Récupérer la zone du bouton d'enregistrements des scores.
-	 * @return : la zone du bouton d'enregistrements des scores
+	 * @return La zone du bouton d'enregistrements des scores
 	 */
 	public JPanel getBtnsCrit() {
 		return this.btnsCrit;
@@ -185,6 +181,7 @@ public class FenetrePrincipale extends JFrame {
 
 	/** 
 	 * Récupérer la zone des barres de progression. 
+	 * @return La zone de barres de progression
 	 */
 	public JPanel getZoneProg() {
 		return this.zoneProg;
@@ -211,11 +208,11 @@ public class FenetrePrincipale extends JFrame {
 		JButton noir = new JButton("Noir");
 		noir.addActionListener(new ActionDemarrerNoir(this.projet));
 
-		JButton score = new JButton("Calculer le classement");
+		JButton score = new JButton("Classement");
 		score.addActionListener(new ActionClasser(this.projet));
 
 		JButton charger = new JButton("Charger un critérium");
-		charger.addActionListener(new ActionChargerInscrits(this.projet));
+		charger.addActionListener(new ActionChargerCrit(this.projet));
 
 		// Modifier les couleurs des boutons
 		vert.setBackground(new Color(160, 160, 0));
@@ -239,7 +236,7 @@ public class FenetrePrincipale extends JFrame {
 
 		// Créer le bouton d'enregistrement
 		JButton sauverCrit = new JButton("Enregistrer");
-		sauverCrit.addActionListener(new AnctionEnregistrerScore(this));
+		sauverCrit.addActionListener(new ActionEnregistrer(this.projet));
 		sauverCrit.setBackground(new Color(160, 160, 0));
 		
 		// Créer le bouton et sa zone
@@ -262,8 +259,11 @@ public class FenetrePrincipale extends JFrame {
 		/* Le panel des boutons administrateur */
 		this.admin = new JPanel(new GridLayout(22, 1));
 
-		JLabel separation = new JLabel("- - -");
-		separation.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel separation0 = new JLabel("- - -");
+		separation0.setHorizontalAlignment(SwingConstants.CENTER);
+
+		JLabel separation1 = new JLabel("- - -");
+		separation1.setHorizontalAlignment(SwingConstants.CENTER);
 
 		JLabel separation2 = new JLabel("- - -");
 		separation2.setHorizontalAlignment(SwingConstants.CENTER);
@@ -276,12 +276,6 @@ public class FenetrePrincipale extends JFrame {
 
 		JLabel separation5 = new JLabel("- - -");
 		separation5.setHorizontalAlignment(SwingConstants.CENTER);
-
-		JLabel separation6 = new JLabel("- - -");
-		separation6.setHorizontalAlignment(SwingConstants.CENTER);
-
-		JLabel separation7 = new JLabel("- - -");
-		separation7.setHorizontalAlignment(SwingConstants.CENTER);
 
 		/* Boutons admin */
 		JButton btnQuitter = new JButton("Quitter le mode administrateur");
@@ -299,33 +293,18 @@ public class FenetrePrincipale extends JFrame {
 		btnSupprimer.setBackground(Color.DARK_GRAY);
 		btnSupprimer.setForeground(Color.WHITE);
 
-		JButton btnEnregistrerLicencies = new JButton("Enregistrer les licenciés");
-		btnEnregistrerLicencies.addActionListener(new ActionEnregistrerLicencies(this.projet));
+		JButton btnEnregistrerLicencies = new JButton("Enregistrer");
+		btnEnregistrerLicencies.addActionListener(new ActionEnregistrer(this.projet));
 		btnEnregistrerLicencies.setBackground(Color.DARK_GRAY);
 		btnEnregistrerLicencies.setForeground(Color.WHITE);
 
 		JButton btnEnregistrerSousLicencies = new JButton("Enregistrer Sous");
-		btnEnregistrerSousLicencies.addActionListener(new ActionEnregistrerSousLicencies(this.projet));
+		btnEnregistrerSousLicencies.addActionListener(new ActionEnregistrerSous(this.projet));
 		btnEnregistrerSousLicencies.setBackground(Color.DARK_GRAY);
 		btnEnregistrerSousLicencies.setForeground(Color.WHITE);
 
-		JButton btnSelection = new JButton("Sélectionner les inscrits");
-		btnSelection.addActionListener(new ActionSelectionner(this.projet));
-		btnSelection.setBackground(Color.DARK_GRAY);
-		btnSelection.setForeground(Color.WHITE);
-
-		JButton btnEnregistrerSelectionnes = new JButton("Enregistrer le critérium");
-		btnEnregistrerSelectionnes.addActionListener(new ActionEnregistrerCrit(this.projet));
-		btnEnregistrerSelectionnes.setBackground(Color.DARK_GRAY);
-		btnEnregistrerSelectionnes.setForeground(Color.WHITE);
-
-		JButton btnEnregistrerSous = new JButton("Enregistrer Sous");
-		btnEnregistrerSous.addActionListener(new ActionEnregistrerSous(this.projet));
-		btnEnregistrerSous.setBackground(Color.DARK_GRAY);
-		btnEnregistrerSous.setForeground(Color.WHITE);
-
 		JButton btnChargerCrit = new JButton("Charger un critérium");
-		btnChargerCrit.addActionListener(new ActionChargerInscrits(this.projet));
+		btnChargerCrit.addActionListener(new ActionChargerCrit(this.projet));
 		btnChargerCrit.setBackground(Color.DARK_GRAY);
 		btnChargerCrit.setForeground(Color.WHITE);
 
@@ -343,11 +322,6 @@ public class FenetrePrincipale extends JFrame {
 		btnModifNb.addActionListener(new ActionModifParam(this.projet));
 		btnModifNb.setBackground(Color.DARK_GRAY);
 		btnModifNb.setForeground(Color.WHITE);
-
-		JButton btnModifConfig = new JButton("Modifier le fichier des licenciés");
-		btnModifConfig.addActionListener(new ActionModifierFichierLicencies(this.projet));
-		btnModifConfig.setBackground(Color.DARK_GRAY);
-		btnModifConfig.setForeground(Color.WHITE);
 		
 		JButton exporterClassement = new JButton("Exporter le classement");
 		exporterClassement.addActionListener(new ActionExporterClassement(this.projet));
@@ -362,38 +336,31 @@ public class FenetrePrincipale extends JFrame {
 		/* Ajouter les boutons */
 		this.admin.add(btnQuitter);
 
-		this.admin.add(separation);
+		this.admin.add(separation0);
 
 		this.admin.add(btnAjouter);
 		this.admin.add(btnSupprimer);
 
-		this.admin.add(separation7);
+		this.admin.add(separation1);
 		
 		this.admin.add(btnChargerInscritClub);
 		
-		this.admin.add(separation5);
+		this.admin.add(separation2);
 		
 		this.admin.add(btnEnregistrerLicencies);
 		this.admin.add(btnEnregistrerSousLicencies);
 
-		this.admin.add(separation2);
+		this.admin.add(separation3);
 
-		this.admin.add(btnSelection);
 		this.admin.add(btnSolution);
 		this.admin.add(btnGains);
 		this.admin.add(btnModifNb);
 
-		this.admin.add(separation3);
+		this.admin.add(separation4);
 
 		this.admin.add(btnChargerCrit);
-		this.admin.add(btnEnregistrerSelectionnes);
-		this.admin.add(btnEnregistrerSous);
 		
-		this.admin.add(separation4);
-		
-		this.admin.add(btnModifConfig);
-		
-		this.admin.add(separation6);
+		this.admin.add(separation5);
 		
 		this.admin.add(exporterClassement);
 
@@ -403,36 +370,65 @@ public class FenetrePrincipale extends JFrame {
 		this.admin.setVisible(false);
 	}
 
-
 	////////////////////////
 	///METHODES PUBLIQUES///
 	////////////////////////
 
+	/**
+	 * Fermer le mode administrateur et ouvrir le mode classique.
+	 */
 	public void fermerModeAdmin() {
+		// Changer la couleur de fond
+		this.desktop.setBackground(Color.DARK_GRAY);
+
+		// Masquer les boutons administrateur et la grille de tous les inscrits
 		this.grilleLicencies.setVisible(false);
 		this.admin.setVisible(false);
 
+		// Afficher les boutons
 		this.btnsCrit.setVisible(true);
 		this.btnsDem.setVisible(true);
+		
+		// Fermer toutes les fenêtres internes
+		JInternalFrame[] jifs = this.desktop.getAllFrames();
+		for (int i = 0 ; i < jifs.length ; i++)
+			jifs[i].hide();
 	}
 
+	/**
+	 * Ouvrir le mode administrateur et fermer le mode classique.
+	 */
 	public void ouvrirModeAdmin() {
-		// Rendre inivisible les boutons et les numéros des inscrits
+		// Changer la couleur de fond
+		this.desktop.setBackground(Color.WHITE);
+		
+		// Masquer les boutons et la grille d'un niveau au cas où
 		this.btnsDem.setVisible(false);
 		this.btnsCrit.setVisible(false);
 		this.grilleInscrits.setVisible(false);
-	}
 
+		// Afficher la grille de tous les inscrits et les boutons administrateur
+		this.grilleLicencies.setVisible(true);
+		this.admin.setVisible(true);
+		
+		// Fermer toutes les fenêtres internes
+		JInternalFrame[] jifs = this.desktop.getAllFrames();
+		for (int i = 0 ; i < jifs.length ; i++)
+			jifs[i].hide();
+	}
+	
+
+	
 	@Override
 	public void dispose() {
 		if (!this.projet.getCritEnreg()) {
 			int resultatCrit = javax.swing.JOptionPane.showConfirmDialog(this.getDesktop(),
-					"Voulez-vous enregistrer les modifications sur le critérium ?");
+					"Voulez-vous enregistrer les modifications ?");
 
 			// Si oui
 			if (resultatCrit == 0) {
 				// Enregistrer le critérium
-				this.projet.enregistrerResultats();
+				this.projet.enregistrer();
 			}
 
 			// Si oui ou non 

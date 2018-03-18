@@ -9,10 +9,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import Modele.Projet;
 
-public class ActionChargerInscrits implements ActionListener {
+public class ActionChargerCrit implements ActionListener {
     private Projet projet;
 
-    public ActionChargerInscrits(Projet projet) {
+    public ActionChargerCrit(Projet projet) {
         this.projet = projet;
     }
 

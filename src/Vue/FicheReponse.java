@@ -1,13 +1,23 @@
 package Vue;
 
-import Modele.Projet;
-
-import javax.swing.*;
-
-import Controleur.Reponse.ActionValiderReponse;
-
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
+import Controleur.Reponse.ActionAnnulerReponse;
+import Controleur.Reponse.ActionValiderReponse;
+import Modele.Projet;
 
 /**
  * Created by Aurélie on 31/10/2017.
@@ -18,6 +28,8 @@ public class FicheReponse extends JInternalFrame {
 
 	private ArrayList<JList<String>> lesMemos;
 	private ArrayList<JList<String>> lesBalises;
+	// TODO
+	private HashMap<String,JTextArea> lesOrientations;
 
 	public FicheReponse(Projet projet) {
 		// Créer la fenetre
@@ -64,11 +76,17 @@ public class FicheReponse extends JInternalFrame {
 			balise.setForeground(Color.LIGHT_GRAY);
 			contenu1.add(balise);
 		}
+		for (int i = 1 ; i <= this.projet.getNbCircuit() ; i++) {
+			JLabel orientation = new JLabel("   Orientation " + i + "   ");
+			orientation.setForeground(Color.LIGHT_GRAY);
+			contenu1.add(orientation);
+		}
 
 		this.lesMemos = new ArrayList<>();
 		this.lesBalises = new ArrayList<>();
+		this.lesOrientations = new HashMap<>();
 
-		// Initialiser les choix de réponses
+		// Mémo
 		for (int i = 1 ; i <= this.projet.getNbMemo() ; i++) {
 			JList<String> leMemo = new JList<>(data2);
 			leMemo.setPreferredSize(new Dimension(10, 20));
@@ -78,6 +96,7 @@ public class FicheReponse extends JInternalFrame {
 			this.lesMemos.add(leMemo);
 		}	
 
+		// balise
 		for (int i = 1 ; i <= this.projet.getNbBalise() ; i++) {
 			JList<String> laBalise = new JList<>(data2);
 			laBalise.setPreferredSize(new Dimension(10, 20));
@@ -87,15 +106,35 @@ public class FicheReponse extends JInternalFrame {
 			this.lesBalises.add(laBalise);
 		}
 
-		// Ajouter le bouton validers
+		// orientation
+		for (int i = 0 ; i < this.projet.getNbCircuit() ; i++) {
+			JPanel panel = new JPanel(new GridLayout(this.projet.getNbOrientation(), 2));
+			panel.setBackground(Color.DARK_GRAY);
+			for (int j = 0 ; j < this.projet.getNbOrientation() ; j++) {
+				JTextArea area = new JTextArea();
+				JLabel label = new JLabel("     " + j);
+				label.setLabelFor(area);
+				label.setBackground(Color.DARK_GRAY);
+				label.setForeground(Color.LIGHT_GRAY);
+				panel.add(label);
+				panel.add(area);
+				this.lesOrientations.put("orientation" + i + "_" + j, area);
+			}
+			contenu2.add(panel);
+		}
+			
+		// Ajouter le bouton valider
 		JButton bValider = new JButton("Valider");
-		bValider.addActionListener(new ActionValiderReponse(
-				this.projet, this.lesMemos, this.lesBalises, this));
+		bValider.addActionListener(new ActionValiderReponse(this));
 		contenu3.add(bValider);
 
+		// Ajouter le bouton annuler
+		JButton btnAnnuler = new JButton("Annuler");
+		btnAnnuler.addActionListener(new ActionAnnulerReponse(this));
+		contenu3.add(btnAnnuler);
+
 		// Afficher la fenêtre
-		this.setSize(new Dimension(
-				65 * (this.projet.getNbBalise() + this.projet.getNbMemo()), 200));
+		this.pack();
 		this.setDefaultCloseOperation(JInternalFrame.HIDE_ON_CLOSE);
 		this.setVisible(false);
 	}
@@ -112,6 +151,8 @@ public class FicheReponse extends JInternalFrame {
 			this.lesBalises.get(i).setSelectedIndex(Projet.alphabet.get(
 					this.projet.getReponses().get("balise" + i)));
 		}
+		for (String key : this.lesOrientations.keySet())
+			this.lesOrientations.get(key).setText(this.projet.getReponses().get(key));
 	}
 
 
@@ -120,42 +161,54 @@ public class FicheReponse extends JInternalFrame {
 	 * @param memo     La liste des réponses aux mémos sélectionnées 
 	 * @param balise   La liste des réponses aux balises sélectionnées
 	 */
-	public void validerModif(ArrayList<JList<String>> memo, 
-			ArrayList<JList<String>> balise) {
+	public void validerModif() {
 
 		// vrai tant qu'il n'y a pas de problème
 		Boolean continuer = true;
 		
 		// vérifier que les mémos ont une réponse sélectionnée
 		for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
-			if (memo.get(i).getSelectedIndex() == -1) {
-				memo.get(i).setBackground(Color.RED);
+			if (lesMemos.get(i).getSelectedIndex() == -1) {
+				lesMemos.get(i).setBackground(Color.RED);
 				continuer = false;
 			} else {
-				memo.get(i).setBackground(Color.DARK_GRAY);
+				lesMemos.get(i).setBackground(Color.DARK_GRAY);
 			}
 		}
 
 		// vérifier que les balises ont une réponse enregistrée
 		for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
-			if (balise.get(i).getSelectedIndex() == -1) {
-				balise.get(i).setBackground(Color.RED);
+			if (lesBalises.get(i).getSelectedIndex() == -1) {
+				lesBalises.get(i).setBackground(Color.RED);
 				continuer = false;
 			} else {
-				balise.get(i).setBackground(Color.DARK_GRAY);
+				lesBalises.get(i).setBackground(Color.DARK_GRAY);
 			}
+		}
+
+		// Vérifier que toutes les balises d'orientation sur tous les circuits ont nue réponse
+		for (String key : this.lesOrientations.keySet()) {
+			if (this.lesOrientations.get(key).getText().equals(""))
+				continuer = false;
+			else
+				this.lesOrientations.get(key).setBackground(Color.DARK_GRAY);
 		}
 
 		// si pas de problème
 		if (continuer) {
 			// Mettre à jour les réponses aux questions des mémos orientation
 			for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
-				this.projet.getReponses().put("memo" + i, memo.get(i).getSelectedValue());
+				this.projet.getReponses().put("memo" + i, lesMemos.get(i).getSelectedValue());
 			}
 
 			// Mettre à jour les réponses aux questions des balises
 			for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
-				this.projet.getReponses().put("balise" + i, balise.get(i).getSelectedValue());
+				this.projet.getReponses().put("balise" + i, lesBalises.get(i).getSelectedValue());
+			}
+
+			// Mettre à jour les réponses aux balies d'orientations
+			for (String key : this.lesOrientations.keySet()) {
+				this.projet.getReponses().put(key, this.lesOrientations.get(key).getText());
 			}
 
 			// Signaler une modification

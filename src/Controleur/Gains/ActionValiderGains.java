@@ -11,17 +11,15 @@ import Vue.FicheGains;
 
 public class ActionValiderGains implements ActionListener{
 
-	private HashMap<String, JTextField> gains;
 	private FicheGains jif;
 	
-	public ActionValiderGains(Projet projet, HashMap<String, JTextField> scores, FicheGains jif) {
-		this.gains = scores;
+	public ActionValiderGains(FicheGains jif) {
 		this.jif = jif;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		this.jif.validerGains(this.gains);
+		this.jif.validerGains();
 	}
 	
 

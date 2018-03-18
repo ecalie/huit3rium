@@ -5,16 +5,16 @@ import java.awt.event.ActionListener;
 
 import Modele.Projet;
 
-public class ActionEnregistrerLicencies implements ActionListener {
+public class ActionEnregistrer implements ActionListener {
 
     private Projet projet;
 
-    public ActionEnregistrerLicencies(Projet projet) {
+    public ActionEnregistrer(Projet projet) {
         this.projet = projet;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.projet.enregistrerInscrit();
+        this.projet.enregistrer();
     }
 }

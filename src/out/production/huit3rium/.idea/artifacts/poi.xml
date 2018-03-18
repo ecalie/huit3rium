@@ -1,6 +1,0 @@
-<component name="ArtifactManager">
-  <artifact name="poi">
-    <output-path>$USER_HOME$/Downloads/poi-3.17</output-path>
-    <root id="root" />
-  </artifact>
-</component>

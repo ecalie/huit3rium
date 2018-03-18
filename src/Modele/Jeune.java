@@ -44,6 +44,9 @@ public class Jeune {
 
 	/** Le nombre de points. */
 	private int points;
+	
+	/** Vrai quand tous les résultats sont renseignés. */
+	private boolean fini;
 
 	///////////////////////
 	///// CONSTRUCTEURS ///
@@ -71,6 +74,7 @@ public class Jeune {
 		this.sexe = sexe;
 		this.fiche = fiche;
 		this.fiche2 = fiche2;
+		this.fini = false;
 
 		this.lesReponses = new HashMap<>();
 	}
@@ -87,6 +91,7 @@ public class Jeune {
 		this.numero = Integer.parseInt(fiche.getNumero2().getText());
 		this.fiche = fiche;
 		this.fiche2 = fiche2;
+		this.fini = false;
 		this.lesReponses = new HashMap<>();
 	}
 
@@ -242,6 +247,14 @@ public class Jeune {
 	public void setSexe(char sexe) {
 		this.sexe = sexe;
 	}
+	
+	public boolean getFini() {
+		return this.fini;
+	}
+	
+	public void setFini(boolean fini) {
+		this.fini = fini;
+	}
 
 	////////////////////////
 	///METHODES PUBLIQUES///
@@ -380,12 +393,21 @@ public class Jeune {
 		}
 	}
 	
-	public void initialiserReponses(int nbBalise, int nbMemo) {
+	/**
+	 * Initialiser les réponses.
+	 * @param nbBalise Le nombre de balises
+	 * @param nbMemo   Le nombre de mémo
+	 */
+	public void initialiserReponses(int nbBalise, int nbMemo, int nbOrientation) {
 		for (int i = 0 ; i < nbBalise ; i ++) {
-			this.lesReponses.put("balise" + i, "XX");
-			this.lesReponses.put("maniabilite" + i, "XX");
+			this.lesReponses.put("balise" + i, "");
+			this.lesReponses.put("maniabilite" + i, "");
 		}
+		
 		for (int i = 0 ; i < nbMemo ; i++)
-			this.lesReponses.put("memo" + i, "XX");
+			this.lesReponses.put("memo" + i, "");
+		
+		for (int i = 0 ; i < nbOrientation ; i++)
+			this.lesReponses.put("orientation" + i, "");
 	}
 }
