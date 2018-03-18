@@ -71,7 +71,7 @@ public class FenetrePrincipale extends JFrame {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch(Exception e) {}
-
+		
 		/* Mise en forme de la fenêtre */
 		this.setLayout(new BorderLayout());
 
@@ -111,7 +111,7 @@ public class FenetrePrincipale extends JFrame {
 		this.add(lesGrilles, BorderLayout.WEST);
 		
 		/* Taille minimale de la fenêtre */
-		this.setMinimumSize(new Dimension(500, 300));
+		this.setMinimumSize(new Dimension(800, 700));
 
 		/* Afficher la fenetre */
 		this.setExtendedState(this.MAXIMIZED_BOTH);
