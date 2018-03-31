@@ -5,7 +5,9 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,6 +38,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controleur.Ajout.ActionModifierFiche;
 import Controleur.Classement.ActionClasserCouleur;
+import Controleur.Classement.ActionExporterCouleur;
 import Controleur.Score.ActionModifierScore;
 import Controleur.Supprimer.ActionAnnulerSuppr;
 import Controleur.Supprimer.ActionValiderSuppr;
@@ -1425,7 +1428,7 @@ public class Projet {
 	/**
 	 * Demander quels classements.
 	 */
-	public void classement() {
+	public void afficherQuelClassement() {
 		JInternalFrame jif = new JInternalFrame("Classement", false, false, false, true);
 
 		// Mise en forme de la fenetre
@@ -1465,11 +1468,51 @@ public class Projet {
 		jif.pack();
 	}
 	
+	public void exporterQuelClassement() {
+		JInternalFrame jif = new JInternalFrame("Exporter classement", false, false, false, true);
+
+		// Mise en forme de la fenetre
+		jif.getContentPane().setLayout(new BorderLayout());
+		
+		// Check box
+		JCheckBox checkVert = new JCheckBox("Vert");
+		JCheckBox checkBleu = new JCheckBox("Bleu");
+		JCheckBox checkRouge = new JCheckBox("Rouge");
+		JCheckBox checkNoir = new JCheckBox("Noir");
+
+		// Bouton
+		JButton btnValider = new JButton("Valider");
+		btnValider.addActionListener(new ActionExporterCouleur(checkVert, checkBleu, checkRouge, checkNoir, this, jif));
+		
+		// Le panel des checkBox
+		JPanel panel1 = new JPanel(new FlowLayout());
+		// Le panel des boutons 
+		JPanel panel2 = new JPanel(new FlowLayout());
+		
+		// Ajouter les checkBox
+		panel1.add(checkVert);
+		panel1.add(checkBleu);
+		panel1.add(checkRouge);
+		panel1.add(checkNoir);
+		
+		// Ajouter les boutons
+		panel2.add(btnValider);
+		
+		// Ajouter les panels à la fenetre
+		jif.getContentPane().add(panel1, BorderLayout.CENTER);
+		jif.getContentPane().add(panel2, BorderLayout.SOUTH);
+		
+		// Ajouter la fenetre à la fenetre prinicpale
+		this.fp.getDesktop().add(jif);
+		jif.setVisible(true);
+		jif.pack();
+	}
+	
 	/**
 	 * Afficher le classement d'un niveau.
 	 * @param niveau Le niveau dont on affiche le classement
 	 */
-	public void classerCouleur(Niveau niveau) {
+	public void afficherClassement(Niveau niveau) {
 		// On vérifie que les fiches sont correctement remplies
 		boolean ok = true;
 		for (Jeune j : this.lesInscrits)
@@ -1535,20 +1578,6 @@ public class Projet {
 		}
 	}
 
-	/**
-	 * Exporter le classement d'un critérium.
-	 */
-	public void exporterClassement() {
-		if (this.nomFichierCrit == null) {
-			javax.swing.JOptionPane.showMessageDialog(this.fp,
-					"Impossible d'exporter un classement car il n'y a pas de critérium chargé.");
-		} else {
-			exporterClassement(Niveau.V);
-			//exporterClassement(Niveau.B);
-			//exporterClassement(Niveau.R);
-			//exporterClassement(Niveau.N);
-		}
-	}
 
 	/**
 	 * Remplir un fichier de classement pour une couleur donnée.
@@ -1575,7 +1604,7 @@ public class Projet {
 						"Erreur",
 						JOptionPane.ERROR_MESSAGE
 						);
-				this.exporterClassement();
+				this.exporterClassement(niveau);
 			}
 			if (!nom.contains("."))
 				nom += ".xlsx";
@@ -1584,12 +1613,99 @@ public class Projet {
 		}
 
 		try {
+
 			XSSFWorkbook wb = new XSSFWorkbook();
 
 			// Créer un workbook
-			Sheet sheet = wb.createSheet("Classement" + niveau);
+			Sheet sheet = wb.createSheet("Classement général");
+			
+			// Initialiser le style du titre
+			final CellStyle style1 = wb.createCellStyle();
+			// couleur de fond
+		    style1.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+		    style1.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style1.setAlignment(HorizontalAlignment.CENTER);
+		    style1.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // bordure
+		    style1.setBorderLeft(BorderStyle.THIN);
+		    style1.setBorderRight(BorderStyle.THIN);
+		    style1.setBorderTop(BorderStyle.THIN);
+		    style1.setBorderBottom(BorderStyle.THIN);
+		    // police
+		    XSSFFont font = wb.createFont();
+		    font.setFontHeightInPoints((short) 18);
+		    font.setBold(true);
+		    style1.setFont(font);
+		    
+		    // Initialiser le style en-tête
+		    final CellStyle style2 = wb.createCellStyle();
+		    style2.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+		    style2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style2.setAlignment(HorizontalAlignment.CENTER);
+		    style2.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // police
+		    XSSFFont font2 = wb.createFont();
+		    font2.setBold(true);
+		    style2.setFont(font2);
+		    // bordure
+		    style2.setBorderLeft(BorderStyle.THIN);
+		    style2.setBorderRight(BorderStyle.THIN);
+		    style2.setBorderTop(BorderStyle.THIN);
+		    style2.setBorderBottom(BorderStyle.THIN);
 
+		    // Initialiser le style couleur
+		    final CellStyle style3 = wb.createCellStyle();
+		    style3.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+		    style3.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style3.setAlignment(HorizontalAlignment.CENTER);
+		    style3.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // bordure
+		    style3.setBorderLeft(BorderStyle.THIN);
+		    style3.setBorderRight(BorderStyle.THIN);
+		    style3.setBorderTop(BorderStyle.THIN);
+		    style3.setBorderBottom(BorderStyle.THIN);
+		    
+		    // Initialiser le style sans couleur
+		    final CellStyle style4 = wb.createCellStyle();
+		    style4.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		    style4.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style4.setAlignment(HorizontalAlignment.CENTER);
+		    style4.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // bordure
+		    style4.setBorderLeft(BorderStyle.THIN);
+		    style4.setBorderRight(BorderStyle.THIN);
+		    style4.setBorderTop(BorderStyle.THIN);
+		    style4.setBorderBottom(BorderStyle.THIN);
+
+		    int nbCol = 9;
+		    // Fusionner la cellules des 3 première lignes
+		    CellRangeAddress cra = new CellRangeAddress(0, 2, 0, nbCol-1);
+		    sheet.addMergedRegion(cra);
+		    
+		    // Ecrire les titre de la feuille
 			Row row = sheet.createRow(0);
+			row.createCell(0);
+		    row.getCell(0).setCellValue("CLASSEMENT GENERAL");
+		    row.getCell(0).setCellStyle(style1);
+			row.createCell(nbCol-1);
+			
+			// Tracer la bordure droite sur la  première case
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style1);
+		    row = sheet.createRow(1);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style1);
+		    row = sheet.createRow(2);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style1);
+
+			int i = 3;
+			// Ecrire les en-têtes
+		    row  = sheet.createRow(i++);
 			row.createCell(0).setCellValue("Lettre");
 			row.createCell(1).setCellValue("N°");
 			row.createCell(2).setCellValue("Nom");
@@ -1599,8 +1715,12 @@ public class Projet {
 			row.createCell(6).setCellValue("Club");
 			row.createCell(7).setCellValue("Points");
 			row.createCell(8).setCellValue("Classement");
+			
+			// Appliquer le style sur les en-têtes
+			for (int ii = 0 ; ii < nbCol ; ii++) {
+				row.getCell(ii).setCellStyle(style2);
+			}
 
-			int i = 0;
 			int k = 1;
 			int nbPoints = 0;
 			// Remplir le fichier avec les jeunes de la couleur passée en paramèters
@@ -1642,7 +1762,16 @@ public class Projet {
 					row.createCell(6).setCellValue(j.getClub().getNom());
 					row.createCell(7).setCellValue(j.getPoints());
 					row.createCell(8).setCellValue(k);
+					
+					for (int ind = 0 ; ind < nbCol ; ind ++) {
+						row.getCell(ind).setCellStyle(style4);
+					}
 				}
+			}
+			
+			// Ajuster la taille des colonnes
+			for (int ind = 0 ; ind < nbCol ; ind++) {
+				sheet.autoSizeColumn(ind, true);
 			}
 
 			FileOutputStream fos = new FileOutputStream(new File (nom));
@@ -1650,6 +1779,10 @@ public class Projet {
 			fos.close();
 			wb.close();
 			
+		} catch (FileNotFoundException e) {
+			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
+					"Erreur dans l'exportation du classement des " + niveau + ". \n S'il est ouvert dans excel, le fermer et réessayer.");
+			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

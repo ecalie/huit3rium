@@ -9,13 +9,13 @@ public class ActionExporterClassement implements ActionListener {
 
 	private Projet projet;
 	
-	public ActionExporterClassement(Projet projet) {
+	public ActionExporterClassement(Projet projet){
 		this.projet = projet;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		this.projet.exporterClassement();
+		this.projet.exporterQuelClassement();		
 	}
 
 }

@@ -9,7 +9,7 @@ import javax.swing.JInternalFrame;
 import Modele.Niveau;
 import Modele.Projet;
 
-public class ActionClasserCouleur implements ActionListener {
+public class ActionExporterCouleur implements ActionListener {
 
 	private JCheckBox vert;
 	private JCheckBox bleu;
@@ -18,7 +18,7 @@ public class ActionClasserCouleur implements ActionListener {
 	private Projet projet;
 	private JInternalFrame jif;
 	
-	public ActionClasserCouleur(JCheckBox v, JCheckBox b, JCheckBox r, JCheckBox n, Projet p, JInternalFrame jif) {
+	public ActionExporterCouleur(JCheckBox v, JCheckBox b, JCheckBox r, JCheckBox n, Projet p, JInternalFrame jif) {
 		vert = v;
 		bleu = b;
 		rouge = r;
@@ -29,14 +29,14 @@ public class ActionClasserCouleur implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		if (vert.isSelected())
-			this.projet.afficherClassement(Niveau.V);
-		if (bleu.isSelected())
-			this.projet.afficherClassement(Niveau.B);
-		if (rouge.isSelected())
-			this.projet.afficherClassement(Niveau.R);
-		if (noir.isSelected())
-			this.projet.afficherClassement(Niveau.N);
+		if (this.vert.isSelected())
+			this.projet.exporterClassement(Niveau.V);
+		if (this.bleu.isSelected())
+			this.projet.exporterClassement(Niveau.B);
+		if (this.rouge.isSelected())
+			this.projet.exporterClassement(Niveau.R);
+		if (this.noir.isSelected())
+			this.projet.exporterClassement(Niveau.N);
 		jif.dispose();
 	}
 

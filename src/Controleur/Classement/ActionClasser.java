@@ -15,7 +15,7 @@ public class ActionClasser implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		this.projet.classement();
+		this.projet.afficherQuelClassement();
 	}
 
 }
