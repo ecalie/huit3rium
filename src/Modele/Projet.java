@@ -7,7 +7,6 @@ import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,6 +32,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -1619,7 +1619,7 @@ public class Projet {
 			// Créer un workbook
 			Sheet sheet = wb.createSheet("Classement général");
 			
-			// Initialiser le style du titre
+			// Initialiser le style du titre 1
 			final CellStyle style1 = wb.createCellStyle();
 			// couleur de fond
 		    style1.setFillForegroundColor(IndexedColors.GOLD.getIndex());
@@ -1638,7 +1638,7 @@ public class Projet {
 		    font.setBold(true);
 		    style1.setFont(font);
 		    
-		    // Initialiser le style en-tête
+		    // Initialiser le style en-tête 1
 		    final CellStyle style2 = wb.createCellStyle();
 		    style2.setFillForegroundColor(IndexedColors.GOLD.getIndex());
 		    style2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -1654,10 +1654,10 @@ public class Projet {
 		    style2.setBorderRight(BorderStyle.THIN);
 		    style2.setBorderTop(BorderStyle.THIN);
 		    style2.setBorderBottom(BorderStyle.THIN);
-
-		    // Initialiser le style couleur
+		    
+		    // Initialiser le style sans couleur
 		    final CellStyle style3 = wb.createCellStyle();
-		    style3.setFillForegroundColor(IndexedColors.GOLD.getIndex());
+		    style3.setFillForegroundColor(IndexedColors.WHITE.getIndex());
 		    style3.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		    // alignement
 		    style3.setAlignment(HorizontalAlignment.CENTER);
@@ -1667,10 +1667,12 @@ public class Projet {
 		    style3.setBorderRight(BorderStyle.THIN);
 		    style3.setBorderTop(BorderStyle.THIN);
 		    style3.setBorderBottom(BorderStyle.THIN);
-		    
-		    // Initialiser le style sans couleur
-		    final CellStyle style4 = wb.createCellStyle();
-		    style4.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+
+		    // rouge //
+			// Initialiser le style du titre 2
+			final CellStyle style4 = wb.createCellStyle();
+			// couleur de fond
+		    style4.setFillForegroundColor(IndexedColors.RED.getIndex());
 		    style4.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		    // alignement
 		    style4.setAlignment(HorizontalAlignment.CENTER);
@@ -1680,7 +1682,60 @@ public class Projet {
 		    style4.setBorderRight(BorderStyle.THIN);
 		    style4.setBorderTop(BorderStyle.THIN);
 		    style4.setBorderBottom(BorderStyle.THIN);
+		    // police
+		    style4.setFont(font);
+		    
+		    // Initialiser le style en-tête 2
+		    final CellStyle style5 = wb.createCellStyle();
+		    style5.setFillForegroundColor(IndexedColors.RED.getIndex());
+		    style5.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style5.setAlignment(HorizontalAlignment.CENTER);
+		    style5.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // police
+		    style5.setFont(font2);
+		    // bodure
+		    style5.setBorderLeft(BorderStyle.THIN);
+		    style5.setBorderRight(BorderStyle.THIN);
+		    style5.setBorderTop(BorderStyle.THIN);
+		    style5.setBorderBottom(BorderStyle.THIN);
 
+		    // bleu //
+			// Initialiser le style du titre 3
+			final CellStyle style7 = wb.createCellStyle();
+			// couleur de fond
+		    style7.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+		    style7.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style7.setAlignment(HorizontalAlignment.CENTER);
+		    style7.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // bordure
+		    style7.setBorderLeft(BorderStyle.THIN);
+		    style7.setBorderRight(BorderStyle.THIN);
+		    style7.setBorderTop(BorderStyle.THIN);
+		    style7.setBorderBottom(BorderStyle.THIN);
+		    // police
+		    style7.setFont(font);
+		    
+		    // Initialiser le style en-tête 3
+		    final CellStyle style8 = wb.createCellStyle();
+		    style8.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+		    style8.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		    // alignement
+		    style8.setAlignment(HorizontalAlignment.CENTER);
+		    style8.setVerticalAlignment(VerticalAlignment.CENTER);
+		    // police
+		    style5.setFont(font2);
+		    // bodure
+		    style8.setBorderLeft(BorderStyle.THIN);
+		    style8.setBorderRight(BorderStyle.THIN);
+		    style8.setBorderTop(BorderStyle.THIN);
+		    style8.setBorderBottom(BorderStyle.THIN);
+		    
+		    ////////////////////////////////////
+		    ///FEUILLE 1 : CLASSEMENT GENERAL///
+		    ////////////////////////////////////
+		    
 		    int nbCol = 9;
 		    // Fusionner la cellules des 3 première lignes
 		    CellRangeAddress cra = new CellRangeAddress(0, 2, 0, nbCol-1);
@@ -1713,8 +1768,8 @@ public class Projet {
 			row.createCell(4).setCellValue("N° Licence");
 			row.createCell(5).setCellValue("N° Club");
 			row.createCell(6).setCellValue("Club");
-			row.createCell(7).setCellValue("Points");
-			row.createCell(8).setCellValue("Classement");
+			row.createCell(7).setCellValue("Classement");
+			row.createCell(8).setCellValue("Points");
 			
 			// Appliquer le style sur les en-têtes
 			for (int ii = 0 ; ii < nbCol ; ii++) {
@@ -1760,24 +1815,184 @@ public class Projet {
 					row.createCell(4).setCellValue(j.getNumLicence());
 					row.createCell(5).setCellValue(j.getClub().getNum());
 					row.createCell(6).setCellValue(j.getClub().getNom());
-					row.createCell(7).setCellValue(j.getPoints());
-					row.createCell(8).setCellValue(k);
+					row.createCell(7).setCellValue(k);
+					row.createCell(8).setCellValue(j.getPoints());
 					
 					for (int ind = 0 ; ind < nbCol ; ind ++) {
-						row.getCell(ind).setCellStyle(style4);
+						row.getCell(ind).setCellStyle(style3);
 					}
 				}
 			}
 			
 			// Ajuster la taille des colonnes
-			for (int ind = 0 ; ind < nbCol ; ind++) {
+			for (int ind = 0 ; ind < nbCol-1 ; ind++) {
 				sheet.autoSizeColumn(ind, true);
 			}
 
+			///////////////////////////////////
+			///FEUILLE 2 : CLASSEMENT FILLES///
+			///////////////////////////////////
+			 
+			sheet = wb.createSheet("Classement filles");
+		    nbCol = 9;
+		    // Fusionner la cellules des 3 première lignes
+		    cra = new CellRangeAddress(0, 2, 0, nbCol-1);
+		    sheet.addMergedRegion(cra);
+		    
+		    // Ecrire les titre de la feuille
+			row = sheet.createRow(0);
+			row.createCell(0);
+		    row.getCell(0).setCellValue("CLASSEMENT FILLES");
+		    row.getCell(0).setCellStyle(style4);
+			row.createCell(nbCol-1);
+			
+			// Tracer la bordure droite sur la  première case
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style4);
+		    row = sheet.createRow(1);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style4);
+		    row = sheet.createRow(2);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style4);
+
+			i = 3;
+			// Ecrire les en-têtes
+		    row  = sheet.createRow(i++);
+			row.createCell(0).setCellValue("Lettre");
+			row.createCell(1).setCellValue("N°");
+			row.createCell(2).setCellValue("Nom");
+			row.createCell(3).setCellValue("Prénom");
+			row.createCell(4).setCellValue("N° Licence");
+			row.createCell(5).setCellValue("N° Club");
+			row.createCell(6).setCellValue("Club");
+			row.createCell(7).setCellValue("Classement");
+			row.createCell(8).setCellValue("Points");
+			
+			// Appliquer le style sur les en-têtes
+			for (int ii = 0 ; ii < nbCol ; ii++) {
+				row.getCell(ii).setCellStyle(style5);
+			}
+
+			k = 1;
+			nbPoints = 0;
+			
+			for (Jeune j : classement) {
+				row = sheet.createRow(i);
+				if (j.getNiveau() == niveau && j.getSexe() == 'F') {
+					i++;
+					if (nbPoints != j.getPoints())
+						k = i;
+					nbPoints = j.getPoints();
+
+					row.createCell(0).setCellValue(j.getClub().toString());
+					row.createCell(1).setCellValue(j.getNumero());
+					row.createCell(2).setCellValue(j.getNom());
+					row.createCell(3).setCellValue(j.getPrenom());
+					row.createCell(4).setCellValue(j.getNumLicence());
+					row.createCell(5).setCellValue(j.getClub().getNum());
+					row.createCell(6).setCellValue(j.getClub().getNom());
+					row.createCell(7).setCellValue(k);
+					row.createCell(8).setCellValue(j.getPoints());
+					
+					for (int ind = 0 ; ind < nbCol ; ind ++) {
+						row.getCell(ind).setCellStyle(style3);
+					}
+				}
+			}
+			
+			// Ajuster la taille des colonnes
+			for (int ind = 0 ; ind < nbCol-1 ; ind++) {
+				sheet.autoSizeColumn(ind, true);
+			}
+
+			////////////////////////////////////
+			///FEUILLE 2 : CLASSEMENT GARCONS///
+			////////////////////////////////////
+			 
+			sheet = wb.createSheet("Classement garçons");
+		    nbCol = 9;
+		    // Fusionner la cellules des 3 première lignes
+		    cra = new CellRangeAddress(0, 2, 0, nbCol-1);
+		    sheet.addMergedRegion(cra);
+		    
+		    // Ecrire les titre de la feuille
+			row = sheet.createRow(0);
+			row.createCell(0);
+		    row.getCell(0).setCellValue("CLASSEMENT GARCONS");
+		    row.getCell(0).setCellStyle(style7);
+			row.createCell(nbCol-1);
+			
+			// Tracer la bordure droite sur la  première case
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style7);
+		    row = sheet.createRow(1);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style7);
+		    row = sheet.createRow(2);
+			row.createCell(nbCol-1);		
+		    row.getCell(nbCol-1).setCellStyle(style7);
+
+			i = 3;
+			// Ecrire les en-têtes
+		    row  = sheet.createRow(i++);
+			row.createCell(0).setCellValue("Lettre");
+			row.createCell(1).setCellValue("N°");
+			row.createCell(2).setCellValue("Nom");
+			row.createCell(3).setCellValue("Prénom");
+			row.createCell(4).setCellValue("N° Licence");
+			row.createCell(5).setCellValue("N° Club");
+			row.createCell(6).setCellValue("Club");
+			row.createCell(7).setCellValue("Classement");
+			row.createCell(8).setCellValue("Points");
+			
+			// Appliquer le style sur les en-têtes
+			for (int ii = 0 ; ii < nbCol ; ii++) {
+				row.getCell(ii).setCellStyle(style8);
+			}
+
+			k = 1;
+			nbPoints = 0;
+			
+			for (Jeune j : classement) {
+				row = sheet.createRow(i);
+				if (j.getNiveau() == niveau && j.getSexe() == 'G') {
+					i++;
+					if (nbPoints != j.getPoints())
+						k = i;
+					nbPoints = j.getPoints();
+
+					row.createCell(0).setCellValue(j.getClub().toString());
+					row.createCell(1).setCellValue(j.getNumero());
+					row.createCell(2).setCellValue(j.getNom());
+					row.createCell(3).setCellValue(j.getPrenom());
+					row.createCell(4).setCellValue(j.getNumLicence());
+					row.createCell(5).setCellValue(j.getClub().getNum());
+					row.createCell(6).setCellValue(j.getClub().getNom());
+					row.createCell(7).setCellValue(k);
+					row.createCell(8).setCellValue(j.getPoints());
+					
+					for (int ind = 0 ; ind < nbCol ; ind ++) {
+						row.getCell(ind).setCellStyle(style3);
+					}
+				}
+			}
+			
+			// Ajuster la taille des colonnes
+			for (int ind = 0 ; ind < nbCol-1 ; ind++) {
+				sheet.autoSizeColumn(ind, true);
+			}
+			
 			FileOutputStream fos = new FileOutputStream(new File (nom));
 			wb.write(fos);
 			fos.close();
 			wb.close();
+
+			int ecart = 300;
+			Confirmation charg = new Confirmation("Export réussi", this.fp, ecart);
+			Thread thread = new Thread(charg);
+			thread.start();
+			
 			
 		} catch (FileNotFoundException e) {
 			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
