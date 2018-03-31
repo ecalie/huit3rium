@@ -2,7 +2,6 @@ package Vue;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,7 +16,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import Controleur.Score.ActionDeselectionner;
 import Controleur.Score.ActionValiderScore;
@@ -147,14 +145,12 @@ public class FicheScore extends JInternalFrame {
 
 			// TODO centrer
 			JList<String> zone1 = new JList<>(data1);
-			zone1.setPreferredSize(new Dimension(10, 20));
 			zone1.setForeground(Color.BLUE);
 			zone1.setBackground(Color.LIGHT_GRAY);
 			zone1.setSelectedIndex(-1);
 			this.lesZones.add(zone1);
 
 			JList<String> zone2 = new JList<>(data1);
-			zone2.setPreferredSize(new Dimension(10, 20));
 			zone2.setForeground(Color.BLUE);
 			zone2.setBackground(Color.LIGHT_GRAY);
 			zone2.setSelectedIndex(-1);
