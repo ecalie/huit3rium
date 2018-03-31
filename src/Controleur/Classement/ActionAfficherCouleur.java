@@ -9,7 +9,7 @@ import javax.swing.JInternalFrame;
 import Modele.Niveau;
 import Modele.Projet;
 
-public class ActionClasserCouleur implements ActionListener {
+public class ActionAfficherCouleur implements ActionListener {
 
 	private JCheckBox vert;
 	private JCheckBox bleu;
@@ -18,7 +18,7 @@ public class ActionClasserCouleur implements ActionListener {
 	private Projet projet;
 	private JInternalFrame jif;
 	
-	public ActionClasserCouleur(JCheckBox v, JCheckBox b, JCheckBox r, JCheckBox n, Projet p, JInternalFrame jif) {
+	public ActionAfficherCouleur(JCheckBox v, JCheckBox b, JCheckBox r, JCheckBox n, Projet p, JInternalFrame jif) {
 		vert = v;
 		bleu = b;
 		rouge = r;

@@ -38,6 +38,9 @@ public class Jeune {
 	
 	/** Les réponses. */
 	private HashMap<String, String> lesReponses;
+	
+	/** Le numéro du parcours d'orientation. */
+	private int numParours;
 
 	/** La fiche score du jeune. */
 	private FicheScore fiche2;
@@ -104,6 +107,14 @@ public class Jeune {
 	 */
 	public FicheJeune getFiche() {
 		return fiche;
+	}
+
+	public int getNumParours() {
+		return numParours;
+	}
+
+	public void setNumParours(int numParours) {
+		this.numParours = numParours;
 	}
 
 	/**

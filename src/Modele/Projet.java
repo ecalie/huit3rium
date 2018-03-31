@@ -36,13 +36,15 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import Controleur.Ajout.ActionModifierFiche;
-import Controleur.Classement.ActionClasserCouleur;
+import Controleur.Classement.ActionAfficherCouleur;
 import Controleur.Classement.ActionExporterCouleur;
+import Controleur.Depart.ActionValiderDemarrer;
 import Controleur.Score.ActionModifierScore;
 import Controleur.Supprimer.ActionAnnulerSuppr;
 import Controleur.Supprimer.ActionValiderSuppr;
 import Vue.FenetrePrincipale;
 import Vue.FicheClassement;
+import Vue.FicheDepart;
 import Vue.FicheGains;
 import Vue.FicheJeune;
 import Vue.FicheParam;
@@ -108,11 +110,23 @@ public class Projet {
 	private JProgressBar barreMemo;
 	private JProgressBar barreBalise;
 
+	/** Indices des jeunes partis. */
+	private int indVert;
+	private int indBleu;
+	private int indRouge;
+	private int indNoir;
+	
+	/** Ordre de départ de chaque couleur. */
+	private ArrayList<Jeune> ordreVert;
+	private ArrayList<Jeune> ordreBleu;
+	private ArrayList<Jeune> ordreRouge;
+	private ArrayList<Jeune> ordreNoir;
+	
 	/** Classement du critérium. */
 	private ArrayList<Jeune> classement;
 	
 	/** Les fiches classements */
-	FicheClassement fcVert, fcBleu, fcRouge, fcNoir;
+	private FicheClassement fcVert, fcBleu, fcRouge, fcNoir;
 	
 	private String dossier;
 
@@ -143,24 +157,6 @@ public class Projet {
 		panel.add(new JLabel("Mémo orientation : "));
 		panel.add(this.nombreArriveMemo);
 		panel.add(this.barreMemo);
-
-	/*	JFileChooser chooser = new JFileChooser();
-		
-		chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm", "xltx", "xlt", "xltm", "xla", "xlam"));
-		this.choisirDossier(chooser);
-		chooser.setMultiSelectionEnabled(true);
-
-		// Si validation du fichier
-		if (chooser.showDialog(chooser, "Ouvrir") == 0) {
-			File files[] = chooser.getSelectedFiles();
-			
-			this.dossier = files[0].getAbsolutePath();
-			for (int ind = 0 ; ind < files.length ; ind++) {
-				inscription(files[ind]);
-			}
-		} else
-			System.exit(0);
-	*/
 	}
 
 	////////////////////////
@@ -1441,7 +1437,7 @@ public class Projet {
 
 		// Bouton
 		JButton btnValider = new JButton("Valider");
-		btnValider.addActionListener(new ActionClasserCouleur(checkVert, checkBleu, checkRouge, checkNoir, this, jif));
+		btnValider.addActionListener(new ActionAfficherCouleur(checkVert, checkBleu, checkRouge, checkNoir, this, jif));
 		
 		// Le panel des checkBox
 		JPanel panel1 = new JPanel(new FlowLayout());
@@ -1467,6 +1463,9 @@ public class Projet {
 		jif.pack();
 	}
 	
+	/**
+	 * Demander quels classmeent.
+	 */
 	public void exporterQuelClassement() {
 		JInternalFrame jif = new JInternalFrame("Exporter classement", false, false, false, true);
 
@@ -1576,7 +1575,6 @@ public class Projet {
 			break;
 		}
 	}
-
 
 	/**
 	 * Remplir un fichier de classement pour une couleur donnée.
@@ -2010,10 +2008,19 @@ public class Projet {
 	 * Charger les inscrits à un critérium.
 	 * @param nomFichierInscrits   Le nom du fichier duquel on charge les inscrits
 	 **/
-	public void chargerCrit(String nomFichierInscrits) {
-		this.dossier = nomFichierInscrits;
-		this.nomFichierCrit = nomFichierInscrits;
-		File f = new File(nomFichierInscrits);
+	public void chargerCrit() {
+		// demander le fichier à ouvrir
+        JFileChooser chooser = new JFileChooser();
+        choisirDossier(chooser);
+        chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm", "xltx", "xlt", "xltm", "xla", "xlam"));
+		 
+        File f = null;
+        // si validation de l'ouverture
+        if (chooser.showDialog(chooser, "Ouvrir") == 0)
+        	f = chooser.getSelectedFile(); 
+        else
+        	return;
+        
 		Workbook wb = null;
 
 		// Créer le fichier et la feuille de calcul
@@ -2267,6 +2274,177 @@ public class Projet {
 		} 
 	}
 
+	/////////////////////
+	///ORDRE DE DEPART///
+	/////////////////////
+	
+	/**
+	 * Demander l'ordre de départ de quel niveau ?
+	 */
+	public void demarrer() {
+		indVert = 0;
+		indBleu = 0;
+		indRouge = 0;
+		indNoir = 0;
+		
+		JInternalFrame jif = new JInternalFrame("Démarrer", false, false, false, true);
+
+		// Mise en forme de la fenetre
+		jif.getContentPane().setLayout(new BorderLayout());
+		
+		// Check box
+		JCheckBox checkVert = new JCheckBox("Vert");
+		JCheckBox checkBleu = new JCheckBox("Bleu");
+		JCheckBox checkRouge = new JCheckBox("Rouge");
+		JCheckBox checkNoir = new JCheckBox("Noir");
+
+		// Bouton
+		JButton btnValider = new JButton("Valider");
+		btnValider.addActionListener(new ActionValiderDemarrer(checkVert, checkBleu, checkRouge, checkNoir, this, jif));
+		
+		// Le panel des checkBox
+		JPanel panel1 = new JPanel(new FlowLayout());
+		// Le panel des boutons 
+		JPanel panel2 = new JPanel(new FlowLayout());
+		
+		// Ajouter les checkBox
+		panel1.add(checkVert);
+		panel1.add(checkBleu);
+		panel1.add(checkRouge);
+		panel1.add(checkNoir);
+		
+		// Ajouter les boutons
+		panel2.add(btnValider);
+		
+		// Ajouter les panels à la fenetre
+		jif.getContentPane().add(panel1, BorderLayout.CENTER);
+		jif.getContentPane().add(panel2, BorderLayout.SOUTH);
+		
+		// Ajouter la fenetre à la fenetre prinicpale
+		this.fp.getDesktop().add(jif);
+		jif.setVisible(true);
+		jif.pack();
+	}
+	
+	/**
+	 * Donner l'ordre de départ d'un niveau.
+	 * @param niveau Le niveau dont l'ordre de départ est demandé
+	 */
+	public void demarrer(Niveau niveau) {
+		// Classer les jeunes sans que deux jeunes du même club ne se suivent
+		ArrayList<Jeune> ordre = this.ordreDepart(niveau);
+		
+		// Enregistrer l'ordre de départ
+		switch(niveau) {
+		case V : 
+			this.ordreVert = ordre;
+		case B : 
+			this.ordreBleu = ordre;
+		case R : 
+			this.ordreRouge = ordre;
+		case N : 
+			this.ordreNoir = ordre;
+		}
+		
+		// Afficher la liste des jeunes dans l'ordre de départ
+		this.fp.afficherOrdre(ordre);
+				
+		// Afficher une fiche pour renseigner le numéro de son parcours d'orientation
+		JInternalFrame jif = new FicheDepart(ordre, this);
+	}
+	
+	/**
+	 * Calculer un ordre de départ sans que deuxjeunes du même club ne se suivent.
+	 * @param niveau Le niveau dont on veut l'ordre de départ
+	 */
+	private ArrayList<Jeune> ordreDepart(Niveau niveau) {
+		ArrayList<Jeune> ordre = new ArrayList<>();
+		ArrayList<Integer> numeros = new ArrayList<>();
+		
+		// Initialiser la listes des jeunes du bon niveau
+		ArrayList<Jeune> couleur = new ArrayList<>();
+		for (Jeune j : this.lesInscrits)
+			if (j.getNiveau() == niveau)
+				couleur.add(j);
+		
+		// Initialiser la liste de indices à "trier"
+		for (int ind = 0 ; ind < couleur.size() ; ind++)
+			numeros.add(ind);
+
+		Club club = Club.A;
+		// Tant qu'il reste des jeunes à ajouter
+		while (numeros.size() > 0) {
+			// Choisir un indice au hasars dans la liste
+			int max = numeros.size();
+			int ind = (int) (Math.random() * max);
+			
+			// Récupérer le jeune correspond à cet indice
+			Jeune j = couleur.get(numeros.get(ind));
+			
+			// Copier la liste des numéros non encore ajoutés
+			ArrayList<Integer> numeros2 = new ArrayList<>();
+			for (int indice : numeros)
+				numeros2.add(indice);
+			
+			// Choisir un nouveau numéro jusqu'à ce qu'il convienne
+			while (j.getClub() == club && numeros2.size() > 1) {
+				numeros2.remove(ind);
+				ind = (int) (Math.random() * numeros2.size());
+				j = couleur.get(numeros2.get(ind));
+			}
+			
+			// Si aucun numéro ne convient
+			if (numeros2.size() == 1) {
+				// Récupérer les clubs des deux premiers de la liste de départ
+				int indDecalage = 0;
+				Club c1 = ordre.get(0).getClub();
+				Club c2 = ordre.get(1).getClub();
+				
+				// Tant qu'on ne peut pas insérer le jeune en traitement
+				while (c1 == j.getClub() ||  c2 == j.getClub()) {
+					indDecalage++;
+					c1 = ordre.get(indDecalage).getClub();
+					c2 = ordre.get(indDecalage+1).getClub();
+					
+					// Si on n'a pas trouvé de places pour l'ajouter
+					// Tous les jeunes non encore ajoutés sont du mêm club que le dernier ajouté
+					// Un club est trop représenté pour respecter les conditions
+					if (indDecalage == ordre.size()) {
+						// On ajoute tous les jeunes à la fin de la liste
+						for (int index = 0 ; index < numeros.size() ; index++)
+							ordre.add(couleur.get(numeros.get(index)));
+						
+						// on renvoie la liste 
+						return ordre;
+					}
+				}
+				
+				// On a trouvé une place pour le jeune
+				// Décaler les jeunes suivants
+				ordre.add(j);
+				for (int indBoucle = ordre.size()-1 ; indBoucle > indDecalage; indBoucle--) {
+					ordre.set(indBoucle, ordre.get(indBoucle-1));
+				}
+				
+				// Insérer le jeune
+				ordre.set(indDecalage,j);
+				
+			} else {
+				// sinon un jeune convient, on l'ajoute à la fin de la liste
+				ordre.add(j);
+			}
+
+			// On met à jour le club du dernier jeune ajouté
+			club = j.getClub();
+			
+			// On retire l'indice du jeune ajoté de la liste des indices
+			numeros.remove(ind);
+		}
+		
+		// On renvoie la liste
+		return ordre;
+	}
+	
 	/////////////////////////////////////
 	///GERER LES BARRES DE PROGRESSION///
 	/////////////////////////////////////

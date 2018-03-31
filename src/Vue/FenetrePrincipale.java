@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
@@ -21,18 +23,20 @@ import Controleur.Administrateur.ActionQuitterAdministrateur;
 import Controleur.Ajout.ActionAjouter;
 import Controleur.Charger.ActionChargerCrit;
 import Controleur.Charger.ActionChargerFichierInscription;
-import Controleur.Classement.ActionClasser;
+import Controleur.Classement.ActionAfficherClassement;
 import Controleur.Classement.ActionExporterClassement;
 import Controleur.Demarrer.ActionDemarrerBleu;
 import Controleur.Demarrer.ActionDemarrerNoir;
 import Controleur.Demarrer.ActionDemarrerRouge;
 import Controleur.Demarrer.ActionDemarrerVert;
+import Controleur.Depart.ActionDemarrer;
 import Controleur.Enregistrer.ActionEnregistrer;
 import Controleur.Enregistrer.ActionEnregistrerSous;
 import Controleur.Gains.ActionDefinirGains;
 import Controleur.Parametres.ActionModifParam;
 import Controleur.Reponse.ActionDefinirReponses;
 import Controleur.Supprimer.ActionSupprimer;
+import Modele.Jeune;
 import Modele.Projet;
 
 public class FenetrePrincipale extends JFrame {
@@ -50,15 +54,15 @@ public class FenetrePrincipale extends JFrame {
 	/** Les boutons admin. */
 	private JPanel admin;
 
-	/** La zone des boutons démarrer / admin. */
-	private JPanel btnsDem;
-
 	/** La zone des boutons critérium. */
 	private JPanel btnsCrit;
 	
 	/** La zone des barres de progression. */
 	private JPanel zoneProg;
-
+	
+	/** La zone d'appel. */
+	private JPanel ordreDepart;
+	
 	//////////////////
 	///CONSTRUCTEUR///
 	//////////////////
@@ -92,6 +96,12 @@ public class FenetrePrincipale extends JFrame {
 		this.add(this.zoneProg, BorderLayout.SOUTH);
 		this.zoneProg.setVisible(false);
 		
+		// La zone d'appel
+		this.ordreDepart = new JPanel();
+		this.ordreDepart.setLayout(new GridLayout(20,4));
+		this.add(this.ordreDepart, BorderLayout.EAST);
+		this.ordreDepart.setVisible(false);
+		
 		/* Initialiser un projet associé à la fenêtre */
 		this.projet = new Projet(this);
 
@@ -102,8 +112,8 @@ public class FenetrePrincipale extends JFrame {
 		this.boutonsAdmin();
 
 		/* La grille des licenciés */
-		this.grilleLicencies = new JPanel(new GridLayout(20, 3));
-		this.grilleInscrits = new JPanel(new GridLayout(20, 3));
+		this.grilleLicencies = new JPanel(new GridLayout(20,6));
+		this.grilleInscrits = new JPanel(new GridLayout(20,4));
 
 		JPanel lesGrilles = new JPanel(new BorderLayout());
 		lesGrilles.add(this.grilleLicencies, BorderLayout.WEST);
@@ -164,14 +174,6 @@ public class FenetrePrincipale extends JFrame {
 	}
 
 	/**
-	 * Récupérer la zone des boutons.
-	 * @return La zone des boutons
-	 */
-	public JPanel getBtnsDem() {
-		return this.btnsDem;
-	}
-
-	/**
 	 * Récupérer la zone du bouton d'enregistrements des scores.
 	 * @return La zone du bouton d'enregistrements des scores
 	 */
@@ -187,6 +189,14 @@ public class FenetrePrincipale extends JFrame {
 		return this.zoneProg;
 	}
 	
+	/**
+	 * Récupérer la zone d'appel.
+	 * @return La zone d'appel dans l'ordre de départ
+	 */
+	public JPanel getOrdreDepart() {
+		return ordreDepart;
+	}
+
 	//////////////////////
 	///METHODES PRIVEES///
 	//////////////////////
@@ -196,9 +206,6 @@ public class FenetrePrincipale extends JFrame {
 	 **/
 	private void btns() {
 		// Créer les boutons 
-		JButton admin = new JButton("Mode administrateur");
-		admin.addActionListener(new ActionAdministrateur(this));
-
 		JButton vert = new JButton("Vert");
 		vert.addActionListener(new ActionDemarrerVert(this.projet));
 		JButton bleu = new JButton("Bleu");
@@ -207,49 +214,58 @@ public class FenetrePrincipale extends JFrame {
 		rouge.addActionListener(new ActionDemarrerRouge(this.projet));
 		JButton noir = new JButton("Noir");
 		noir.addActionListener(new ActionDemarrerNoir(this.projet));
-
-		JButton score = new JButton("Classement");
-		score.addActionListener(new ActionClasser(this.projet));
-
-		JButton charger = new JButton("Charger un critérium");
-		charger.addActionListener(new ActionChargerCrit(this.projet));
+		// Créer le bouton d'enregistrement
+		JButton sauverCrit = new JButton("Enregistrer");
+		sauverCrit.addActionListener(new ActionEnregistrer(this.projet));
+		sauverCrit.setBackground(new Color(160, 160, 0));
+		// Le bouton démarrer
+		JButton go = new JButton("Démarer");
+		go.addActionListener(new ActionDemarrer(this.projet));
+		go.setBackground(new Color(160, 160, 0));
+		// Changer de mode
+		JButton admin = new JButton("Mode administrateur");
+		admin.addActionListener(new ActionAdministrateur(this));
+		admin.setBackground(new Color(160, 160, 0));
 
 		// Modifier les couleurs des boutons
 		vert.setBackground(new Color(160, 160, 0));
 		bleu.setBackground(new Color(160, 160, 0));
 		rouge.setBackground(new Color(160, 160, 0));
 		noir.setBackground(new Color(160, 160, 0));
-		charger.setBackground(new Color(160, 160, 0));
-		score.setBackground(new Color(160, 160, 0));
+		sauverCrit.setBackground(new Color(160, 160, 0));
+		go.setBackground(new Color(160, 160, 0));
 		admin.setBackground(new Color(160, 160, 0));
 		
-		// Ajouter les boutons 
-		this.btnsDem = new JPanel();
-		this.btnsDem.setLayout(new FlowLayout());
-		this.btnsDem.add(vert);
-		this.btnsDem.add(bleu);
-		this.btnsDem.add(rouge);
-		this.btnsDem.add(noir);
-		this.btnsDem.add(score);
-		this.btnsDem.add(charger);
-		this.btnsDem.add(admin);
-
-		// Créer le bouton d'enregistrement
-		JButton sauverCrit = new JButton("Enregistrer");
-		sauverCrit.addActionListener(new ActionEnregistrer(this.projet));
-		sauverCrit.setBackground(new Color(160, 160, 0));
 		
-		// Créer le bouton et sa zone
-		this.btnsCrit = new JPanel();
-		this.btnsCrit.add(sauverCrit);
-		this.btnsCrit.setVisible(false);
+		// Créer les séparation
+		JLabel separation1 = new JLabel("~~");
+		separation1.setHorizontalAlignment(SwingConstants.CENTER);
+		JLabel separation2 = new JLabel("~~");
+		separation2.setHorizontalAlignment(SwingConstants.CENTER);
+		
+		// Panel des boutons couleur
+		JPanel panel1 = new JPanel();
+		panel1.setLayout(new FlowLayout());
+		panel1.add(vert);
+		panel1.add(bleu);
+		panel1.add(rouge);
+		panel1.add(noir);
+		panel1.add(separation1);
+		panel1.add(sauverCrit);
+		panel1.add(separation2);
+		panel1.add(go);
+		
+		// Panel du bouton démarrer
+		JPanel panel2 = new JPanel();
+		panel2.add(admin);
 
 		// Ajouter les deux zones de boutons
-		JPanel boutons = new JPanel(new BorderLayout());
-		boutons.add(btnsDem, BorderLayout.WEST);
-		boutons.add(btnsCrit, BorderLayout.EAST);
+		this.btnsCrit = new JPanel(new BorderLayout());
+		this.btnsCrit.add(panel1, BorderLayout.WEST);
+		this.btnsCrit.add(panel2, BorderLayout.EAST);
+		this.btnsCrit.setVisible(true);
 				
-		this.getContentPane().add(boutons, BorderLayout.NORTH);
+		this.getContentPane().add(this.btnsCrit, BorderLayout.NORTH);
 	}
 
 	/**
@@ -323,10 +339,15 @@ public class FenetrePrincipale extends JFrame {
 		btnModifNb.setBackground(Color.DARK_GRAY);
 		btnModifNb.setForeground(Color.WHITE);
 		
-		JButton exporterClassement = new JButton("Exporter le classement");
+		JButton exporterClassement = new JButton("Exporter les classements");
 		exporterClassement.addActionListener(new ActionExporterClassement(this.projet));
 		exporterClassement.setBackground(Color.DARK_GRAY);
 		exporterClassement.setForeground(Color.WHITE);
+		
+		JButton afficherClassement = new JButton("Afficher les classements");
+		afficherClassement.addActionListener(new ActionAfficherClassement(this.projet));
+		afficherClassement.setBackground(Color.DARK_GRAY);
+		afficherClassement.setForeground(Color.WHITE);
 		
 		JButton btnChargerInscritClub = new JButton("Charger un fichier d'inscription");
 		btnChargerInscritClub.addActionListener(new ActionChargerFichierInscription(this.projet));
@@ -363,6 +384,7 @@ public class FenetrePrincipale extends JFrame {
 		this.admin.add(separation5);
 		
 		this.admin.add(exporterClassement);
+		this.admin.add(afficherClassement);
 
 		this.add(this.admin, BorderLayout.EAST);
 
@@ -373,6 +395,30 @@ public class FenetrePrincipale extends JFrame {
 	////////////////////////
 	///METHODES PUBLIQUES///
 	////////////////////////
+
+	/**
+	 * Afficher la liste de départ.
+	 * @param ordre La liste de départ
+	 */
+	public void afficherOrdre(ArrayList<Jeune> ordre) {
+		this.ordreDepart.removeAll();
+		
+		for (int i = 0 ; i < Math.min(ordre.size(), 20) ; i++) {
+			Jeune j = ordre.get(i);
+			JLabel label = new JLabel(j.toString(), JLabel.CENTER);
+			label.setFont(new Font("Arial", Font.BOLD, 20));
+			label.setOpaque(true);
+			label.setForeground(Color.BLUE);
+			this.ordreDepart.add(label);
+		}
+		
+		this.add(ordreDepart, BorderLayout.EAST);
+		
+		this.ordreDepart.setVisible(false);
+		this.ordreDepart.setVisible(true);
+		
+		this.grilleInscrits.setVisible(false);
+	}
 
 	/**
 	 * Fermer le mode administrateur et ouvrir le mode classique.
@@ -387,7 +433,6 @@ public class FenetrePrincipale extends JFrame {
 
 		// Afficher les boutons
 		this.btnsCrit.setVisible(true);
-		this.btnsDem.setVisible(true);
 		
 		// Fermer toutes les fenêtres internes
 		JInternalFrame[] jifs = this.desktop.getAllFrames();
@@ -403,7 +448,6 @@ public class FenetrePrincipale extends JFrame {
 		this.desktop.setBackground(Color.WHITE);
 		
 		// Masquer les boutons et la grille d'un niveau au cas où
-		this.btnsDem.setVisible(false);
 		this.btnsCrit.setVisible(false);
 		this.grilleInscrits.setVisible(false);
 
@@ -416,8 +460,6 @@ public class FenetrePrincipale extends JFrame {
 		for (int i = 0 ; i < jifs.length ; i++)
 			jifs[i].hide();
 	}
-	
-
 	
 	@Override
 	public void dispose() {

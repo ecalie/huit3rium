@@ -37,7 +37,6 @@ public class ActionQuitterAdministrateur implements ActionListener {
 			this.fp.getAdmin().setVisible(false);
 
 			this.fp.getBtnsCrit().setVisible(true);
-			this.fp.getBtnsDem().setVisible(true);
 		}
 	}
 }

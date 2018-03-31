@@ -5,11 +5,11 @@ import java.awt.event.ActionListener;
 
 import Modele.Projet;
 
-public class ActionClasser implements ActionListener {
+public class ActionAfficherClassement implements ActionListener {
 
 	private Projet projet;
 	
-	public ActionClasser(Projet projet) {
+	public ActionAfficherClassement(Projet projet) {
 		this.projet = projet;
 	}
 	
