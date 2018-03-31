@@ -1,11 +1,19 @@
 package Vue;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import Controleur.Parametres.ActionAnnulerParam;
 import Controleur.Parametres.ActionValiderParam;
 import Modele.Projet;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Created by Aurélie on 01/11/2017.

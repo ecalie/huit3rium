@@ -1,11 +1,13 @@
 package Controleur.Supprimer;
 
-import Modele.Projet;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+
+import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
+
+import Modele.Projet;
 
 public class ActionValiderSuppr implements ActionListener {
 

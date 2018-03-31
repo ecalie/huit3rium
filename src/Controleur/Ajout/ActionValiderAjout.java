@@ -1,12 +1,9 @@
 package Controleur.Ajout;
 
-import Modele.Jeune;
-import Modele.Projet;
-import Vue.FicheJeune;
-
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import Vue.FicheJeune;
 
 public class ActionValiderAjout implements ActionListener {
 

@@ -1,10 +1,10 @@
 package Controleur.Administrateur;
 
-import Vue.FenetrePrincipale;
-
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import Vue.FenetrePrincipale;
 
 public class ActionQuitterAdministrateur implements ActionListener {
 	private FenetrePrincipale fp;

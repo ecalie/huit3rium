@@ -1,10 +1,10 @@
 package Controleur.Ajout;
 
-import Vue.FenetrePrincipale;
-import Vue.FicheJeune;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import Vue.FenetrePrincipale;
+import Vue.FicheJeune;
 
 public class ActionAjouter implements ActionListener {
     private FenetrePrincipale fp;

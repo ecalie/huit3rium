@@ -1,8 +1,9 @@
 package Controleur.Supprimer;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JInternalFrame;
 
 public class ActionAnnulerSuppr implements ActionListener {
 
