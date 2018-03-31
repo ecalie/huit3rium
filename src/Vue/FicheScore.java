@@ -450,7 +450,6 @@ public class FicheScore extends JInternalFrame {
 			}
 		}
 
-		System.out.println(balise);
 		// Si au moins une zone ou une balise est remplie, les autres doivent l'être aussi
 		if (balise) {
 			// vérifier que les balises ont une réponse enregistrée

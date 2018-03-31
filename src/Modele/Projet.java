@@ -1482,7 +1482,7 @@ public class Projet {
 		for (Jeune j : this.lesInscrits)
 			if (j.getNiveau() == niveau) 
 				j.modifierPoints(this.reponses, this.nbBalise, this.nbMemo,
-						this.gains, this.fp);
+						this.nbSegment, this.gains, this.fp);
 
 		// Trier par score
 		classement = new ArrayList<>();
@@ -1509,24 +1509,28 @@ public class Projet {
 		// Afficher le classement
 		switch (niveau) {
 		case V : 
+			if (fcVert != null)
+				fcVert.dispose();
 			fcVert = new FicheClassement(this);
 			fcVert.afficherCouleur(classement, Niveau.V);
-			this.fp.getDesktop().add(fcVert);
 			break;
 		case B : 
+			if (fcBleu != null)
+				fcBleu.dispose();
 			fcBleu = new FicheClassement(this);
 			fcBleu.afficherCouleur(classement, Niveau.B);
-			this.fp.getDesktop().add(fcBleu);
 			break;
 		case R : 
+			if (fcRouge != null)
+				fcRouge.dispose();
 			fcRouge = new FicheClassement(this);
 			fcRouge.afficherCouleur(classement, Niveau.R);
-			this.fp.getDesktop().add(fcRouge);
 			break;
 		case N : 
+			if (fcNoir != null)
+				fcNoir.dispose();
 			fcNoir = new FicheClassement(this);
 			fcNoir.afficherCouleur(classement, Niveau.N);
-			this.fp.getDesktop().add(fcNoir);
 			break;
 		}
 	}
@@ -1540,9 +1544,9 @@ public class Projet {
 					"Impossible d'exporter un classement car il n'y a pas de critérium chargé.");
 		} else {
 			exporterClassement(Niveau.V);
-			exporterClassement(Niveau.B);
-			exporterClassement(Niveau.R);
-			exporterClassement(Niveau.N);
+			//exporterClassement(Niveau.B);
+			//exporterClassement(Niveau.R);
+			//exporterClassement(Niveau.N);
 		}
 	}
 
@@ -1550,7 +1554,6 @@ public class Projet {
 	 * Remplir un fichier de classement pour une couleur donnée.
 	 * @param couleur La couleur de la catégorie à écrire dans le fihcier
 	 */
-	// TODO
 	public void exporterClassement(Niveau niveau) {
 		// Récupérer le fichier
 		JFileChooser chooser = new JFileChooser();
@@ -1561,11 +1564,10 @@ public class Projet {
 		chooser.setMultiSelectionEnabled(false);
 
 		// Le fichier d'enregistrement des classements
-		File fichierClassement = null;
+		String nom = "";
 		if (chooser.showDialog(chooser, "Exporter les classements") == 0) {
 			// Récupérer le fichier d'enregistrement
-			fichierClassement = chooser.getSelectedFile();
-			String nom = fichierClassement.getName();
+			nom = chooser.getSelectedFile().getAbsolutePath();
 
 			if (!fichierExcel(nom) && nom.contains(".")) {
 				javax.swing.JOptionPane.showMessageDialog(this.getFp(),
@@ -1575,68 +1577,82 @@ public class Projet {
 						);
 				this.exporterClassement();
 			}
+			if (!nom.contains("."))
+				nom += ".xlsx";
+		} else {
+			return;
 		}
 
 		try {
-			//TODO
-			fichierClassement.createNewFile();
+			XSSFWorkbook wb = new XSSFWorkbook();
 
 			// Créer un workbook
-			Workbook wb = WorkbookFactory.create(fichierClassement);
-			Sheet sheet = wb.createSheet("Feuil1");
+			Sheet sheet = wb.createSheet("Classement" + niveau);
 
-			Row row = sheet.getRow(0);
-			row.getCell(0).setCellValue("Rang");
-			row.getCell(1).setCellValue("Lettre");
-			row.getCell(2).setCellValue("N°");
-			row.getCell(3).setCellValue("/");
-			row.getCell(4).setCellValue("N° Equipe");
-			row.getCell(5).setCellValue("Nom");
-			row.getCell(6).setCellValue("Prénom");
-			row.getCell(7).setCellValue("N° Licence");
-			row.getCell(8).setCellValue("N° Club");
-			row.getCell(9).setCellValue("Nom Club");
-			row.getCell(10).setCellValue("Date Naissance");
-			row.getCell(11).setCellValue("Age");
-			row.getCell(12).setCellValue("Catégorie");
-			row.getCell(13).setCellValue("Niveau");
-			row.getCell(14).setCellValue("Sexe");
-			row.getCell(15).setCellValue("Points");
-			row.getCell(16).setCellValue("Pastille");
+			Row row = sheet.createRow(0);
+			row.createCell(0).setCellValue("Lettre");
+			row.createCell(1).setCellValue("N°");
+			row.createCell(2).setCellValue("Nom");
+			row.createCell(3).setCellValue("Prénom");
+			row.createCell(4).setCellValue("N° Licence");
+			row.createCell(5).setCellValue("N° Club");
+			row.createCell(6).setCellValue("Club");
+			row.createCell(7).setCellValue("Points");
+			row.createCell(8).setCellValue("Classement");
 
 			int i = 0;
-			int k;
+			int k = 1;
 			int nbPoints = 0;
 			// Remplir le fichier avec les jeunes de la couleur passée en paramèters
+			classement = new ArrayList<>();
+			for (Jeune j : this.lesInscrits) 
+				if (j.getNiveau() == niveau)  {
+					int place = 0;
+					for (int ii = 0 ; ii < classement.size() ; ii++) {
+						Jeune jj = classement.get(ii);
+						if (j.getPoints() < jj.getPoints()) {
+							place++;
+						} else {
+							break;
+						}
+					}
+					if (classement.size() == place) {
+						classement.add(j);
+					} else {
+						this.decaler(classement, place);
+						classement.set(place, j);
+					}
+
+				}
+			
 			for (Jeune j : classement) {
-				row = sheet.getRow(i);
+				row = sheet.createRow(i);
 				if (j.getNiveau() == niveau) {
 					i++;
 					if (nbPoints != j.getPoints())
 						k = i;
 					nbPoints = j.getPoints();
 
-					row.getCell(0).setCellValue(i);
-					row.getCell(1).setCellValue(j.getClub().toString());
-					row.getCell(2).setCellValue(j.getNumero());
-					row.getCell(3).setCellValue("/");
-					row.getCell(4).setCellValue(j.getNumero());
-					row.getCell(5).setCellValue(j.getNom());
-					row.getCell(6).setCellValue(j.getPrenom());
-					row.getCell(7).setCellValue(j.getNumLicence());
-					row.getCell(8).setCellValue(j.getClub().getNum());
-					row.getCell(9).setCellValue(j.getClub().getNom());
-					row.getCell(10).setCellValue(j.getNaissance().toString());
-					row.getCell(11).setCellValue(j.age());
-					row.getCell(12).setCellValue(j.getNiveau().getNom());
-					row.getCell(13).setCellValue(j.getNiveau().getNom());
-					row.getCell(14).setCellValue(j.getSexe());
-					row.getCell(15).setCellValue(j.getPoints());
+					row.createCell(0).setCellValue(j.getClub().toString());
+					row.createCell(1).setCellValue(j.getNumero());
+					row.createCell(2).setCellValue(j.getNom());
+					row.createCell(3).setCellValue(j.getPrenom());
+					row.createCell(4).setCellValue(j.getNumLicence());
+					row.createCell(5).setCellValue(j.getClub().getNum());
+					row.createCell(6).setCellValue(j.getClub().getNom());
+					row.createCell(7).setCellValue(j.getPoints());
+					row.createCell(8).setCellValue(k);
 				}
 			}
 
+			FileOutputStream fos = new FileOutputStream(new File (nom));
+			wb.write(fos);
+			fos.close();
 			wb.close();
-		} catch (Exception e) {}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	////////////////
@@ -1645,11 +1661,12 @@ public class Projet {
 	
 	/**
 	 * Charger les inscrits à un critérium.
-	 * @param nomFichierInscrtis   Le nom du fichier duquel on charge les inscrits
+	 * @param nomFichierInscrits   Le nom du fichier duquel on charge les inscrits
 	 **/
-	public void chargerCrit(String nomFichierInscrtis) {
-		this.dossier = nomFichierInscrtis;
-		File f = new File(nomFichierInscrtis);
+	public void chargerCrit(String nomFichierInscrits) {
+		this.dossier = nomFichierInscrits;
+		this.nomFichierCrit = nomFichierInscrits;
+		File f = new File(nomFichierInscrits);
 		Workbook wb = null;
 
 		// Créer le fichier et la feuille de calcul
@@ -1668,7 +1685,7 @@ public class Projet {
 		int i = 5;
 		Row row = sheet.getRow(i++);
 
-		while (row != null) {
+		while (row != null && row.getCell(0) != null && !row.getCell(0).getStringCellValue().equals("")) {
 			// Récupérer les inscrits
 			String id = row.getCell(0).getStringCellValue();
 
@@ -1761,7 +1778,7 @@ public class Projet {
 		// Récupérer les solutions dse circuits d'orientation
 		for (int ind = 0; ind < nbCircuit; ind++) 
 			for (int ii = 0 ; ii < this.nbOrientation ; ii++)
-				this.reponses.put("orientation" + ind + "_" + ii, sheet.getRow(ligne++).getCell(3).getStringCellValue());
+				this.reponses.put("orientation" + ind + "_" + ii, "" + sheet.getRow(ligne++).getCell(2).getStringCellValue());
 
 		// Créer des fiches avec les bons nombre de mémo / balises
 		this.ficheReponse = new FicheReponse(this);
@@ -2029,8 +2046,8 @@ public class Projet {
 		j.getLesReponses().put("cables", rep);
 		
 		for (int i = 0 ; i < this.nbOrientation ; i++) {
-			int reponse = (int) row.getCell(colonne++).getNumericCellValue();
-			j.getLesReponses().put("orientation"  + i, reponse + "");
+			String reponse = row.getCell(colonne++).getStringCellValue();
+			j.getLesReponses().put("orientation"  + i, reponse);
 		}
 	}
 
@@ -2065,6 +2082,11 @@ public class Projet {
 		
 		this.ficheParametre = new FicheParam(this);
 		this.ficheParametre.annulerModifier();
+		
+		fcVert = new FicheClassement(this);
+		fcBleu = new FicheClassement(this);
+		fcRouge = new FicheClassement(this);
+		fcNoir = new FicheClassement(this);
 		
 		this.ficheReponse = new FicheReponse(this);
 		this.conforme = true;

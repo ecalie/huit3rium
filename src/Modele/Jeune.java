@@ -336,7 +336,7 @@ public class Jeune {
 	 * @param fp         La fenêtre principale
 	 */
 	public void modifierPoints (HashMap<String, String> reponses, int nbBalises, 
-			int nbMemos, HashMap<String, Integer> points, FenetrePrincipale fp) {
+			int nbMemos, int nbSegments, HashMap<String, Integer> points, FenetrePrincipale fp) {
 
 		if (points.get("baliseTrouvee") == null && nbBalises > 0) {
 			javax.swing.JOptionPane.showMessageDialog(fp,
@@ -379,8 +379,10 @@ public class Jeune {
 			if (!this.lesReponses.get("balise" + i).equals("XX"))
 				this.points += points.get("baliseTrouvee");
 
-			if (this.lesReponses.get("maniabilite" + i).equals("O"))
-				this.points += points.get("maniabilite");
+			for (int ii = 1 ; ii <= nbSegments ; ii++) {
+				if (this.lesReponses.get("maniabilite" + i + "_" + ii).equals("O"))
+					this.points += points.get("maniabilite");
+			}
 		}
 
 		// ajouter les points pour chaque mémo

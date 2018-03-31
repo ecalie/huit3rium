@@ -1,6 +1,8 @@
 package Vue;
 
 import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 
@@ -23,6 +25,7 @@ public class FicheClassement extends JInternalFrame {
 	public FicheClassement(Projet projet) {
 		super("", true, true, false, true);
 		this.projet = projet;
+		this.projet.getFp().getDesktop().add(this);
 		this.pack();
 		this.hide();
 	}
@@ -35,20 +38,15 @@ public class FicheClassement extends JInternalFrame {
 	 */
 	public void afficherCouleur(ArrayList<Jeune> lesInscrits, Niveau niveau) {
 		this.setTitle("Classement des " + niveau.getNom());
-
-		int nb = 0;
-		for (Jeune j : lesInscrits)
-			if (j.getNiveau() == niveau)
-				nb++;	
-
-		this.getContentPane().setLayout(new GridLayout(nb, 1));
+		
+		this.getContentPane().setLayout(new GridBagLayout());
 
 		int i = 0;
 		int k = 0;
 		int nbPoints = 0;
+		
 		for (Jeune j : lesInscrits) {
 			if (j.getNiveau() == niveau) {
-				JPanel panel = new JPanel(new GridLayout(1,5));
 				i++;
 				if (nbPoints != j.getPoints())
 					k = i;
@@ -62,33 +60,66 @@ public class FicheClassement extends JInternalFrame {
 				JLabel points = new JLabel("" + j.getPoints());
 
 				// ajouter les labels
-				panel.add(classement);
-				panel.add(nom);
-				panel.add(prenom);
-				panel.add(club);
-				panel.add(points);
+			    GridBagConstraints c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 0;
+				c.gridy = i;
+				this.add(classement, c);
 
-				// ajouter le panel
-				this.add(panel);
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 1;
+				c.gridy = i;
+				this.add(new JLabel("     "), c);
 
-				// modifier les couleurs
-				if (k == 1)
-					panel.setBackground(new Color(255, 215, 0));
-				else if (k == 2)
-					panel.setBackground(new Color(192, 192, 192));
-				else if (k == 3)
-					panel.setBackground(new Color(97, 78, 2));
-				else {
-					// modifier la couleur du fond
-					panel.setBackground(Color.DARK_GRAY);
-					
-					// modifier la couleur du texte
-					classement.setForeground(Color.LIGHT_GRAY);
-					nom.setForeground(Color.LIGHT_GRAY);
-					prenom.setForeground(Color.LIGHT_GRAY);
-					club.setForeground(Color.LIGHT_GRAY);
-					points.setForeground(Color.LIGHT_GRAY);
-				}
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 2;
+				c.gridy = i;
+				c.gridwidth = 2;
+				this.add(nom, c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 4;
+				c.gridy = i;
+				this.add(new JLabel("     "), c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 5;
+				c.gridy = i;
+				c.gridwidth = 2;
+				this.add(prenom, c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 7;
+				c.gridy = i;
+				this.add(new JLabel("     "), c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 8;
+				c.gridy = i;
+				c.gridwidth = 6;
+				this.add(club, c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 14;
+				c.gridy = i;
+				this.add(new JLabel("   "), c);
+
+			    c = new GridBagConstraints();
+			    c.fill = GridBagConstraints.HORIZONTAL;
+				c.gridx = 15;
+				c.gridy = i;
+				this.add(points, c);
+
+				// modifier la couleur du fond
+				this.setBackground(Color.DARK_GRAY);
+				this.setForeground(Color.LIGHT_GRAY);
 			}
 		}
 		this.pack();
