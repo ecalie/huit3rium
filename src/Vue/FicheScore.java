@@ -478,18 +478,22 @@ public class FicheScore extends JInternalFrame {
 		if (balise) {		
 			// Si une balise est trouvée, la zone l'est aussi et inversement
 			for (int i = 0 ; i < this.projet.getNbBalise(); i++) {
-				if (lesBalises.get(i).getSelectedIndex() == 4 &&
-						lesZones.get(i).getSelectedIndex() != 2) {
-					lesZones.get(i).setBackground(Color.RED);
-					lesBalises.get(i).setBackground(Color.RED);
-					return false;
+				for (int ii = 0 ; ii < this.projet.getNbSegment() ; ii++) {
+					if (lesBalises.get(i).getSelectedIndex() == 4 &&
+							lesZones.get(this.projet.getNbSegment()*i+ii).getSelectedIndex() != 2) {
+						lesZones.get(this.projet.getNbSegment()*i+ii).setBackground(Color.RED);
+						lesBalises.get(i).setBackground(Color.RED);
+						return false;
+					}
 				}
 
-				if (lesBalises.get(i).getSelectedIndex() != 4 &&
-						lesZones.get(i).getSelectedIndex() == 2) {
-					lesZones.get(i).setBackground(Color.RED);
-					lesBalises.get(i).setBackground(Color.RED);
-					return false;
+				for (int ii = 0 ; ii < this.projet.getNbSegment() ; ii++) {
+					if (lesBalises.get(i).getSelectedIndex() != 4 &&
+							lesZones.get(this.projet.getNbSegment()*i+ii).getSelectedIndex() == 2) {
+						lesZones.get(this.projet.getNbSegment()*i+ii).setBackground(Color.RED);
+						lesBalises.get(i).setBackground(Color.RED);
+						return false;
+					}
 				}
 			}
 		}
@@ -501,33 +505,64 @@ public class FicheScore extends JInternalFrame {
 	 * Vérifier la cohérence des balises trouvées et des zones de maniabilité éffectuées.
 	 * @return Vrai si ok, faux s'il y a une incohérence
 	 */
-	public boolean verifScore() {
+	public boolean toutRempli() {
 		boolean ok = true;
+		
+		// vérifier que les mémos ont une réponse sélectionnée
 		for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
 			if (lesMemos.get(i).getSelectedIndex() == -1) {
-				ok = false;
 				lesMemos.get(i).setBackground(Color.RED);
-				this.setVisible(true);
-			} else
+				ok = false;
+			} else {
 				lesMemos.get(i).setBackground(Color.LIGHT_GRAY);
+			}
 		}
-
+		
+		// vérifier que les balises ont une réponse enregistrée
 		for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
 			if (lesBalises.get(i).getSelectedIndex() == -1) {
-				ok = false;
 				lesBalises.get(i).setBackground(Color.RED);
-				this.setVisible(true);
-			} else
-				lesBalises.get(i).setBackground(Color.LIGHT_GRAY);
-
-			if (lesZones.get(i).getSelectedIndex() == -1) {
 				ok = false;
-				this.setVisible(true);
-				lesZones.get(i).setBackground(Color.RED);
-			} else
-				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
+			} else {
+				lesBalises.get(i).setBackground(Color.LIGHT_GRAY);
+			}
 		}
+		
+		// vérifier que les maniabilité sont renseignées
+		for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
+			if (lesZones.get(i).getSelectedIndex() == -1) {
+				lesZones.get(i).setBackground(Color.RED);
+				ok = false;
+			} else {
+				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
+			}
+		}
+
+		// Si une balise est trouvée, la zone l'est aussi et inversement
+		for (int i = 0 ; i < this.projet.getNbBalise(); i++) {
+			for (int ii = 0 ; ii < this.projet.getNbSegment() ; ii++) {
+				if (lesBalises.get(i).getSelectedIndex() == 4 &&
+						lesZones.get(this.projet.getNbSegment()*i+ii).getSelectedIndex() != 2) {
+					lesZones.get(this.projet.getNbSegment()*i+ii).setBackground(Color.RED);
+					lesBalises.get(i).setBackground(Color.RED);
+					ok = false;
+				}
+			}
+
+			for (int ii = 0 ; ii < this.projet.getNbSegment() ; ii++) {
+				if (lesBalises.get(i).getSelectedIndex() != 4 &&
+						lesZones.get(this.projet.getNbSegment()*i+ii).getSelectedIndex() == 2) {
+					lesZones.get(this.projet.getNbSegment()*i+ii).setBackground(Color.RED);
+					lesBalises.get(i).setBackground(Color.RED);
+					ok = false;
+				}
+			}
+		}
+		
+		if (!ok)
+			this.setVisible(true);
 		return ok;
+		
 	}
 
 }

@@ -1068,7 +1068,7 @@ public class Projet {
 		// Toutes les colonnes
 		for (int ind = 4; ind < this.lesInscrits.size() + 5 ; ind++) {
 			row = sheet.getRow(ind);
-			for (int col = 0 ; col < indColMax ; col++)
+			for (int col = 0 ; col <= indColMax ; col++)
 				row.getCell(col).setCellStyle(style4);
 		}
 		
@@ -1364,7 +1364,7 @@ public class Projet {
 
 		int ecart = 0;
 		if (this.fp.getAdmin().isVisible())
-			ecart = 250;
+			ecart = 300;
 		else
 			ecart = 10;
 		Confirmation charg = new Confirmation("Enregistrement réussi" , this.fp, ecart);
@@ -1502,7 +1502,7 @@ public class Projet {
 		boolean ok = true;
 		for (Jeune j : this.lesInscrits)
 			if (j.getNiveau() == niveau) {
-				ok = ok && j.getFiche2().verifScore();
+				ok = ok && j.getFiche2().toutRempli();
 				if (!ok)
 					return;
 			}
@@ -2008,6 +2008,9 @@ public class Projet {
         else
         	return;
         
+        // enregistrer le nom du fichier
+        this.nomFichierCrit = f.getName();
+        
 		Workbook wb = null;
 
 		// Créer le fichier et la feuille de calcul
@@ -2169,7 +2172,7 @@ public class Projet {
 			
 			int ecart = 0;
 			if (this.fp.getAdmin().isVisible())
-				ecart = 250;
+				ecart = 300;
 			else
 				ecart = 10;
 			Confirmation charg = new Confirmation("Chargement réussi", this.fp, ecart);

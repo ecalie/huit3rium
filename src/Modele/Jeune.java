@@ -336,6 +336,7 @@ public class Jeune {
 		// réinitialiser le score
 		this.points = 0;
 		
+		System.out.println(lesReponses);
 		// ajouter les points pour chaque balise
 		for (int i = 0 ; i < nbBalises ; i++) {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))

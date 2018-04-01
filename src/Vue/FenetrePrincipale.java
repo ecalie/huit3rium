@@ -305,12 +305,12 @@ public class FenetrePrincipale extends JFrame {
 		btnQuitter.setBackground(Color.DARK_GRAY);
 		btnQuitter.setForeground(Color.WHITE);
 
-		JButton btnAjouter = new JButton("Ajouter un licencié");
+		JButton btnAjouter = new JButton("Ajouter un inscrit");
 		btnAjouter.addActionListener(new ActionAjouter(this));
 		btnAjouter.setBackground(Color.DARK_GRAY);
 		btnAjouter.setForeground(Color.WHITE);
 
-		JButton btnSupprimer = new JButton("Supprimer un licencié");
+		JButton btnSupprimer = new JButton("Supprimer un / des inscrit(s)");
 		btnSupprimer.addActionListener(new ActionSupprimer(this.projet));
 		btnSupprimer.setBackground(Color.DARK_GRAY);
 		btnSupprimer.setForeground(Color.WHITE);

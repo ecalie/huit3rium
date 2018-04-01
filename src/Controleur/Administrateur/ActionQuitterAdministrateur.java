@@ -15,24 +15,6 @@ public class ActionQuitterAdministrateur implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// Si modification
-		if (!this.fp.getProjet().getCritEnreg()) {
-			int resultatLicencie = javax.swing.JOptionPane.showConfirmDialog(this.fp.getDesktop(),
-					"Voulez-vous enregistrer les modifications sur les licenciés ?");
-
-			// Si oui
-			if (resultatLicencie == 0) {
-				// Enregistrer les modifications
-				this.fp.getProjet().enregistrer();
-			}
-			// Sinon si oui ou non
-			else if (resultatLicencie != 2) {
-				// fermer le mode admin
-				this.fp.fermerModeAdmin();
-			}
-		} else {
-			// fermer le mode admin
-			this.fp.fermerModeAdmin();
-		}
+		this.fp.fermerModeAdmin();
 	}
 }
