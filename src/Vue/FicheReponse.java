@@ -188,7 +188,7 @@ public class FicheReponse extends JInternalFrame {
 			}
 		}
 
-		// Vérifier que toutes les balises d'orientation sur tous les circuits ont nue réponse
+		// Vérifier que toutes les balises d'orientation sur tous les circuits ont une réponse
 		for (String key : this.lesOrientations.keySet()) {
 			if (this.lesOrientations.get(key).getText().equals("")) {
 				this.lesOrientations.get(key).setBackground(Color.RED);

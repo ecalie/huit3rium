@@ -273,7 +273,7 @@ public class FenetrePrincipale extends JFrame {
 	 **/
 	private void boutonsAdmin() {
 		/* Le panel des boutons administrateur */
-		this.admin = new JPanel(new GridLayout(22, 1));
+		this.admin = new JPanel(new GridLayout(18, 1));
 
 		JLabel separation0 = new JLabel("- - -");
 		separation0.setHorizontalAlignment(SwingConstants.CENTER);
@@ -430,6 +430,7 @@ public class FenetrePrincipale extends JFrame {
 		// Masquer les boutons administrateur et la grille de tous les inscrits
 		this.grilleLicencies.setVisible(false);
 		this.admin.setVisible(false);
+		this.ordreDepart.setVisible(false);
 
 		// Afficher les boutons
 		this.btnsCrit.setVisible(true);
@@ -450,6 +451,7 @@ public class FenetrePrincipale extends JFrame {
 		// Masquer les boutons et la grille d'un niveau au cas où
 		this.btnsCrit.setVisible(false);
 		this.grilleInscrits.setVisible(false);
+		this.ordreDepart.setVisible(false);
 
 		// Afficher la grille de tous les inscrits et les boutons administrateur
 		this.grilleLicencies.setVisible(true);

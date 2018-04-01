@@ -1,6 +1,7 @@
 package Vue;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 
@@ -18,6 +19,7 @@ public class FicheDepart extends JInternalFrame {
 
 	private ArrayList<Jeune> ordre;
 	private Projet projet;
+	private JTextField saisie2;
 	
 	public FicheDepart(ArrayList<Jeune> o, Projet projet) {
 		super(o.get(0).toString(), false, false, false, false);
@@ -32,7 +34,7 @@ public class FicheDepart extends JInternalFrame {
 		panel1.setLayout(new FlowLayout());
 		
 		JLabel saisie = new JLabel("Numéro du parcours d'orientation");
-		JTextField saisie2 = new JTextField(5);
+		saisie2 = new JTextField(3);
 		saisie.setLabelFor(saisie2);
 		
 		panel1.add(saisie);
@@ -55,6 +57,21 @@ public class FicheDepart extends JInternalFrame {
 	}
 	
 	public void valider() {
+		int num = 1;
+		try {
+			num = Integer.parseInt(this.saisie2.getText());
+		} catch (Exception e) {
+			this.saisie2.setBackground(Color.RED);
+			return;
+		}
+		
+		if (num < 1 || num > this.projet.getNbCircuit()) {
+			this.saisie2.setBackground(Color.RED);
+			return;
+		}
+		
+		this.ordre.get(0).setNumParours(num-1);
+		
 		// Supprimer le jeune de la liste des prochains départs
 		this.ordre.remove(0);
 		

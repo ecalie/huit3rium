@@ -336,8 +336,8 @@ public class FicheScore extends JInternalFrame {
 				reponses.put("maniabilite" + i + "_2", this.lesZones.get(2*i+1).getSelectedValue());
 			}
 
-			for (int i = 0; i < this.lesOrientation.size(); i++) {
-				reponses.put("orientation" + i, this.lesOrientation.get(i).getText());
+			for (int i = 1; i <= this.lesOrientation.size(); i++) {
+				reponses.put("orientation" + i, this.lesOrientation.get(i-1).getText());
 			}
 			
 			if (this.chaine.isSelected())

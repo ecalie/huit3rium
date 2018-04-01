@@ -346,41 +346,14 @@ public class Jeune {
 	 * @param points     Les points gagnés pour chaque épreuves
 	 * @param fp         La fenêtre principale
 	 */
-	public void modifierPoints (HashMap<String, String> reponses, int nbBalises, 
+	public void modifierPoints (HashMap<String, String> reponses, int nbBalises, int nbOrientation, 
 			int nbMemos, int nbSegments, HashMap<String, Integer> points, FenetrePrincipale fp) {
-
-		if (points.get("baliseTrouvee") == null && nbBalises > 0) {
-			javax.swing.JOptionPane.showMessageDialog(fp,
-					"Veuillez donner le nombre de points gagnés en trouvant une balise.");
-			return;
-		}
-
-		if (points.get("baliseCorrecte") == null && nbBalises > 0) {
-			javax.swing.JOptionPane.showMessageDialog(fp,
-					"Veuillez donner le nombre de points gagnés en répondant à une question balise.");
-			return;
-		}
-
-		if (points.get("memoTrouve") == null  && nbMemos > 0) {
-			javax.swing.JOptionPane.showMessageDialog(fp,
-					"Veuillez donner le nombre de points gagnés en trouvant un mémo.");
-			return;
-		}
-
-		if (points.get("memoCorrect") == null && nbMemos > 0) {
-			javax.swing.JOptionPane.showMessageDialog(fp,
-					"Veuillez donner le nombre de points gagnés en répondant à une question mémo.");
-			return;
-		}
-
-		if (points.get("baliseTrouvee") == null && nbBalises > 0) {
-			javax.swing.JOptionPane.showMessageDialog(fp,
-					"Veuillez donner le nombre de points gagnés en trouvant une balise.");
-			return;
-		}
 
 		// réinitialiser le score
 		this.points = 0;
+		
+		System.out.println(reponses);
+		System.out.println(getLesReponses());
 		
 		// ajouter les points pour chaque balise
 		for (int i = 0 ; i < nbBalises ; i++) {
@@ -403,6 +376,16 @@ public class Jeune {
 
 			if (!this.lesReponses.get("memo" + i).equals("XX")) 
 				this.points += points.get("memoTrouve");
+		}		
+		
+		
+		// ajouter les points du parcours d'orientation
+		for (int i = 0 ; i < nbOrientation ; i++) {
+			System.out.println("orientation" + this.numParours + "_" + i);
+			System.out.println(reponses.get("orientation" + this.numParours + "_" + i));
+			System.out.println(this.lesReponses.get("orientation" + (i+1)));
+			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + (i+1))))
+				this.points += points.get("orientation");
 		}
 	}
 	

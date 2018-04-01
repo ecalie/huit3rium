@@ -109,18 +109,6 @@ public class Projet {
 	/** ProgressBar des jeunes revenus. */
 	private JProgressBar barreMemo;
 	private JProgressBar barreBalise;
-
-	/** Indices des jeunes partis. */
-	private int indVert;
-	private int indBleu;
-	private int indRouge;
-	private int indNoir;
-	
-	/** Ordre de départ de chaque couleur. */
-	private ArrayList<Jeune> ordreVert;
-	private ArrayList<Jeune> ordreBleu;
-	private ArrayList<Jeune> ordreRouge;
-	private ArrayList<Jeune> ordreNoir;
 	
 	/** Classement du critérium. */
 	private ArrayList<Jeune> classement;
@@ -1522,8 +1510,8 @@ public class Projet {
 		// Calculer des scores
 		for (Jeune j : this.lesInscrits)
 			if (j.getNiveau() == niveau) 
-				j.modifierPoints(this.reponses, this.nbBalise, this.nbMemo,
-						this.nbSegment, this.gains, this.fp);
+				j.modifierPoints(this.reponses, this.nbBalise, this.nbOrientation, 
+						this.nbMemo, this.nbSegment, this.gains, this.fp);
 
 		// Trier par score
 		classement = new ArrayList<>();
@@ -2281,12 +2269,7 @@ public class Projet {
 	/**
 	 * Demander l'ordre de départ de quel niveau ?
 	 */
-	public void demarrer() {
-		indVert = 0;
-		indBleu = 0;
-		indRouge = 0;
-		indNoir = 0;
-		
+	public void demarrer() {		
 		JInternalFrame jif = new JInternalFrame("Démarrer", false, false, false, true);
 
 		// Mise en forme de la fenetre
@@ -2334,18 +2317,6 @@ public class Projet {
 		// Classer les jeunes sans que deux jeunes du même club ne se suivent
 		ArrayList<Jeune> ordre = this.ordreDepart(niveau);
 		
-		// Enregistrer l'ordre de départ
-		switch(niveau) {
-		case V : 
-			this.ordreVert = ordre;
-		case B : 
-			this.ordreBleu = ordre;
-		case R : 
-			this.ordreRouge = ordre;
-		case N : 
-			this.ordreNoir = ordre;
-		}
-		
 		// Afficher la liste des jeunes dans l'ordre de départ
 		this.fp.afficherOrdre(ordre);
 				
@@ -2387,27 +2358,29 @@ public class Projet {
 				numeros2.add(indice);
 			
 			// Choisir un nouveau numéro jusqu'à ce qu'il convienne
-			while (j.getClub() == club && numeros2.size() > 1) {
+			while (j.getClub() == club && numeros2.size() > 0) {
 				numeros2.remove(ind);
-				ind = (int) (Math.random() * numeros2.size());
-				j = couleur.get(numeros2.get(ind));
+				if (numeros2.size() > 0) {
+					ind = (int) (Math.random() * numeros2.size());
+					j = couleur.get(numeros2.get(ind));
+				}
 			}
 			
 			// Si aucun numéro ne convient
-			if (numeros2.size() == 1) {
+			if (numeros2.size() == 0) {
 				// Récupérer les clubs des deux premiers de la liste de départ
 				int indDecalage = 0;
 				Club c1 = ordre.get(0).getClub();
-				Club c2 = ordre.get(1).getClub();
+				Club c2 = null;
 				
+				System.out.println(ordre);
 				// Tant qu'on ne peut pas insérer le jeune en traitement
-				while (c1 == j.getClub() ||  c2 == j.getClub()) {
-					indDecalage++;
-					c1 = ordre.get(indDecalage).getClub();
-					c2 = ordre.get(indDecalage+1).getClub();
+				while (c1 == j.getClub() || c2 == j.getClub()) {
+					c1 = ordre.get(indDecalage+1).getClub();
+					c2 = ordre.get(indDecalage+2).getClub();
 					
 					// Si on n'a pas trouvé de places pour l'ajouter
-					// Tous les jeunes non encore ajoutés sont du mêm club que le dernier ajouté
+					// Tous les jeunes non encore ajoutés sont du même club que le dernier ajouté
 					// Un club est trop représenté pour respecter les conditions
 					if (indDecalage == ordre.size()) {
 						// On ajoute tous les jeunes à la fin de la liste
@@ -2417,6 +2390,7 @@ public class Projet {
 						// on renvoie la liste 
 						return ordre;
 					}
+					indDecalage++;
 				}
 				
 				// On a trouvé une place pour le jeune
