@@ -1022,7 +1022,7 @@ public class Projet {
 				row.getCell(colonne++).setCellValue(je.getLesReponses().get("balise" + ind));
 			}
 			for (int ind = 0 ; ind < this.nbBalise ; ind++) {
-				for (int in = 1 ; in <= this.nbSegment ; in++) {
+				for (int in = 0 ; in < this.nbSegment ; in++) {
 				    row.createCell(colonne);
 					row.getCell(colonne++).setCellValue(je.getLesReponses().get("maniabilite" + ind + "_" + in));
 				}
@@ -1030,7 +1030,7 @@ public class Projet {
 		    row.createCell(colonne);
 			row.getCell(colonne++).setCellValue(je.getLesReponses().get("chaine"));
 		    row.createCell(colonne);
-			row.getCell(colonne++).setCellValue(je.getLesReponses().get("clés"));
+			row.getCell(colonne++).setCellValue(je.getLesReponses().get("clefs"));
 		    row.createCell(colonne);
 			row.getCell(colonne++).setCellValue(je.getLesReponses().get("reparation"));
 		    row.createCell(colonne);
@@ -2019,7 +2019,10 @@ public class Projet {
 			return;
 		}
 		
+		// Charger les inscriptions
 		inscription(f);
+		
+		// Charger les résultats déjà saisis
 		Sheet sheet = wb.getSheet("Résultats");
 
 		// Initialiser les indices et ligne
@@ -2048,6 +2051,7 @@ public class Projet {
 			
 			row = sheet.getRow(i++);
 		}
+		
 		// Mettre à jour les paramètres du critérium
 		sheet = wb.getSheet("Paramètres");
 
@@ -2160,8 +2164,8 @@ public class Projet {
 			this.barreMemo.setMaximum(this.lesInscrits.size());
 			this.barreBalise.setMaximum(this.lesInscrits.size());
 
-			this.fp.getGrilleLicencies().setVisible(false);
-			this.fp.getGrilleLicencies().setVisible(true);
+			// Afficher la grille des licenciés
+			this.affichage();
 			
 			int ecart = 0;
 			if (this.fp.getAdmin().isVisible())

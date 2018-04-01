@@ -32,11 +32,7 @@ public class ActionQuitterAdministrateur implements ActionListener {
 			}
 		} else {
 			// fermer le mode admin
-			this.fp.getDesktop().setBackground(Color.WHITE);
-			this.fp.getGrilleLicencies().setVisible(false);
-			this.fp.getAdmin().setVisible(false);
-
-			this.fp.getBtnsCrit().setVisible(true);
+			this.fp.fermerModeAdmin();
 		}
 	}
 }
