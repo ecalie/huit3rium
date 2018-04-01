@@ -901,7 +901,7 @@ public class Projet {
 		///FEUILLE 2 : RESULTATS///
 		///////////////////////////
 
-		int indColMax = 5 + this.nbMemo + this.nbBalise * (1+this.nbSegment) + this.nbOrientation;
+		int indColMax = 6 + this.nbMemo + this.nbBalise * (1+this.nbSegment) + this.nbOrientation;
 		// Ecrire les réponses de chaque inscrit
 		sheet = wb.createSheet("Résultats");
 
@@ -971,6 +971,10 @@ public class Projet {
 		    row.createCell(colonne);
 			row.getCell(colonne++).setCellValue("Orientation" + ind);
 		}
+		cra = new CellRangeAddress(ligne, ligne + 1, colonne, colonne);
+	    sheet.addMergedRegion(cra);
+	    row.createCell(colonne);
+		row.getCell(colonne++).setCellValue("N° Parcours");
 	    
 		ligne++;
 		colonne = 0;
@@ -1036,6 +1040,9 @@ public class Projet {
 			    row.createCell(colonne);
 				row.getCell(colonne++).setCellValue(je.getLesReponses().get("orientation" + ind));
 			}
+		    row.createCell(colonne);
+			row.getCell(colonne++).setCellValue(je.getNumParours()+1);
+			
 			row = sheet.createRow(ligne++);
 		}
 
@@ -1058,37 +1065,29 @@ public class Projet {
 			row.getCell(ind).setCellStyle(style2);
 		}
 		
-		// Les colonnes 1, 2, 4, 8, 10, 12, 14, 16
+		// Toutes les colonnes
 		for (int ind = 4; ind < this.lesInscrits.size() + 5 ; ind++) {
 			row = sheet.getRow(ind);
-			row.getCell(0).setCellStyle(style3);
-			row.getCell(1).setCellStyle(style3);
-			row.getCell(2).setCellStyle(style3);
-			row.getCell(4).setCellStyle(style3);
-			row.getCell(8).setCellStyle(style3);
-			row.getCell(10).setCellStyle(style3);
-			row.getCell(12).setCellStyle(style3);
-			row.getCell(14).setCellStyle(style3);
-			row.getCell(16).setCellStyle(style3);
-			row.getCell(20).setCellStyle(style3);
+			for (int col = 0 ; col < indColMax ; col++)
+				row.getCell(col).setCellStyle(style4);
 		}
 		
-		// Les autres colonnes
+		// Les colonnes 1, 2, 4, 8, 10, 12, 14, 16
 		for (int ind = 4; ind < this.lesInscrits.size() + 5 ; ind++) {
+			int col = 0;
 			row = sheet.getRow(ind);
-			row.getCell(3).setCellStyle(style4);
-			row.getCell(5).setCellStyle(style4);
-			row.getCell(6).setCellStyle(style4);
-			row.getCell(7).setCellStyle(style4);
-			row.getCell(9).setCellStyle(style4);
-			row.getCell(11).setCellStyle(style4);
-			row.getCell(13).setCellStyle(style4);
-			row.getCell(15).setCellStyle(style4);
-			row.getCell(17).setCellStyle(style4);
-			row.getCell(18).setCellStyle(style4);
-			row.getCell(19).setCellStyle(style4);
-			row.getCell(21).setCellStyle(style4);
-			row.getCell(22).setCellStyle(style4);
+			row.getCell(col++).setCellStyle(style3);
+			row.getCell(col++).setCellStyle(style3);
+			row.getCell(col).setCellStyle(style3);
+			col += this.nbMemo;
+			row.getCell(col).setCellStyle(style3);
+			col += this.nbBalise;
+			for (int ii = 0 ; ii < this.nbBalise ; ii++) {
+				row.getCell(col).setCellStyle(style3);
+				col += this.nbSegment;
+			}
+			col +=4;
+			row.getCell(col).setCellStyle(style3);
 		}
 		
 		////////////////////////////
@@ -2161,6 +2160,9 @@ public class Projet {
 			this.barreMemo.setMaximum(this.lesInscrits.size());
 			this.barreBalise.setMaximum(this.lesInscrits.size());
 
+			this.fp.getGrilleLicencies().setVisible(false);
+			this.fp.getGrilleLicencies().setVisible(true);
+			
 			int ecart = 0;
 			if (this.fp.getAdmin().isVisible())
 				ecart = 250;
@@ -2239,7 +2241,7 @@ public class Projet {
 	}
 
 	/**
-	 * Dmeander quels fichiers sont à charger et les charger.
+	 * Demander quels fichiers sont à charger et les charger.
 	 */
 	public void chargerFichierInscription() {
 		JFileChooser chooser = new JFileChooser();
@@ -2321,7 +2323,7 @@ public class Projet {
 		this.fp.afficherOrdre(ordre);
 				
 		// Afficher une fiche pour renseigner le numéro de son parcours d'orientation
-		JInternalFrame jif = new FicheDepart(ordre, this);
+		new FicheDepart(ordre, this);
 	}
 	
 	/**
@@ -2548,6 +2550,9 @@ public class Projet {
 			String reponse = row.getCell(colonne++).getStringCellValue();
 			j.getLesReponses().put("orientation"  + i, reponse);
 		}
+		
+		int num = (int) row.getCell(colonne++).getNumericCellValue();
+		j.setNumParours(num-1);
 	}
 
 	/**

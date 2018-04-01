@@ -63,6 +63,9 @@ public class FenetrePrincipale extends JFrame {
 	/** La zone d'appel. */
 	private JPanel ordreDepart;
 	
+	/** Panel btns admin + depart. */
+	private JPanel east;
+	
 	//////////////////
 	///CONSTRUCTEUR///
 	//////////////////
@@ -98,9 +101,12 @@ public class FenetrePrincipale extends JFrame {
 		
 		// La zone d'appel
 		this.ordreDepart = new JPanel();
-		this.ordreDepart.setLayout(new GridLayout(20,4));
-		this.add(this.ordreDepart, BorderLayout.EAST);
-		this.ordreDepart.setVisible(false);
+		this.ordreDepart.setLayout(new GridLayout(20,1));
+		
+		// La zone est
+		this.east = new JPanel(new BorderLayout());
+		this.east.setVisible(true);
+		this.add(this.east, BorderLayout.EAST);
 		
 		/* Initialiser un projet associé à la fenêtre */
 		this.projet = new Projet(this);
@@ -386,7 +392,7 @@ public class FenetrePrincipale extends JFrame {
 		this.admin.add(exporterClassement);
 		this.admin.add(afficherClassement);
 
-		this.add(this.admin, BorderLayout.EAST);
+		this.east.add(this.admin, BorderLayout.EAST);
 
 		/* Masquer les boutons */
 		this.admin.setVisible(false);
@@ -412,12 +418,10 @@ public class FenetrePrincipale extends JFrame {
 			this.ordreDepart.add(label);
 		}
 		
-		this.add(ordreDepart, BorderLayout.EAST);
+		this.east.add(ordreDepart, BorderLayout.WEST);
 		
 		this.ordreDepart.setVisible(false);
 		this.ordreDepart.setVisible(true);
-		
-		this.grilleInscrits.setVisible(false);
 	}
 
 	/**

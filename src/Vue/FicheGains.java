@@ -90,7 +90,7 @@ public class FicheGains extends JInternalFrame {
 		// points mémo
 		if (projet.getNbMemo() > 0) {
 			// mémo trouvé
-			JLabel memoTrouve = new JLabel("Question mémo", JLabel.CENTER);
+			JLabel memoTrouve = new JLabel("Mémo", JLabel.CENTER);
 			memoTrouve.setForeground(Color.LIGHT_GRAY);
 			this.scoreMemo = new JTextField(1);
 			this.scoreMemo.setBackground(Color.LIGHT_GRAY);

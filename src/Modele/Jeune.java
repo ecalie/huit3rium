@@ -307,22 +307,6 @@ public class Jeune {
 	}
 
 	/**
-	 * Mettre à jour les attributs d'un jeune en fonction des données lues dans le 
-	 * fichier d'enregistrement.
-	 * @param donnees Le données lues dans le fichier d'enregistrememnt
-	 */
-	public void setScore(String[] donnees, int nbBalises, int nbMemos) {
-		for (int i = 0 ; i < nbBalises ; i++) {
-			this.lesReponses.put("balise" + i, donnees[i + nbMemos + 1]);
-			this.lesReponses.put("maniabilite" + i, donnees[i + nbMemos + nbBalises + 1]);
-		}
-
-		for (int i = 0 ; i < nbMemos ; i++) {
-			this.lesReponses.put("memo" + i,  donnees[i + 1]);
-		}
-	}
-
-	/**
 	 * Comparer deux jeunes par leur numéro.
 	 * @param j Le jeune à comparer
 	 * @return vrai si j à un numéro plus petit
@@ -352,9 +336,6 @@ public class Jeune {
 		// réinitialiser le score
 		this.points = 0;
 		
-		System.out.println(reponses);
-		System.out.println(getLesReponses());
-		
 		// ajouter les points pour chaque balise
 		for (int i = 0 ; i < nbBalises ; i++) {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))
@@ -363,14 +344,14 @@ public class Jeune {
 			if (!this.lesReponses.get("balise" + i).equals("XX"))
 				this.points += points.get("baliseTrouvee");
 
-			for (int ii = 1 ; ii <= nbSegments ; ii++) {
+			for (int ii = 0 ; ii < nbSegments ; ii++) {
 				if (this.lesReponses.get("maniabilite" + i + "_" + ii).equals("O"))
 					this.points += points.get("maniabilite");
 			}
 		}
 
 		// ajouter les points pour chaque mémo
-		for (int i = 0 ; i < nbMemos ; i++) {
+		for (int i = 0 ; i < nbMemos - 1 ; i++) {
 			if (reponses.get("memo" + i).equals(this.lesReponses.get("memo" + i)))
 				this.points += points.get("memoCorrect");
 
@@ -378,15 +359,41 @@ public class Jeune {
 				this.points += points.get("memoTrouve");
 		}		
 		
+		int nb = nbMemos -1; 
+		if (reponses.get("memo" + nb).equals(this.lesReponses.get("memo" + nb)))
+			this.points += points.get("mecanique");
+		if (!this.lesReponses.get("memo" + nb).equals("XX")) 
+			this.points += points.get("memoTrouve");
+		
 		
 		// ajouter les points du parcours d'orientation
 		for (int i = 0 ; i < nbOrientation ; i++) {
-			System.out.println("orientation" + this.numParours + "_" + i);
-			System.out.println(reponses.get("orientation" + this.numParours + "_" + i));
-			System.out.println(this.lesReponses.get("orientation" + (i+1)));
-			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + (i+1))))
+			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + i)))
 				this.points += points.get("orientation");
 		}
+		
+		// ajouter les points de la trousse mécanique
+		if (this.lesReponses.get("chaine").equals("O"))
+			this.points += points.get("chaine");
+		if (this.lesReponses.get("clefs").equals("O"))
+			this.points += points.get("clefs");
+		if (this.lesReponses.get("cables").equals("O"))
+			this.points += points.get("cables");
+		if (this.lesReponses.get("reparation").equals("O"))
+			this.points += points.get("reparation");
+		
+		System.out.println(this.points);
+		// Appliquer le facteur multiplicatif
+		int pts = 15;
+		int fact = 1;
+		while (pts < this.points) {
+			fact++;
+			pts += 5;
+		}
+		
+		System.out.println(fact);
+		
+		this.points *= fact;
 	}
 	
 	/**
@@ -397,7 +404,8 @@ public class Jeune {
 	public void initialiserReponses(int nbBalise, int nbMemo, int nbOrientation) {
 		for (int i = 0 ; i < nbBalise ; i ++) {
 			this.lesReponses.put("balise" + i, "");
-			this.lesReponses.put("maniabilite" + i, "");
+			this.lesReponses.put("maniabilite" + i + "_0", "");
+			this.lesReponses.put("maniabilite" + i + "_1", "");
 		}
 		
 		for (int i = 0 ; i < nbMemo ; i++)
