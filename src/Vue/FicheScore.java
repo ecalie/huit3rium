@@ -32,6 +32,7 @@ public class FicheScore extends JInternalFrame {
 	private JCheckBox cables;
 	private JCheckBox clefs;
 	private JCheckBox reparation;
+	private JTextArea numCircuit;
 
 	private Jeune licencie;
 	private Projet projet;
@@ -208,11 +209,26 @@ public class FicheScore extends JInternalFrame {
 		c.gridy = 2;
 		c.ipadx = 10;
 		contenu1.add(panel, c);
-
+		
+	    c = new GridBagConstraints();
+	    JLabel num = new JLabel("N° Circuit");
+	    c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment())+1;
+		c.gridy = 0;
+		c.gridheight = 2;
+		contenu1.add(num, c);
+		
+		numCircuit = new JTextArea();
+	    c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment())+1;
+		c.gridy = 2;
+		c.ipadx = 10;
+		contenu1.add(numCircuit, c);
+		
 		JLabel trousse = new JLabel("         Trousse");
-		 c = new GridBagConstraints();
+		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + (1+this.projet.getNbSegment())*this.projet.getNbBalise() + 1;
+		c.gridx = this.projet.getNbMemo() + (1+this.projet.getNbSegment())*this.projet.getNbBalise() + 2;
 		c.gridy = 0;
 		contenu1.add(trousse, c);
 
@@ -259,7 +275,7 @@ public class FicheScore extends JInternalFrame {
 
 		int ind = 0;
 		for (int i = 0 ; i < this.lesBalises.size(); i++)
-			for (int ii = 0 ; ii < this.projet.getNbSegment() ; ii++) { 				
+			for (int ii = 1 ; ii <= this.projet.getNbSegment() ; ii++) { 				
 				invaliderZone(this.licencie.getLesReponses().get("maniabilite" + i + "_" + ii),this.lesZones.get(ind));
 				ind++;
 			}
@@ -336,8 +352,8 @@ public class FicheScore extends JInternalFrame {
 				reponses.put("maniabilite" + i + "_2", this.lesZones.get(2*i+1).getSelectedValue());
 			}
 
-			for (int i = 1; i <= this.lesOrientation.size(); i++) {
-				reponses.put("orientation" + i, this.lesOrientation.get(i-1).getText());
+			for (int i = 0; i < this.lesOrientation.size(); i++) {
+				reponses.put("orientation" + i, this.lesOrientation.get(i).getText());
 			}
 			
 			if (this.chaine.isSelected())
@@ -345,9 +361,9 @@ public class FicheScore extends JInternalFrame {
 			else
 				reponses.put("chaine", "N");
 			if (this.clefs.isSelected())
-				reponses.put("clés", "O");
+				reponses.put("clefs", "O");
 			else
-				reponses.put("clés", "N");
+				reponses.put("clefs", "N");
 			if (this.reparation.isSelected())
 				reponses.put("reparation", "O");
 			else
@@ -529,12 +545,21 @@ public class FicheScore extends JInternalFrame {
 		}
 		
 		// vérifier que les maniabilité sont renseignées
-		for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
+		for (int i = 0 ; i < this.projet.getNbBalise()*this.projet.getNbSegment() ; i++) {
 			if (lesZones.get(i).getSelectedIndex() == -1) {
 				lesZones.get(i).setBackground(Color.RED);
 				ok = false;
 			} else {
 				lesZones.get(i).setBackground(Color.LIGHT_GRAY);
+			}
+		}
+		
+		for (int i = 0 ; i < this.projet.getNbOrientation() ; i++){
+			if (this.lesOrientation.get(i).getText().equals("")){
+				lesOrientation.get(i).setBackground(Color.RED);
+				ok = false;
+			} else {
+				lesOrientation.get(i).setBackground(Color.LIGHT_GRAY);
 			}
 		}
 

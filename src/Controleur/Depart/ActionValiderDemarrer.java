@@ -5,20 +5,21 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JInternalFrame;
+import javax.swing.JRadioButton;
 
 import Modele.Niveau;
 import Modele.Projet;
 
 public class ActionValiderDemarrer implements ActionListener {
 
-	private JCheckBox vert;
-	private JCheckBox bleu;
-	private JCheckBox rouge;
-	private JCheckBox noir;
+	private JRadioButton vert;
+	private JRadioButton bleu;
+	private JRadioButton rouge;
+	private JRadioButton noir;
 	private Projet projet;
 	private JInternalFrame jif;
 	
-	public ActionValiderDemarrer(JCheckBox v, JCheckBox b, JCheckBox r, JCheckBox n, Projet p, JInternalFrame jif) {
+	public ActionValiderDemarrer(JRadioButton v, JRadioButton b, JRadioButton r,JRadioButton n, Projet p, JInternalFrame jif) {
 		vert = v;
 		bleu = b;
 		rouge = r;

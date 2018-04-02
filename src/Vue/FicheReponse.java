@@ -143,17 +143,21 @@ public class FicheReponse extends JInternalFrame {
 	 * Réinitialiser les sélections avec les réponses enregistrées.
 	 */
 	public void invaliderModif() {
-		for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
-			this.lesMemos.get(i).setSelectedIndex(Projet.alphabet.get(
-					this.projet.getReponses().get("memo" + i)));
+		try{
+			for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
+				
+				this.lesMemos.get(i).setSelectedIndex(Projet.alphabet.get(
+						this.projet.getReponses().get("memo" + i)));
+			}
+			for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
+				this.lesBalises.get(i).setSelectedIndex(Projet.alphabet.get(
+						this.projet.getReponses().get("balise" + i)));
+			}
+			for (String key : this.lesOrientations.keySet())
+				this.lesOrientations.get(key).setText(this.projet.getReponses().get(key));
+		} catch (NullPointerException e) {
+			this.hide();
 		}
-		for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
-			this.lesBalises.get(i).setSelectedIndex(Projet.alphabet.get(
-					this.projet.getReponses().get("balise" + i)));
-		}
-		for (String key : this.lesOrientations.keySet())
-			this.lesOrientations.get(key).setText(this.projet.getReponses().get(key));
-		
 		this.hide();
 	}
 

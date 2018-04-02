@@ -50,6 +50,7 @@ public class Jeune {
 	
 	/** Vrai quand tous les résultats sont renseignés. */
 	private boolean fini;
+	
 
 	///////////////////////
 	///// CONSTRUCTEURS ///
@@ -345,7 +346,8 @@ public class Jeune {
 			if (!this.lesReponses.get("balise" + i).equals("XX"))
 				this.points += points.get("baliseTrouvee");
 
-			for (int ii = 0 ; ii < nbSegments ; ii++) {
+			for (int ii = 1 ; ii <= nbSegments ; ii++) {
+				System.out.println(i + "_" + ii);
 				if (this.lesReponses.get("maniabilite" + i + "_" + ii).equals("O"))
 					this.points += points.get("maniabilite");
 			}
@@ -405,8 +407,8 @@ public class Jeune {
 	public void initialiserReponses(int nbBalise, int nbMemo, int nbOrientation) {
 		for (int i = 0 ; i < nbBalise ; i ++) {
 			this.lesReponses.put("balise" + i, "");
-			this.lesReponses.put("maniabilite" + i + "_0", "");
 			this.lesReponses.put("maniabilite" + i + "_1", "");
+			this.lesReponses.put("maniabilite" + i + "_2", "");
 		}
 		
 		for (int i = 0 ; i < nbMemo ; i++)

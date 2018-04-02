@@ -37,6 +37,7 @@ import Controleur.Parametres.ActionModifParam;
 import Controleur.Reponse.ActionDefinirReponses;
 import Controleur.Supprimer.ActionSupprimer;
 import Modele.Jeune;
+import Modele.Niveau;
 import Modele.Projet;
 
 public class FenetrePrincipale extends JFrame {
@@ -118,7 +119,7 @@ public class FenetrePrincipale extends JFrame {
 		this.boutonsAdmin();
 
 		/* La grille des licenciés */
-		this.grilleLicencies = new JPanel(new GridLayout(20,6));
+		this.grilleLicencies = new JPanel(new GridLayout(25,8));
 		this.grilleInscrits = new JPanel(new GridLayout(20,4));
 
 		JPanel lesGrilles = new JPanel(new BorderLayout());
@@ -406,15 +407,30 @@ public class FenetrePrincipale extends JFrame {
 	 * Afficher la liste de départ.
 	 * @param ordre La liste de départ
 	 */
-	public void afficherOrdre(ArrayList<Jeune> ordre) {
+	public void afficherOrdre(ArrayList<Jeune> ordre, Niveau niveau) {
 		this.ordreDepart.removeAll();
 		
 		for (int i = 0 ; i < Math.min(ordre.size(), 20) ; i++) {
 			Jeune j = ordre.get(i);
-			JLabel label = new JLabel(j.toString(), JLabel.CENTER);
+			JLabel label = new JLabel("   " + j.toString() + "   ", JLabel.CENTER);
 			label.setFont(new Font("Arial", Font.BOLD, 20));
 			label.setOpaque(true);
-			label.setForeground(Color.BLUE);
+			
+			switch(niveau) {
+			case V : 
+				label.setForeground(Color.GREEN);
+				break;
+			case B : 
+				label.setForeground(Color.BLUE);
+				break;
+			case R : 
+				label.setForeground(Color.RED);
+				break;
+			case N : 
+				label.setForeground(Color.BLACK);
+				break;
+			}
+			
 			this.ordreDepart.add(label);
 		}
 		

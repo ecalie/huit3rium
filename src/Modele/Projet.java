@@ -18,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -147,7 +148,7 @@ public class Projet {
 		panel.add(this.barreMemo);
 	}
 
-	////////////////////////
+	//////////////////////
 	// GETTERS ET SETTERS //
 	////////////////////////
 
@@ -1022,7 +1023,7 @@ public class Projet {
 				row.getCell(colonne++).setCellValue(je.getLesReponses().get("balise" + ind));
 			}
 			for (int ind = 0 ; ind < this.nbBalise ; ind++) {
-				for (int in = 0 ; in < this.nbSegment ; in++) {
+				for (int in = 1 ; in <= this.nbSegment ; in++) {
 				    row.createCell(colonne);
 					row.getCell(colonne++).setCellValue(je.getLesReponses().get("maniabilite" + ind + "_" + in));
 				}
@@ -1411,7 +1412,7 @@ public class Projet {
 	 * Demander quels classements.
 	 */
 	public void afficherQuelClassement() {
-		JInternalFrame jif = new JInternalFrame("Classement", false, false, false, true);
+		JInternalFrame jif = new JInternalFrame("Classement", false, true, false, true);
 
 		// Mise en forme de la fenetre
 		jif.getContentPane().setLayout(new BorderLayout());
@@ -1454,7 +1455,7 @@ public class Projet {
 	 * Demander quels classmeent.
 	 */
 	public void exporterQuelClassement() {
-		JInternalFrame jif = new JInternalFrame("Exporter classement", false, false, false, true);
+		JInternalFrame jif = new JInternalFrame("Exporter classement", false, true, false, true);
 
 		// Mise en forme de la fenetre
 		jif.getContentPane().setLayout(new BorderLayout());
@@ -1568,6 +1569,17 @@ public class Projet {
 	 * @param couleur La couleur de la catégorie à écrire dans le fihcier
 	 */
 	public void exporterClassement(Niveau niveau) {
+		// On vérifie que les fiches sont correctement remplies
+		boolean ok = true;
+		for (Jeune j : this.lesInscrits)
+			if (j.getNiveau() == niveau) {
+				ok = ok && j.getFiche2().toutRempli();
+				if (!ok) {
+					this.fp.getGrilleLicencies().setVisible(false);
+					return;
+				}
+			}
+		
 		// Récupérer le fichier
 		JFileChooser chooser = new JFileChooser();
 		this.choisirDossier(chooser);
@@ -1764,9 +1776,13 @@ public class Projet {
 			int nbPoints = 0;
 			// Remplir le fichier avec les jeunes de la couleur passée en paramèters
 			classement = new ArrayList<>();
+			// calculer le classement
 			for (Jeune j : this.lesInscrits) 
 				if (j.getNiveau() == niveau)  {
 					int place = 0;
+					// calculer le nombre de points
+					j.modifierPoints(this.reponses, this.nbBalise,this.nbOrientation,
+							this.nbMemo, this.nbSegment,  this.gains, this.fp);
 					for (int ii = 0 ; ii < classement.size() ; ii++) {
 						Jeune jj = classement.get(ii);
 						if (j.getPoints() < jj.getPoints()) {
@@ -1784,12 +1800,14 @@ public class Projet {
 
 				}
 			
+			// ecrire le classement
+			int c = 0;
 			for (Jeune j : classement) {
 				row = sheet.createRow(i);
-				if (j.getNiveau() == niveau) {
 					i++;
+					c++;
 					if (nbPoints != j.getPoints())
-						k = i;
+						k = c;
 					nbPoints = j.getPoints();
 
 					row.createCell(0).setCellValue(j.getClub().toString());
@@ -1806,7 +1824,6 @@ public class Projet {
 						row.getCell(ind).setCellStyle(style3);
 					}
 				}
-			}
 			
 			// Ajuster la taille des colonnes
 			for (int ind = 0 ; ind < nbCol-1 ; ind++) {
@@ -1861,12 +1878,15 @@ public class Projet {
 			k = 1;
 			nbPoints = 0;
 			
+			// calculer le classement
+			c = 0;
 			for (Jeune j : classement) {
 				row = sheet.createRow(i);
 				if (j.getNiveau() == niveau && j.getSexe() == 'F') {
 					i++;
+					c++;
 					if (nbPoints != j.getPoints())
-						k = i;
+						k = c;
 					nbPoints = j.getPoints();
 
 					row.createCell(0).setCellValue(j.getClub().toString());
@@ -1938,12 +1958,14 @@ public class Projet {
 			k = 1;
 			nbPoints = 0;
 			
+			c = 0;
 			for (Jeune j : classement) {
 				row = sheet.createRow(i);
 				if (j.getNiveau() == niveau && j.getSexe() == 'G') {
 					i++;
+					c++;
 					if (nbPoints != j.getPoints())
-						k = i;
+						k = c;
 					nbPoints = j.getPoints();
 
 					row.createCell(0).setCellValue(j.getClub().toString());
@@ -2187,8 +2209,10 @@ public class Projet {
 	 */
 	public void inscription(File f) {
 		this.dossier = f.getAbsolutePath();
+		this.nomFichierCrit = f.getName();
 		Workbook wb ;
 		
+		String lettre = "";
 		try {
 			// Créer le fichier et la feuille de calcul
 			wb = WorkbookFactory.create(f);
@@ -2199,7 +2223,7 @@ public class Projet {
 			Row row = sheet.getRow(index++);
 
 			while (row != null  && !row.getCell(0).getStringCellValue().equals("")) {
-				String lettre = row.getCell(0).getStringCellValue();	
+				lettre = row.getCell(0).getStringCellValue();	
 				int numero = (int) row.getCell(1).getNumericCellValue();
 			//	int equipe = (int) row.getCell(3).getNumericCellValue();
 				String nom = row.getCell(4).getStringCellValue();
@@ -2241,6 +2265,9 @@ public class Projet {
 				fj.hide();
 			}
 
+		} catch (ClubInconnuException e) {
+			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
+					"Le club avec la lettre " + lettre + " est inconnu.");
 		} catch (Exception e) {
 			javax.swing.JOptionPane.showMessageDialog(this.getFp(),
 					"Erreur dans l'ouverture du fichier des licenciés. \n S'il est ouvert dans excel, le fermer et réessayer.");
@@ -2279,16 +2306,16 @@ public class Projet {
 	 * Demander l'ordre de départ de quel niveau ?
 	 */
 	public void demarrer() {		
-		JInternalFrame jif = new JInternalFrame("Démarrer", false, false, false, true);
+		JInternalFrame jif = new JInternalFrame("Démarrer", false, true, false, true);
 
 		// Mise en forme de la fenetre
 		jif.getContentPane().setLayout(new BorderLayout());
 		
 		// Check box
-		JCheckBox checkVert = new JCheckBox("Vert");
-		JCheckBox checkBleu = new JCheckBox("Bleu");
-		JCheckBox checkRouge = new JCheckBox("Rouge");
-		JCheckBox checkNoir = new JCheckBox("Noir");
+		JRadioButton checkVert = new JRadioButton("Vert");
+		JRadioButton checkBleu = new JRadioButton("Bleu");
+		JRadioButton checkRouge = new JRadioButton("Rouge");
+		JRadioButton checkNoir = new JRadioButton("Noir");
 
 		// Bouton
 		JButton btnValider = new JButton("Valider");
@@ -2299,7 +2326,7 @@ public class Projet {
 		// Le panel des boutons 
 		JPanel panel2 = new JPanel(new FlowLayout());
 		
-		// Ajouter les checkBox
+		// Ajouter les JRadioButton
 		panel1.add(checkVert);
 		panel1.add(checkBleu);
 		panel1.add(checkRouge);
@@ -2327,10 +2354,11 @@ public class Projet {
 		ArrayList<Jeune> ordre = this.ordreDepart(niveau);
 		
 		// Afficher la liste des jeunes dans l'ordre de départ
-		this.fp.afficherOrdre(ordre);
+		this.fp.afficherOrdre(ordre, niveau);
 				
 		// Afficher une fiche pour renseigner le numéro de son parcours d'orientation
 		new FicheDepart(ordre, this);
+		ordre.get(0).getFiche2().setVisible(true);
 	}
 	
 	/**
@@ -2339,19 +2367,16 @@ public class Projet {
 	 */
 	private ArrayList<Jeune> ordreDepart(Niveau niveau) {
 		ArrayList<Jeune> ordre = new ArrayList<>();
-		ArrayList<Integer> numeros = new ArrayList<>();
+		ArrayList<Jeune> numeros = new ArrayList<>();
 		
 		// Initialiser la listes des jeunes du bon niveau
-		ArrayList<Jeune> couleur = new ArrayList<>();
 		for (Jeune j : this.lesInscrits)
 			if (j.getNiveau() == niveau)
-				couleur.add(j);
-		
-		// Initialiser la liste de indices à "trier"
-		for (int ind = 0 ; ind < couleur.size() ; ind++)
-			numeros.add(ind);
+				numeros.add(j);
 
 		Club club = Club.A;
+		Club club2 = Club.A;
+		Club club3 = Club.A;
 		// Tant qu'il reste des jeunes à ajouter
 		while (numeros.size() > 0) {
 			// Choisir un indice au hasars dans la liste
@@ -2359,11 +2384,11 @@ public class Projet {
 			int ind = (int) (Math.random() * max);
 			
 			// Récupérer le jeune correspond à cet indice
-			Jeune j = couleur.get(numeros.get(ind));
+			Jeune j = numeros.get(ind);
 			
 			// Copier la liste des numéros non encore ajoutés
-			ArrayList<Integer> numeros2 = new ArrayList<>();
-			for (int indice : numeros)
+			ArrayList<Jeune> numeros2 = new ArrayList<>();
+			for (Jeune indice : numeros)
 				numeros2.add(indice);
 			
 			// Choisir un nouveau numéro jusqu'à ce qu'il convienne
@@ -2371,7 +2396,7 @@ public class Projet {
 				numeros2.remove(ind);
 				if (numeros2.size() > 0) {
 					ind = (int) (Math.random() * numeros2.size());
-					j = couleur.get(numeros2.get(ind));
+					j = numeros2.get(ind);
 				}
 			}
 			
@@ -2382,7 +2407,6 @@ public class Projet {
 				Club c1 = ordre.get(0).getClub();
 				Club c2 = null;
 				
-				System.out.println(ordre);
 				// Tant qu'on ne peut pas insérer le jeune en traitement
 				while (c1 == j.getClub() || c2 == j.getClub()) {
 					c1 = ordre.get(indDecalage+1).getClub();
@@ -2391,10 +2415,10 @@ public class Projet {
 					// Si on n'a pas trouvé de places pour l'ajouter
 					// Tous les jeunes non encore ajoutés sont du même club que le dernier ajouté
 					// Un club est trop représenté pour respecter les conditions
-					if (indDecalage == ordre.size()) {
+					if (indDecalage == ordre.size()-3) {
 						// On ajoute tous les jeunes à la fin de la liste
 						for (int index = 0 ; index < numeros.size() ; index++)
-							ordre.add(couleur.get(numeros.get(index)));
+							ordre.add(numeros.get(index));
 						
 						// on renvoie la liste 
 						return ordre;
@@ -2418,10 +2442,17 @@ public class Projet {
 			}
 
 			// On met à jour le club du dernier jeune ajouté
-			club = j.getClub();
+			club = club2;
+			club2 = club3;
+			club3 = j.getClub();
 			
-			// On retire l'indice du jeune ajoté de la liste des indices
-			numeros.remove(ind);
+
+			System.out.println(ind);
+			System.out.println(numeros.get(ind));
+			System.out.println(numeros);
+			System.out.println(ordre);
+			// On retire l'indice du jeune ajouté de la liste des indices
+			numeros.remove(j);
 		}
 		
 		// On renvoie la liste
@@ -2535,7 +2566,7 @@ public class Projet {
 		}
 		
 		for (int i = 0 ; i < this.nbBalise ; i++) {
-			for (int ii = 0 ; ii < this.nbSegment ; ii++) {
+			for (int ii = 1 ; ii <= this.nbSegment ; ii++) {
 				String rep = row.getCell(colonne++).getStringCellValue();
 				j.getLesReponses().put("maniabilite" + i + "_" + ii, rep);
 			};
@@ -2568,16 +2599,16 @@ public class Projet {
 	 */
 	private void initialiserProjet(FenetrePrincipale fp) {
 		this.fp = fp;
-		this.nbOrientation = 3;
+		this.nbOrientation = 4;
 		this.nbBalise = 4;
 		this.nbMemo = 2;
 		this.nbSegment = 2;
-		this.nbCircuit = 3;
+		this.nbCircuit = 4;
 		this.reponses = new HashMap<>();
 		this.lesInscrits = new ArrayList<>();
 		this.gains = new HashMap<>();
 		this.gains.put("baliseTrouvee", 2);
-		this.gains.put("baliseCorrecte", 1);
+		this.gains.put("baliseCorrecte", 3);
 		this.gains.put("memoTrouve", 1);
 		this.gains.put("memoCorrect", 2);
 		this.gains.put("mecanique", 3);
@@ -2657,7 +2688,7 @@ public class Projet {
 	 * @param lettre La lettre du club
 	 * @return Le club correspondant
 	 */
-	public static Club recupClub(String lettre) {
+	public static Club recupClub(String lettre) throws ClubInconnuException {
 		switch (lettre) {
 		case "A" :
 			return Club.A;
@@ -2683,9 +2714,16 @@ public class Projet {
 			return Club.K;
 		case "L" :
 			return Club.L;
+		case "N" : 
+			return Club.N;
+		case "O" : 
+			return Club.O;
+		case "P" : 
+			return Club.P;
+		case "Q" : 
+			return Club.Q;
 		default :
-			System.exit(0);
-			return Club.A;
+			throw new ClubInconnuException();
 		}
 	}
 
