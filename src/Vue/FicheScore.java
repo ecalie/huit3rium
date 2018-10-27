@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -16,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import Controleur.Score.ActionDeselectionner;
 import Controleur.Score.ActionValiderScore;
@@ -27,12 +29,12 @@ public class FicheScore extends JInternalFrame {
 	private ArrayList<JList<String>> lesMemos;
 	private ArrayList<JList<String>> lesBalises;
 	private ArrayList<JList<String>> lesZones;
-	private ArrayList<JTextArea> lesOrientation;
+	private ArrayList<JTextField> lesOrientation;
 	private JCheckBox chaine;
 	private JCheckBox cables;
 	private JCheckBox clefs;
 	private JCheckBox reparation;
-	private JTextArea numCircuit;
+	private JList<Integer> numCircuit;
 
 	private Jeune licencie;
 	private Projet projet;
@@ -57,16 +59,17 @@ public class FicheScore extends JInternalFrame {
 		JPanel contenu3 = new JPanel(new FlowLayout());
 		this.getContentPane().add(contenu3, BorderLayout.SOUTH);
 
-		String[] data1 = {"O", "N", "XX"};
-		String[] data2 = {"A", "B", "C", "D", "XX"};
+		String[] data1 = {"O", "N", "NT"};
+		String[] data2 = {"A", "B", "C", "SR", "NT"};
+		Integer[] data3 = {1, 2, 3, 4};
 
+	    GridBagConstraints c = new GridBagConstraints();
 		for (int i = 1; i <= this.projet.getNbMemo(); i++) {
 			JButton btnMemo = new JButton("Mémo " + i);
-		    GridBagConstraints c = new GridBagConstraints();
 		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = i - 1;
-			c.gridy = 0;
-			c.gridheight = 2;
+		    c.gridy = 0;
+		    c.gridx = i-1;
+		    c.insets = new Insets(0,(i==0?5:2),0,(i==this.projet.getNbMemo()?5:2));
 			contenu1.add(btnMemo, c);
 
 			// Ajouter les réponses possibles
@@ -83,21 +86,27 @@ public class FicheScore extends JInternalFrame {
 			btnMemo.setContentAreaFilled(false);
 			btnMemo.setBackground(Color.LIGHT_GRAY);
 
-		    c = new GridBagConstraints();
-		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = i - 1;
-			c.gridy = 2;
-			c.ipadx = 10;
+		    c.gridy = 1;
+		    c.gridx = i-1;
+		    c.insets = new Insets(0,(i==0?5:2),0,(i==this.projet.getNbMemo()?5:2));
 			contenu1.add(memo, c);
 		}
+		
+		JLabel maniabilite = new JLabel("Zones de maniabilité : ");
+	    c.fill = GridBagConstraints.HORIZONTAL;
+	    c.gridy = 3;
+	    c.gridx = 0;
+	    c.gridwidth = 2;
+	    c.insets = new Insets(0,0,0,0);
+		contenu1.add(maniabilite, c);
 
 		for (int i = 1; i <= this.projet.getNbBalise(); i++) {
-		    GridBagConstraints c = new GridBagConstraints();
 			JButton btnBalise = new JButton("Balise " + i);
 		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = i - 1 + this.projet.getNbMemo();
+			c.gridwidth = 2;
 			c.gridy = 0;
-			c.gridheight = 2;
+		    c.gridx = 2*i-1 + this.projet.getNbMemo();
+		    c.insets = new Insets(0,(i==0?5:2),0,(i==this.projet.getNbBalise()?5:2));
 			contenu1.add(btnBalise, c);
 
 			JList<String> balise = new JList<>(data2);
@@ -105,7 +114,7 @@ public class FicheScore extends JInternalFrame {
 			balise.setBackground(Color.LIGHT_GRAY);
 			balise.setSelectedIndex(-1);
 			this.lesBalises.add(balise);
-
+			
 			// modifier l'action du bouton
 			btnBalise.addActionListener(new ActionDeselectionner(balise, this.projet));
 			btnBalise.setFocusPainted(false);
@@ -113,36 +122,22 @@ public class FicheScore extends JInternalFrame {
 			btnBalise.setContentAreaFilled(false);
 			btnBalise.setBackground(Color.LIGHT_GRAY);
 
-		    c = new GridBagConstraints();
 		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = i - 1 + this.projet.getNbMemo();
-			c.gridy = 2;
-			c.ipadx = 10;
-			contenu1.add(balise, c);
-		}
-
-		for (int i = 1; i <= this.projet.getNbBalise(); i++) {
-		    GridBagConstraints c = new GridBagConstraints();
-			JLabel balise = new JLabel("            Balise " + i);
-		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 2*(i-1) + this.projet.getNbMemo() + this.projet.getNbBalise();
-			c.gridy = 0;
+			c.gridy = 1;
+		    c.gridx = 2*i-1 + this.projet.getNbMemo();
+		    c.insets = new Insets(0,(i==0?5:2),0,(i==this.projet.getNbBalise()?5:2));
 			c.gridwidth = 2;
 			contenu1.add(balise, c);
 			
-			JButton btnZone1 = new JButton("Seg.1");
+			// Les segments
+			JButton btnZone1 = new JButton("1");
 		    c = new GridBagConstraints();
 		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 2*(i-1) + this.projet.getNbMemo() + this.projet.getNbBalise();
-			c.gridy = 1;
+			c.gridy = 2;
+		    c.gridx = 2*i-1 + this.projet.getNbMemo();
+		    c.insets = new Insets(0,(i==0?5:2),0,2);
+			c.gridwidth = 1;
 			contenu1.add(btnZone1, c);
-			
-			JButton btnZone2 = new JButton("Seg.2");
-		    c = new GridBagConstraints();
-		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 2*(i-1) + 1 + this.projet.getNbMemo() + this.projet.getNbBalise();
-			c.gridy = 1;
-			contenu1.add(btnZone2, c);
 
 			// TODO centrer
 			JList<String> zone1 = new JList<>(data1);
@@ -150,12 +145,33 @@ public class FicheScore extends JInternalFrame {
 			zone1.setBackground(Color.LIGHT_GRAY);
 			zone1.setSelectedIndex(-1);
 			this.lesZones.add(zone1);
-
+			
+		    c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridy = 3;
+		    c.gridx = 2*i-1 + this.projet.getNbMemo();
+		    c.insets = new Insets(0,(i==0?5:2),0,2);
+			contenu1.add(zone1, c);
+			c.gridx++;
+			
+			JButton btnZone2 = new JButton("2");
+		    c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridy = 2;
+		    c.gridx = 2*i + this.projet.getNbMemo();
+		    c.insets = new Insets(0,2,0,(i==this.projet.getNbBalise()?5:2));
+			contenu1.add(btnZone2, c);
+			
 			JList<String> zone2 = new JList<>(data1);
 			zone2.setForeground(Color.BLUE);
 			zone2.setBackground(Color.LIGHT_GRAY);
 			zone2.setSelectedIndex(-1);
 			this.lesZones.add(zone2);
+			
+		    c.fill = GridBagConstraints.HORIZONTAL;
+			c.gridy = 3;
+		    c.gridx = 2*i + this.projet.getNbMemo();
+		    c.insets = new Insets(0,2,0,(i==this.projet.getNbBalise()?5:2));
+			contenu1.add(zone2, c);
+			c.gridx++;
 			
 			// modifier l'action du bouton
 			btnZone1.addActionListener(new ActionDeselectionner(zone1, this.projet));
@@ -169,74 +185,58 @@ public class FicheScore extends JInternalFrame {
 			btnZone2.setBorderPainted(false);
 			btnZone2.setContentAreaFilled(false);
 			btnZone2.setBackground(Color.LIGHT_GRAY);
-			
-		    c = new GridBagConstraints();
-		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 2*(i-1) + this.projet.getNbMemo() + this.projet.getNbBalise();
-			c.gridy = 2;
-			c.ipadx = 10;  
-			contenu1.add(zone1, c);
-			
-		    c = new GridBagConstraints();
-		    c.fill = GridBagConstraints.HORIZONTAL;
-			c.gridx = 2*(i-1) + 1 + this.projet.getNbMemo() + this.projet.getNbBalise();
-			c.gridy = 2;
-			c.ipadx = 10;  
-			contenu1.add(zone2, c);
 		}
 
-	    GridBagConstraints c = new GridBagConstraints();
+	    JLabel num = new JLabel("N° Circuit");
+	    c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 0;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2 + 1;
+	    c.insets = new Insets(0,5,0,5);
+		contenu1.add(num, c);
+		
+		numCircuit = new JList<>(data3);
+		numCircuit.setForeground(Color.BLUE);
+		numCircuit.setBackground(Color.LIGHT_GRAY);
+		numCircuit.setSelectedIndex(-1);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridy = 1;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2 + 1;
+	    c.insets = new Insets(0,5,0,5);
+		contenu1.add(numCircuit, c);
+		c.gridx++;
+		
 	    JLabel orien = new JLabel("Orientation");
 	    c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment());
-		c.gridy = 0;
-		c.gridheight = 2;
+		c.gridy = 2;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2+1;
+	    c.insets = new Insets(0,5,0,5);
 		contenu1.add(orien, c);
 		
 		JPanel panel = new JPanel(new GridLayout(this.projet.getNbOrientation(), 2));
 		for (int i = 1; i <= this.projet.getNbOrientation(); i++) {
-			JLabel label = new JLabel("    " + i);
+			JLabel label = new JLabel("" + i);
 			panel.add(label);
-			JTextArea area = new JTextArea();
+			JTextField area = new JTextField(3);
 			panel.add(area);
+			area.setBackground(Color.LIGHT_GRAY);
 			label.setLabelFor(area);
 			this.lesOrientation.add(area);
 		}
 		
-	    c = new GridBagConstraints();
-	    c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment());
-		c.gridy = 2;
-		c.ipadx = 10;
+		c.gridy = 3;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2+1;
+	    c.insets = new Insets(0,5,0,5);
 		contenu1.add(panel, c);
 		
-	    c = new GridBagConstraints();
-	    JLabel num = new JLabel("N° Circuit");
-	    c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment())+1;
-		c.gridy = 0;
-		c.gridheight = 2;
-		contenu1.add(num, c);
-		
-		numCircuit = new JTextArea();
-	    c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*(1+this.projet.getNbSegment())+1;
-		c.gridy = 2;
-		c.ipadx = 10;
-		contenu1.add(numCircuit, c);
-		
-		JLabel trousse = new JLabel("         Trousse");
+		JLabel trousse = new JLabel("Trousse mécanique");
 		c = new GridBagConstraints();
 		c.fill = GridBagConstraints.HORIZONTAL;
-		c.gridx = this.projet.getNbMemo() + (1+this.projet.getNbSegment())*this.projet.getNbBalise() + 2;
 		c.gridy = 0;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2 + 2;
+	    c.insets = new Insets(0,5,0,5);
 		contenu1.add(trousse, c);
 
 		JPanel contenu2 = new JPanel(new GridLayout(4,1));
-		JLabel trousse2 = new JLabel("       mécanique");
-		c.gridy++;
-		contenu1.add(trousse2, c);
-		
 		chaine = new JCheckBox("Dérive chaîne");
 		contenu2.add(chaine);
 		
@@ -249,12 +249,20 @@ public class FicheScore extends JInternalFrame {
 		reparation = new JCheckBox("Réparation");
 		contenu2.add(reparation);
 
-		c.gridy++;
+		c.gridy = 1;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2 + 2;
+	    c.insets = new Insets(0,5,0,5);
 		contenu1.add(contenu2, c);
 		
 		JButton bValider = new JButton("Valider");
 		bValider.addActionListener(new ActionValiderScore(this));
-		contenu3.add(bValider);
+		c.fill = GridBagConstraints.HORIZONTAL;
+	    c.gridy = 3;
+	    c.gridx = this.projet.getNbMemo() + this.projet.getNbBalise()*2 + 2;
+	    c.insets = new Insets(0,5,0,5);
+	    c.gridwidth = 1;
+		contenu1.add(bValider, c);
+		
 
 		this.projet.getFp().getDesktop().add(this);
 		//this.setSize(new Dimension(50 * (this.lesMemos.size() + this.lesBalises.size() * 2), 300));
@@ -283,6 +291,9 @@ public class FicheScore extends JInternalFrame {
 		for (int i = 0; i < this.lesOrientation.size(); i++)
 			this.lesOrientation.get(i).setText(this.licencie.getLesReponses().get("orientation" + i));
 	
+		this.numCircuit.setSelectedIndex(this.licencie.getNumParours());
+		
+		
 		// La trousse de réparation
 		if(this.licencie.getLesReponses().get("clefs").equals("O"))
 			this.clefs.setSelected(true);
@@ -311,7 +322,9 @@ public class FicheScore extends JInternalFrame {
 	 * @param list      La zone de la réponse sur la fiche
 	 */
 	public void invaliderReponse(String reponse, JList<String> list) {
-		if (reponse.equals("XX"))
+		if (reponse.equals("SR"))
+			list.setSelectedIndex(list.getMaxSelectionIndex()-1);
+		if (reponse.equals("NT"))
 			list.setSelectedIndex(list.getMaxSelectionIndex());
 		else if (reponse.equals(""))
 			list.setSelectedIndex(-1);
@@ -329,7 +342,7 @@ public class FicheScore extends JInternalFrame {
 			list.setSelectedIndex(0);
 		else if (resultat.equals("N"))
 			list.setSelectedIndex(1);
-		else if (resultat.equals("XX"))
+		else if (resultat.equals("NT"))
 			list.setSelectedIndex(2);
 		else
 			list.setSelectedIndex(-1);
@@ -355,6 +368,8 @@ public class FicheScore extends JInternalFrame {
 			for (int i = 0; i < this.lesOrientation.size(); i++) {
 				reponses.put("orientation" + i, this.lesOrientation.get(i).getText());
 			}
+			
+			this.licencie.setNumParours(this.numCircuit.getSelectedIndex()-1);
 			
 			if (this.chaine.isSelected())
 				reponses.put("chaine", "O");
@@ -428,6 +443,14 @@ public class FicheScore extends JInternalFrame {
 	 */
 	public Boolean verif() {
 		Boolean ok = true;
+		// Regarder si le numélro de parcours est renseigné
+		if (numCircuit.getSelectedIndex() == -1) {
+			ok = false;
+			numCircuit.setBackground(Color.RED);
+		} else {
+			numCircuit.setBackground(Color.LIGHT_GRAY);
+		}
+		
 		// regarger si un mémo est rempli
 		Boolean memo = false;
 		for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {

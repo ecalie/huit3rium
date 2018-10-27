@@ -63,7 +63,7 @@ public class FicheReponse extends JInternalFrame {
 		contenu2.setBackground(Color.DARK_GRAY);
 		contenu3.setBackground(Color.DARK_GRAY);
 
-		String[] data2 = {"A", "B", "C", "D"};
+		String[] data2 = {"A", "B", "C"};
 
 		// Initialiser les en-têtes
 		for (int i = 1 ; i <= this.projet.getNbMemo() ; i++) {
@@ -107,10 +107,10 @@ public class FicheReponse extends JInternalFrame {
 		}
 
 		// orientation
-		for (int i = 0 ; i < this.projet.getNbCircuit() ; i++) {
+		for (int i = 1 ; i <= this.projet.getNbCircuit() ; i++) {
 			JPanel panel = new JPanel(new GridLayout(this.projet.getNbOrientation(), 2));
 			panel.setBackground(Color.DARK_GRAY);
-			for (int j = 0 ; j < this.projet.getNbOrientation() ; j++) {
+			for (int j = 1 ; j <= this.projet.getNbOrientation() ; j++) {
 				JTextArea area = new JTextArea();
 				JLabel label = new JLabel("     " + j);
 				label.setLabelFor(area);
@@ -118,7 +118,7 @@ public class FicheReponse extends JInternalFrame {
 				label.setForeground(Color.LIGHT_GRAY);
 				panel.add(label);
 				panel.add(area);
-				this.lesOrientations.put("orientation" + i + "_" + j, area);
+				this.lesOrientations.put("orientation" + (i-1) + "_" + (j-1), area);
 			}
 			contenu2.add(panel);
 		}

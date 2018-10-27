@@ -88,15 +88,19 @@ public class Jeune {
 	 * @param fiche  La fiche répertoriant les caractéristiques du jeune
 	 * @param fiche2 La fiche répertoriant les scores du jeune au critérium
 	 */
-	public Jeune(FicheJeune fiche, FicheScore fiche2) {
-		this.nom = fiche.getNom2().getText();
-		this.prenom = fiche.getPrenom2().getText();
-		this.club = Projet.toClub(fiche.getClub2().getSelectedItem().toString());
-		this.numero = Integer.parseInt(fiche.getNumero2().getText());
-		this.fiche = fiche;
-		this.fiche2 = fiche2;
-		this.fini = false;
-		this.lesReponses = new HashMap<>();
+	public Jeune(FicheJeune fiche, FicheScore fiche2) throws MauvaisFormatNumeroException {
+		try {
+			this.nom = fiche.getNom2().getText();
+			this.prenom = fiche.getPrenom2().getText();
+			this.club = Projet.toClub(fiche.getClub2().getSelectedItem().toString());
+			this.numero = Integer.parseInt(fiche.getNumero2().getText());
+			this.fiche = fiche;
+			this.fiche2 = fiche2;
+			this.fini = false;
+			this.lesReponses = new HashMap<>();
+		} catch (NumberFormatException e) {
+			throw new MauvaisFormatNumeroException();
+		}
 	}
 
 	////////////////////////
@@ -337,20 +341,17 @@ public class Jeune {
 		// réinitialiser le score
 		this.points = 0;
 		
-		System.out.println(lesReponses);
 		// ajouter les points pour chaque balise
 		for (int i = 0 ; i < nbBalises ; i++) {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))
 				this.points += points.get("baliseCorrecte");
 
-			if (!this.lesReponses.get("balise" + i).equals("XX"))
+			if (!this.lesReponses.get("balise" + i).equals("SR"))
 				this.points += points.get("baliseTrouvee");
 
-			for (int ii = 1 ; ii <= nbSegments ; ii++) {
-				System.out.println(i + "_" + ii);
+			for (int ii = 1 ; ii <= nbSegments ; ii++)
 				if (this.lesReponses.get("maniabilite" + i + "_" + ii).equals("O"))
 					this.points += points.get("maniabilite");
-			}
 		}
 
 		// ajouter les points pour chaque mémo
@@ -358,14 +359,14 @@ public class Jeune {
 			if (reponses.get("memo" + i).equals(this.lesReponses.get("memo" + i)))
 				this.points += points.get("memoCorrect");
 
-			if (!this.lesReponses.get("memo" + i).equals("XX")) 
+			if (!this.lesReponses.get("memo" + i).equals("SR")) 
 				this.points += points.get("memoTrouve");
 		}		
 		
 		int nb = nbMemos -1; 
 		if (reponses.get("memo" + nb).equals(this.lesReponses.get("memo" + nb)))
 			this.points += points.get("mecanique");
-		if (!this.lesReponses.get("memo" + nb).equals("XX")) 
+		if (!this.lesReponses.get("memo" + nb).equals("SR")) 
 			this.points += points.get("memoTrouve");
 		
 		
@@ -385,7 +386,6 @@ public class Jeune {
 		if (this.lesReponses.get("reparation").equals("O"))
 			this.points += points.get("reparation");
 		
-		System.out.println(this.points);
 		// Appliquer le facteur multiplicatif
 		int pts = 15;
 		int fact = 1;
@@ -393,8 +393,6 @@ public class Jeune {
 			fact++;
 			pts += 5;
 		}
-		
-		System.out.println(fact);
 		
 		this.points *= fact;
 	}

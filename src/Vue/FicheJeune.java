@@ -16,11 +16,14 @@ import Controleur.Ajout.ActionAnnulerAjout;
 import Controleur.Ajout.ActionValiderAjout;
 import Modele.Club;
 import Modele.Jeune;
+import Modele.MauvaisFormatDateException;
+import Modele.MauvaisFormatNumeroException;
 import Modele.Niveau;
 import Modele.Projet;
 
 public class FicheJeune extends JInternalFrame {
 
+    private JLabel labelErreur;
     private JTextField nom2;
     private JTextField prenom2;
     private JComboBox<String> club2;
@@ -113,6 +116,9 @@ public class FicheJeune extends JInternalFrame {
         panel3.add(valider);
         panel3.add(annuler);
 
+        this.labelErreur = new JLabel("");
+        labelErreur.setForeground(Color.RED);
+        this.add(labelErreur, BorderLayout.NORTH);
         this.getContentPane().add(panel1, BorderLayout.WEST);
         this.getContentPane().add(panel2, BorderLayout.EAST);
         this.getContentPane().add(panel3, BorderLayout.SOUTH);
@@ -172,23 +178,53 @@ public class FicheJeune extends JInternalFrame {
      * Mettre à jour le jeune asocié en fonction de la fiche
      **/
     public void validerModif() {
-    	if (verif()) {
-        	if (licencie == null)
-        		this.licencie = new Jeune(this, null);
-	        this.licencie.setNom(this.getNom2().getText());
-	        this.licencie.setPrenom(this.getPrenom2().getText());
-	        this.licencie.setClub(Projet.toClub(this.getClub2().getSelectedItem().toString()));
-	        this.licencie.setSexe(this.getSexe2().getSelectedItem().toString().charAt(0));
-	        this.licencie.setNaissance(Projet.convertir(this.naissance2.getText()));
-	        this.licencie.setNumLicence(Integer.parseInt(this.licence2.getText()));
-	        this.licencie.setNumero(Integer.parseInt(this.numero2.getText()));
-	        this.licencie.setNiveau(Niveau.get(this.getniveau2().getSelectedItem().toString()));
-	
-	        this.setTitle(this.licencie.getClub().toString() + this.licencie.getNumero());
-	        this.projet.ajouterInscrit(this.licencie);
-	        this.hide();
-	        this.projet.affichage();
-    	}
+    	this.labelErreur.setText("");
+        try {
+            if (verif()) {
+                if (licencie == null)
+                    this.licencie = new Jeune(this, new FicheScore(this.projet));
+
+                this.licencie.setNom(this.getNom2().getText());
+                this.licencie.setPrenom(this.getPrenom2().getText());
+                this.licencie.setClub(Projet.toClub(this.getClub2().getSelectedItem().toString()));
+                this.licencie.setSexe(this.getSexe2().getSelectedItem().toString().charAt(0));
+                this.licencie.setNaissance(Projet.convertir(this.naissance2.getText()));
+                try {
+                	this.licencie.setNumLicence(Integer.parseInt(this.licence2.getText()));
+                } catch (NumberFormatException e) {
+                	this.licence2.setBackground(Color.RED);
+                    this.labelErreur.setText("Le numéro de lience doit être un nombre");
+                    this.validate();      
+                    return;
+                }
+                
+                try {
+                	this.licencie.setNumero(Integer.parseInt(this.numero2.getText()));
+                } catch (NumberFormatException e) {
+                	this.numero2.setBackground(Color.RED);
+                    this.labelErreur.setText("Le numéro doit être un nombre (sans la lettre du club)");
+                    this.validate(); 
+                    return;
+                }
+                
+                this.licencie.setNiveau(Niveau.get(this.getniveau2().getSelectedItem().toString()));
+
+                this.licencie.getFiche2().setTitle(this.licencie.toString());
+                this.licencie.getFiche2().setLicencie(this.licencie);
+                this.setTitle(this.licencie.getClub().toString() + this.licencie.getNumero());
+                this.projet.ajouterInscrit(this.licencie);
+                this.hide();
+                this.projet.affichage();
+            }
+        } catch(MauvaisFormatDateException e) {
+            this.labelErreur.setText(e.getMessage());
+            this.naissance2.setBackground(Color.RED);
+            this.validate();
+        } catch (MauvaisFormatNumeroException ee) {
+            this.labelErreur.setText(ee.getMessage());
+            this.numero2.setBackground(Color.RED);
+            this.validate();        	
+        }
     }
     
     /**
