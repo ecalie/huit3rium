@@ -17,6 +17,7 @@ import javax.swing.JTextArea;
 
 import Controleur.Reponse.ActionAnnulerReponse;
 import Controleur.Reponse.ActionValiderReponse;
+import Modele.Niveau;
 import Modele.Projet;
 
 /**
@@ -28,14 +29,15 @@ public class FicheReponse extends JInternalFrame {
 
 	private ArrayList<JList<String>> lesMemos;
 	private ArrayList<JList<String>> lesBalises;
-	// TODO
 	private HashMap<String,JTextArea> lesOrientations;
-
-	public FicheReponse(Projet projet) {
+	private Niveau niveau;
+	
+	public FicheReponse(Projet projet, Niveau niveau) {
 		// Créer la fenetre
-		super("Enregister les réponses", true, false, false, true);
+		super("Enregister les réponses du niveau " + niveau, true, false, false, true);
 
 		this.projet = projet;
+		this.niveau = niveau;
 
 		// Calcule le nombre de colonnes
 		int nbCol = this.projet.getNbBalise() + this.projet.getNbMemo();
@@ -118,7 +120,7 @@ public class FicheReponse extends JInternalFrame {
 				label.setForeground(Color.LIGHT_GRAY);
 				panel.add(label);
 				panel.add(area);
-				this.lesOrientations.put("orientation" + (i-1) + "_" + (j-1), area);
+				this.lesOrientations.put("orientation" + i + "_" + j, area);
 			}
 			contenu2.add(panel);
 		}
@@ -146,21 +148,21 @@ public class FicheReponse extends JInternalFrame {
 		try{
 			for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
 				
+				System.out.println(niveau + "  " + i);
 				this.lesMemos.get(i).setSelectedIndex(Projet.alphabet.get(
-						this.projet.getReponses().get("memo" + i)));
+						this.projet.getReponses().get(niveau).get("memo" + i)));
 			}
 			for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
 				this.lesBalises.get(i).setSelectedIndex(Projet.alphabet.get(
-						this.projet.getReponses().get("balise" + i)));
+						this.projet.getReponses().get(niveau).get("balise" + i)));
 			}
 			for (String key : this.lesOrientations.keySet())
-				this.lesOrientations.get(key).setText(this.projet.getReponses().get(key));
+				this.lesOrientations.get(key).setText(this.projet.getReponses().get(niveau).get(key));
 		} catch (NullPointerException e) {
-			this.hide();
+			e.printStackTrace();
 		}
 		this.hide();
 	}
-
 
 	/**
 	 * Modifier les réponses aux questions.
@@ -206,17 +208,17 @@ public class FicheReponse extends JInternalFrame {
 		if (continuer) {
 			// Mettre à jour les réponses aux questions des mémos orientation
 			for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
-				this.projet.getReponses().put("memo" + i, lesMemos.get(i).getSelectedValue());
+				this.projet.getReponses().get(niveau).put("memo" + i, lesMemos.get(i).getSelectedValue());
 			}
 
 			// Mettre à jour les réponses aux questions des balises
 			for (int i = 0 ; i < this.projet.getNbBalise() ; i++) {
-				this.projet.getReponses().put("balise" + i, lesBalises.get(i).getSelectedValue());
+				this.projet.getReponses().get(niveau).put("balise" + i, lesBalises.get(i).getSelectedValue());
 			}
 
 			// Mettre à jour les réponses aux balies d'orientations
 			for (String key : this.lesOrientations.keySet()) {
-				this.projet.getReponses().put(key, this.lesOrientations.get(key).getText());
+				this.projet.getReponses().get(niveau).put(key, this.lesOrientations.get(key).getText());
 			}
 
 			// Signaler une modification
@@ -224,4 +226,5 @@ public class FicheReponse extends JInternalFrame {
 			this.hide();
 		}
 	}
+	
 }

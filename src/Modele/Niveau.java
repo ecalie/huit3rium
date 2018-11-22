@@ -4,15 +4,17 @@ package Modele;
  * Created by Aurélie on 19/08/2017.
  */
 public enum Niveau {
-    V(""),
-    B("CHEMIN / MARCASSINS"),
-    R("PISTE / RENARDS"),
-    N("SENTIER / COYOTES");
+    V("", "vert"),
+    B("CHEMIN / MARCASSINS", "bleu"),
+    R("PISTE / RENARDS", "rouge"),
+    N("SENTIER / COYOTES", "noir");
 
     private String nom;
+    private String couleur;
 
-    Niveau(String couleur) {
-        this.nom = couleur;
+    Niveau(String nom, String couleur) {
+        this.nom = nom;
+        this.couleur = couleur;
     }
 
     public String getNom() {
@@ -41,4 +43,12 @@ public enum Niveau {
     	}
 		return null;
     }
+
+	public String getCouleur() {
+		return couleur;
+	}
+
+	public void setCouleur(String couleur) {
+		this.couleur = couleur;
+	}
 }

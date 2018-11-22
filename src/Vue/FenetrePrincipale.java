@@ -133,7 +133,7 @@ public class FenetrePrincipale extends JFrame {
 		/* Afficher la fenetre */
 		this.setExtendedState(this.MAXIMIZED_BOTH);
 		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	////////////////////////

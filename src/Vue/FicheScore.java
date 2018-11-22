@@ -61,7 +61,9 @@ public class FicheScore extends JInternalFrame {
 
 		String[] data1 = {"O", "N", "NT"};
 		String[] data2 = {"A", "B", "C", "SR", "NT"};
-		Integer[] data3 = {1, 2, 3, 4};
+		Integer[] data3 = new Integer[this.projet.getNbCircuit()];
+		for (int i = 1 ; i <= this.projet.getNbCircuit() ; i++)
+			data3[i-1] = i;
 
 	    GridBagConstraints c = new GridBagConstraints();
 		for (int i = 1; i <= this.projet.getNbMemo(); i++) {
@@ -291,7 +293,7 @@ public class FicheScore extends JInternalFrame {
 		for (int i = 0; i < this.lesOrientation.size(); i++)
 			this.lesOrientation.get(i).setText(this.licencie.getLesReponses().get("orientation" + i));
 	
-		this.numCircuit.setSelectedIndex(this.licencie.getNumParours());
+		this.numCircuit.setSelectedIndex(this.licencie.getNumParours()-1);
 		
 		
 		// La trousse de réparation
@@ -323,9 +325,9 @@ public class FicheScore extends JInternalFrame {
 	 */
 	public void invaliderReponse(String reponse, JList<String> list) {
 		if (reponse.equals("SR"))
-			list.setSelectedIndex(list.getMaxSelectionIndex()-1);
-		if (reponse.equals("NT"))
-			list.setSelectedIndex(list.getMaxSelectionIndex());
+			list.setSelectedIndex(3);
+		else if (reponse.equals("NT"))
+			list.setSelectedIndex(4);
 		else if (reponse.equals(""))
 			list.setSelectedIndex(-1);
 		else
@@ -369,7 +371,7 @@ public class FicheScore extends JInternalFrame {
 				reponses.put("orientation" + i, this.lesOrientation.get(i).getText());
 			}
 			
-			this.licencie.setNumParours(this.numCircuit.getSelectedIndex()-1);
+			this.licencie.setNumParours(this.numCircuit.getSelectedIndex()+1);
 			
 			if (this.chaine.isSelected())
 				reponses.put("chaine", "O");
@@ -427,7 +429,7 @@ public class FicheScore extends JInternalFrame {
 			this.projet.getFp().repaint();
 		}
 	}
-
+		
 	/**
 	 * Modifier le licencié associé à la fiche.
 	 * @param licencie Le nouveau licencié associé à la fiche

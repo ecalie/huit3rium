@@ -23,6 +23,7 @@ public class FicheParam extends JInternalFrame {
 	private JTextField nbBalises;
 	private JTextField nbMemos;
 	private JTextField nbOrientation;
+	private JTextField nbCircuit;
 	private Projet projet;
 
 	//////////////////
@@ -39,7 +40,7 @@ public class FicheParam extends JInternalFrame {
 		this.getContentPane().setLayout(new BorderLayout());
 
 		// Créer des panels pour les boutons et les paramètres
-		JPanel panel1 = new JPanel(new GridLayout(3,2));
+		JPanel panel1 = new JPanel(new GridLayout(4,2));
 		JPanel panel2 = new JPanel(new FlowLayout());
 
 		// Modifier la couleur de fond de la fenêtre
@@ -72,10 +73,19 @@ public class FicheParam extends JInternalFrame {
 		orientation.setLabelFor(nbOrientation);
 		panel1.add(orientation);
 		panel1.add(nbOrientation);
+
+		// ajouter un champs pour le nombre de circuits d'orientation
+		JLabel circuit = new JLabel("Circuit", JLabel.CENTER);
+		circuit.setForeground(Color.LIGHT_GRAY);
+		nbCircuit = new JTextField(3);
+		nbCircuit.setBackground(Color.LIGHT_GRAY);
+		circuit.setLabelFor(nbCircuit);
+		panel1.add(circuit);
+		panel1.add(nbCircuit);
 		
 		// ajouter les boutons
 		JButton valider = new JButton("Valider");
-		valider.addActionListener(new ActionValiderParam(this));
+		valider.addActionListener(new ActionValiderParam(this, this.projet));
 		valider.setBackground(Color.LIGHT_GRAY);
 		JButton annuler = new JButton("Annuler");
 		annuler.addActionListener(new ActionAnnulerParam(this));
@@ -107,6 +117,10 @@ public class FicheParam extends JInternalFrame {
 	public JTextField getNbOrientation() {
 		return nbOrientation;
 	}
+
+	public JTextField getNbCircuit() {
+		return nbCircuit;
+	}
 	
 	public Projet getProjet() {
 		return projet;
@@ -128,6 +142,10 @@ public class FicheParam extends JInternalFrame {
 		this.nbOrientation.setText(nbOrientation);
 	}
 
+	public void setNbCircuit(String nbCircuit) {
+		this.nbCircuit.setText(nbCircuit);
+	}
+
 	////////////////////////
 	///METHODES PUBLIQUES///
 	////////////////////////
@@ -139,6 +157,7 @@ public class FicheParam extends JInternalFrame {
 		this.setNbBalises("" + projet.getNbBalise());
 		this.setNbMemos("" + projet.getNbMemo());
 		this.setNbOrientation("" + projet.getNbOrientation());
+		this.setNbCircuit("" + projet.getNbCircuit());
 		this.hide();
 	}
 
@@ -150,7 +169,7 @@ public class FicheParam extends JInternalFrame {
 		Boolean stop = false;
 
 		// On vérifie que le formulaire est bien rempli
-		// Si une case est vide
+		// 		-Si une case est vide
 		if (this.getNbBalises().getText().equals("")) {
 			this.getNbBalises().setBackground(Color.RED);
 			stop = true;
@@ -163,8 +182,12 @@ public class FicheParam extends JInternalFrame {
 			this.getNbOrientation().setBackground(Color.RED);
 			stop = true;
 		}
+		if (this.getNbCircuit().getText().equals("")) {
+			this.getNbCircuit().setBackground(Color.RED);
+			stop = true;
+		}
 
-		// on vérifie que c'est un entier
+		// 		-on vérifie que c'est un entier
 		try {
 			Integer.parseInt(this.getNbBalises().getText());
 			this.getNbBalises().setBackground(Color.LIGHT_GRAY);
@@ -189,17 +212,24 @@ public class FicheParam extends JInternalFrame {
 			stop = true;
 		}
 
+		try {
+			Integer.parseInt(this.getNbCircuit().getText());
+			this.getNbCircuit().setBackground(Color.LIGHT_GRAY);
+		} catch(NumberFormatException e) {
+			this.getNbCircuit().setBackground(Color.RED);
+			stop = true;
+		}
+
 		// Si pas de problème, en enregistre
 		if (!stop) {
 			this.projet.setNbBalise(Integer.parseInt(this.getNbBalises().getText()));
 			this.projet.setNbMemo(Integer.parseInt(this.getNbMemos().getText()));
 			this.projet.setNbOrientation(Integer.parseInt(this.getNbOrientation().getText()));
+			this.projet.setNbCircuit(Integer.parseInt(this.getNbCircuit().getText()));
 
 			// Signaler une modification
 			this.projet.setCritEnreg(false);
-
-			// Signaler que les fiches ne sont plus conformes aux paramètres
-			this.projet.setConforme();
+			
 			this.hide();
 		}
 	}

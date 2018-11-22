@@ -346,7 +346,7 @@ public class Jeune {
 			if (reponses.get("balise" + i).equals(this.lesReponses.get("balise" + i)))
 				this.points += points.get("baliseCorrecte");
 
-			if (!this.lesReponses.get("balise" + i).equals("SR"))
+			if (!this.lesReponses.get("balise" + i).equals("NT"))
 				this.points += points.get("baliseTrouvee");
 
 			for (int ii = 1 ; ii <= nbSegments ; ii++)
@@ -359,21 +359,27 @@ public class Jeune {
 			if (reponses.get("memo" + i).equals(this.lesReponses.get("memo" + i)))
 				this.points += points.get("memoCorrect");
 
-			if (!this.lesReponses.get("memo" + i).equals("SR")) 
+			if (!this.lesReponses.get("memo" + i).equals("NT")) 
 				this.points += points.get("memoTrouve");
 		}		
 		
 		int nb = nbMemos -1; 
 		if (reponses.get("memo" + nb).equals(this.lesReponses.get("memo" + nb)))
 			this.points += points.get("mecanique");
-		if (!this.lesReponses.get("memo" + nb).equals("SR")) 
+		if (!this.lesReponses.get("memo" + nb).equals("NT")) 
 			this.points += points.get("memoTrouve");
+		
 		
 		
 		// ajouter les points du parcours d'orientation
 		for (int i = 0 ; i < nbOrientation ; i++) {
-			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + i)))
+			System.out.println(reponses.get("orientation" + this.numParours + "_" + i));
+			System.out.println(lesReponses.get("orientation" + i));
+			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + i))) {
 				this.points += points.get("orientation");
+				System.out.println("point orientation");
+			}
+			
 		}
 		
 		// ajouter les points de la trousse mécanique

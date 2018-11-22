@@ -19,13 +19,6 @@ public class ActionModifierScore implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-    	if (!this.projet.getConforme()) {
-    		FicheScore fiche = new FicheScore(this.projet);
-    		this.licencie.setFiche2(fiche);
-    		fiche.setLicencie(this.licencie);
-    		fiche.setTitle(this.licencie.toString());
-    		this.projet.setConforme();
-    	}
         this.licencie.getFiche2().setVisible(true);
     }
 }
