@@ -45,24 +45,31 @@ public class FicheReponse extends JInternalFrame {
 		// Mettre en forme la fenêtre
 		this.getContentPane().setLayout(new BorderLayout());
 
-		// la fenêtre
-		JPanel contenu = new JPanel(new BorderLayout());
-		// l'en-tête
-		JPanel contenu1 = new JPanel(new GridLayout(1, nbCol));
-		contenu.add(contenu1, BorderLayout.NORTH);
-		// les réponses
-		JPanel contenu2 = new JPanel(new GridLayout(1, nbCol));
-		contenu.add(contenu2, BorderLayout.CENTER);
+		JPanel memobalise = new JPanel(new BorderLayout());
+		JPanel memobaliseTete = new JPanel(new GridLayout(1, nbCol));
+		memobalise.add(memobaliseTete, BorderLayout.NORTH);
+		JPanel memobaliseContenu = new JPanel(new GridLayout(1, nbCol));
+		memobalise.add(memobaliseContenu, BorderLayout.CENTER);
 
-		this.getContentPane().add(contenu, BorderLayout.CENTER);
+		
+		JPanel orientation = new JPanel(new BorderLayout());
+		JPanel orientationTete = new JPanel(new GridLayout(1, nbCol));
+		orientation.add(orientationTete, BorderLayout.NORTH);
+		JPanel orientationContenu = new JPanel(new GridLayout(1, nbCol));
+		orientation.add(orientationContenu, BorderLayout.CENTER);
+
+		JPanel reponses = new JPanel(new GridLayout(2,1));
+		reponses.add(memobalise);
+		reponses.add(orientation);
+		this.getContentPane().add(reponses, BorderLayout.CENTER);
 
 		// le bouton valider
 		JPanel contenu3 = new JPanel(new FlowLayout());
 		this.getContentPane().add(contenu3, BorderLayout.SOUTH);
 
 		// Modifier les couleurs de fonds
-		contenu1.setBackground(Color.DARK_GRAY);
-		contenu2.setBackground(Color.DARK_GRAY);
+		memobalise.setBackground(Color.DARK_GRAY);
+		orientation.setBackground(Color.DARK_GRAY);
 		contenu3.setBackground(Color.DARK_GRAY);
 
 		String[] data2 = {"A", "B", "C"};
@@ -70,18 +77,18 @@ public class FicheReponse extends JInternalFrame {
 		// Initialiser les en-têtes
 		for (int i = 1 ; i <= this.projet.getNbMemo() ; i++) {
 			JLabel memo = new JLabel("Memo " + i);
-			memo.setForeground(Color.LIGHT_GRAY);
-			contenu1.add(memo);
+			memo.setForeground(Color.DARK_GRAY);
+			memobaliseTete.add(memo);
 		}
 		for (int i = 1 ; i <= this.projet.getNbBalise() ; i++) {
 			JLabel balise = new JLabel("Balise " + i);
-			balise.setForeground(Color.LIGHT_GRAY);
-			contenu1.add(balise);
+			balise.setForeground(Color.DARK_GRAY);
+			memobaliseTete.add(balise);
 		}
 		for (int i = 1 ; i <= this.projet.getNbCircuit() ; i++) {
-			JLabel orientation = new JLabel("   Orientation " + i + "   ");
-			orientation.setForeground(Color.LIGHT_GRAY);
-			contenu1.add(orientation);
+			JLabel orien = new JLabel("   Orientation " + i + "   ");
+			orientation.setForeground(Color.DARK_GRAY);
+			orientationTete.add(orien);
 		}
 
 		this.lesMemos = new ArrayList<>();
@@ -94,7 +101,7 @@ public class FicheReponse extends JInternalFrame {
 			leMemo.setPreferredSize(new Dimension(10, 20));
 			leMemo.setForeground(Color.LIGHT_GRAY);
 			leMemo.setBackground(Color.DARK_GRAY);
-			contenu2.add(leMemo);
+			memobaliseContenu.add(leMemo);
 			this.lesMemos.add(leMemo);
 		}	
 
@@ -104,7 +111,7 @@ public class FicheReponse extends JInternalFrame {
 			laBalise.setPreferredSize(new Dimension(10, 20));
 			laBalise.setForeground(Color.LIGHT_GRAY);
 			laBalise.setBackground(Color.DARK_GRAY);
-			contenu2.add(laBalise);
+			memobaliseContenu.add(laBalise);
 			this.lesBalises.add(laBalise);
 		}
 
@@ -122,7 +129,7 @@ public class FicheReponse extends JInternalFrame {
 				panel.add(area);
 				this.lesOrientations.put("orientation" + i + "_" + j, area);
 			}
-			contenu2.add(panel);
+			orientationContenu.add(panel);
 		}
 			
 		// Ajouter le bouton valider
@@ -159,7 +166,7 @@ public class FicheReponse extends JInternalFrame {
 			for (String key : this.lesOrientations.keySet())
 				this.lesOrientations.get(key).setText(this.projet.getReponses().get(niveau).get(key));
 		} catch (NullPointerException e) {
-			e.printStackTrace();
+			// initialisation
 		}
 		this.hide();
 	}
