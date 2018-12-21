@@ -1,18 +1,22 @@
 package Modele;
 
+import java.awt.*;
+
 /**
  * Created by Aurélie on 19/08/2017.
  */
 public enum Niveau {
-    V("", "vert"),
-    B("CHEMIN / MARCASSINS", "bleu"),
-    R("PISTE / RENARDS", "rouge"),
-    N("SENTIER / COYOTES", "noir");
+    V("", "vert", new Color(14, 106, 0)),
+    B("CHEMIN / MARCASSINS", "bleu", new Color(0, 0, 110)),
+    R("PISTE / RENARDS", "rouge", new Color(175, 0, 0)),
+    N("SENTIER / COYOTES", "noir", new Color(0, 0, 0));
 
     private String nom;
     private String couleur;
+    private Color color;
 
-    Niveau(String nom, String couleur) {
+    Niveau(String nom, String couleur, Color color) {
+        this.color = color;
         this.nom = nom;
         this.couleur = couleur;
     }
@@ -23,6 +27,18 @@ public enum Niveau {
 
     public void setNom(String couleur) {
         this.nom = couleur;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public String getCouleur() {
+        return couleur;
+    }
+
+    public void setCouleur(String couleur) {
+        this.couleur = couleur;
     }
 
     @Override
@@ -43,12 +59,4 @@ public enum Niveau {
     	}
 		return null;
     }
-
-	public String getCouleur() {
-		return couleur;
-	}
-
-	public void setCouleur(String couleur) {
-		this.couleur = couleur;
-	}
 }

@@ -158,7 +158,7 @@ public class FenetrePrincipale extends JFrame {
 
 	/**
 	 * Récupérer la grille des licenciés.
-	 * @param   La grille des kicenciés
+	 * @return   La grille des kicenciés
 	 **/
 	public JPanel getGrilleLicencies() {
 		return grilleLicencies;
@@ -415,21 +415,7 @@ public class FenetrePrincipale extends JFrame {
 			JLabel label = new JLabel("   " + j.toString() + "   ", JLabel.CENTER);
 			label.setFont(new Font("Arial", Font.BOLD, 20));
 			label.setOpaque(true);
-			
-			switch(niveau) {
-			case V : 
-				label.setForeground(Color.GREEN);
-				break;
-			case B : 
-				label.setForeground(Color.BLUE);
-				break;
-			case R : 
-				label.setForeground(Color.RED);
-				break;
-			case N : 
-				label.setForeground(Color.BLACK);
-				break;
-			}
+			label.setForeground(niveau.getColor());
 			
 			this.ordreDepart.add(label);
 		}

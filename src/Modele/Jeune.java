@@ -61,7 +61,10 @@ public class Jeune {
 	 * @param prenom  Le prénom du jeune
 	 * @param club    Le club du jeune
 	 * @param numero  Le numéro de plaque du jeune
-	 * @param cate    La catégorie du jeune (couleur)
+	 * @param naissance La date de naissancce du jeune
+	 * @param numLicence Le numéro de licence du jeune
+	 * @param niveau    La catégorie du jeune (couleur)
+	 * @param sexe Le sexe du jeune
 	 * @param fiche   La fiche répertoriant les caractéristiques du jeune
 	 * @param fiche2  La fiche répertoriant les scores du jeunes au critérium
 	 */
@@ -319,12 +322,8 @@ public class Jeune {
 	public boolean inferieur(Jeune j) {
 		if (this.club == j.getClub())
 			return this.numero < j.getNumero();
-		else {
-			if (this.club.toString().compareTo(j.getClub().toString()) == 0)
-				return true;
-			else 
-				return false;
-		}
+		else
+			return (this.club.toString().compareTo(j.getClub().toString()) == 0);
 	}
 
 	/**
@@ -373,11 +372,8 @@ public class Jeune {
 		
 		// ajouter les points du parcours d'orientation
 		for (int i = 0 ; i < nbOrientation ; i++) {
-			System.out.println(reponses.get("orientation" + this.numParours + "_" + i));
-			System.out.println(lesReponses.get("orientation" + i));
-			if (reponses.get("orientation" + this.numParours + "_" + i).equals(this.lesReponses.get("orientation" + i))) {
+			if (reponses.get("orientation" + this.numParours + "_" + (i+1)).equals(this.lesReponses.get("orientation" + i))) {
 				this.points += points.get("orientation");
-				System.out.println("point orientation");
 			}
 			
 		}

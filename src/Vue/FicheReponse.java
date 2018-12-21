@@ -154,8 +154,6 @@ public class FicheReponse extends JInternalFrame {
 	public void invaliderModif() {
 		try{
 			for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {
-				
-				System.out.println(niveau + "  " + i);
 				this.lesMemos.get(i).setSelectedIndex(Projet.alphabet.get(
 						this.projet.getReponses().get(niveau).get("memo" + i)));
 			}
@@ -173,13 +171,10 @@ public class FicheReponse extends JInternalFrame {
 
 	/**
 	 * Modifier les réponses aux questions.
-	 * @param memo     La liste des réponses aux mémos sélectionnées 
-	 * @param balise   La liste des réponses aux balises sélectionnées
 	 */
 	public void validerModif() {
-
 		// vrai tant qu'il n'y a pas de problème
-		Boolean continuer = true;
+		boolean continuer = true;
 		
 		// vérifier que les mémos ont une réponse sélectionnée
 		for (int i = 0 ; i < this.projet.getNbMemo() ; i++) {

@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.SortedSet;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -18,7 +21,7 @@ public class FicheClassement extends JInternalFrame {
 	
 	/**
 	 * Construire une fiche de classement.
-	 * @param titre  Le titre de la fenêtre
+	 * @param projet  Le projetlié à la fenêtre
 	 */
 	public FicheClassement(Projet projet) {
 		super("", true, true, false, true);
@@ -30,15 +33,13 @@ public class FicheClassement extends JInternalFrame {
 
 	/**
 	 * Afficher la fenêtre interne.
-	 * @param nbInscrit    Le nombre d'inscrits
 	 * @param lesInscrits  L'ensembles des jeunes à afficher
-	 * @param couleur      La catégorie à afficher
+	 * @param niveau      La catégorie à afficher
 	 */
-	public void afficherCouleur(ArrayList<Jeune> lesInscrits, Niveau niveau) {
+	public void afficherCouleur(List<Jeune> lesInscrits, Niveau niveau) {
 		this.setTitle("Classement des " + niveau.getNom());
 		
 		this.getContentPane().setLayout(new GridBagLayout());
-
 		int i = 0;
 		int k = 0;
 		int nbPoints = 0;
@@ -48,6 +49,7 @@ public class FicheClassement extends JInternalFrame {
 				i++;
 				if (nbPoints != j.getPoints())
 					k = i;
+
 				nbPoints = j.getPoints();
 
 				// initialiser les labels
@@ -56,6 +58,11 @@ public class FicheClassement extends JInternalFrame {
 				JLabel prenom = new JLabel(j.getPrenom());
 				JLabel club = new JLabel(j.getClub().getNom());
 				JLabel points = new JLabel("" + j.getPoints());
+				classement.setForeground(Color.WHITE);
+				nom.setForeground(Color.WHITE);
+				prenom.setForeground(Color.WHITE);
+				club.setForeground(Color.WHITE);
+				points.setForeground(Color.WHITE);
 
 				// ajouter les labels
 			    GridBagConstraints c = new GridBagConstraints();
@@ -116,8 +123,8 @@ public class FicheClassement extends JInternalFrame {
 				this.add(points, c);
 
 				// modifier la couleur du fond
-				this.setBackground(Color.DARK_GRAY);
-				this.setForeground(Color.LIGHT_GRAY);
+				this.setBackground(niveau.getColor());
+				this.setForeground(new Color(255,255,255));
 			}
 		}
 		this.pack();
@@ -134,4 +141,6 @@ public class FicheClassement extends JInternalFrame {
 	public void fermer() {
 		super.dispose();
 	}
+
+
 }

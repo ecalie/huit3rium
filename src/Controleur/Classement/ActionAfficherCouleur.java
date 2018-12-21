@@ -30,13 +30,13 @@ public class ActionAfficherCouleur implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (vert.isSelected())
-			this.projet.afficherClassement(Niveau.V);
+			this.projet.classer(Niveau.V);
 		if (bleu.isSelected())
-			this.projet.afficherClassement(Niveau.B);
+			this.projet.classer(Niveau.B);
 		if (rouge.isSelected())
-			this.projet.afficherClassement(Niveau.R);
+			this.projet.classer(Niveau.R);
 		if (noir.isSelected())
-			this.projet.afficherClassement(Niveau.N);
+			this.projet.classer(Niveau.N);
 		jif.dispose();
 	}
 
