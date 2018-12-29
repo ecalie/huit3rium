@@ -1,0 +1,5 @@
+*.class
+poi-3.17/docs
+*.xml
+out
+*.html
