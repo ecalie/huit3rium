@@ -1,9 +1,9 @@
-package Controleur.bonus;
+package controleur.bonus;
 
-import Modele.Jeune;
-import Modele.Niveau;
-import Modele.Projet;
-import Vue.FicheBonus;
+import modele.Jeune;
+import modele.Niveau;
+import modele.Projet;
+import vue.FicheBonus;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,8 +31,8 @@ public class ActionDepartager implements ActionListener {
         this.places = places;
         this.index = index;
         this.projet = projet;
-        this.niveau = niveau;
         this.ficheBonus = ficheBonus;
+        this.niveau = niveau;
     }
 
     @Override

@@ -1,4 +1,4 @@
-import Vue.FenetrePrincipale;
+import vue.FenetrePrincipale;
 
 /**
  * Created by Aurélie.
