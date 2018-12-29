@@ -9,14 +9,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.SortedSet;
 
 public class ActionDepartager implements ActionListener {
 
-    private SortedSet<Jeune> inscrits;
+    private SortedSet<Jeune> classement;
     private List<Jeune> egalites;
     private List<JComboBox<String>> places;
     private int index;
@@ -24,9 +22,9 @@ public class ActionDepartager implements ActionListener {
     private Niveau niveau;
     private FicheBonus ficheBonus;
 
-    public ActionDepartager(Projet projet, SortedSet<Jeune> inscrits, List<Jeune> egalites, List<JComboBox<String>> places,
+    public ActionDepartager(Projet projet, SortedSet<Jeune> classement, List<Jeune> egalites, List<JComboBox<String>> places,
                             int index, Niveau niveau, FicheBonus ficheBonus) {
-        this.inscrits = inscrits;
+        this.classement = classement;
         this.egalites = egalites;
         this.places = places;
         this.index = index;
@@ -37,7 +35,7 @@ public class ActionDepartager implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        List<Jeune> classement = new ArrayList<>(inscrits);
+        List<Jeune> classement = new ArrayList<>(this.classement);
 
         // vérifier que tous les champs sont remplis et différents
         boolean ok = true;
@@ -63,6 +61,12 @@ public class ActionDepartager implements ActionListener {
                     if (places.get(j).getSelectedItem().equals("" + i))
                         classement.set(index + i - 1, egalites.get(j));
 
+            SortedSet<Jeune> tmp = new TreeSet<>((Jeune j1, Jeune j2) ->
+                    ((j2.getPoints() - j1.getPoints()) == 0) ? 1 : j2.getPoints() - j1.getPoints());
+
+            tmp.addAll(classement);
+
+            this.projet.getClassement().put(niveau, tmp);
             this.projet.afficherClassement(niveau, classement);
             this.ficheBonus.hide();
         }

@@ -16,13 +16,13 @@ public class FicheBonus extends JInternalFrame {
     private List<Jeune> jeunes;
     private List<JComboBox<String>> classement;
 
-    public FicheBonus(Projet projet, int score, SortedSet<Jeune> inscrits, int place, Niveau niveau) {
+    public FicheBonus(Projet projet, int score, SortedSet<Jeune> classement, int place, Niveau niveau) {
         super("Question bonus pour la place " + place, true, false, false, false);
 
         int index = 0;
         boolean trouve = false;
         this.jeunes = new ArrayList<>();
-        for (Jeune j : inscrits) {
+        for (Jeune j : classement) {
             if (j.getPoints() == score) {
                 jeunes.add(j);
                 trouve = true;
@@ -51,11 +51,11 @@ public class FicheBonus extends JInternalFrame {
             centre.add(nom);
             JComboBox<String> combo = new JComboBox<>(places);
             centre.add(combo);
-            classement.add(combo);
+            this.classement.add(combo);
         }
 
         JButton btn = new JButton("Valider");
-        btn.addActionListener(new ActionDepartager(projet, inscrits, jeunes, classement, index, niveau, this));
+        btn.addActionListener(new ActionDepartager(projet, classement, jeunes, this.classement, index, niveau, this));
         south.add(btn);
 
         this.pack();

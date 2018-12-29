@@ -28,10 +28,10 @@ public class FicheClassement extends JInternalFrame {
     /**
      * Afficher la fenêtre interne.
      *
-     * @param lesInscrits L'ensembles des jeunes à afficher
+     * @param classement L'ensembles des jeunes à afficher
      * @param niveau      La catégorie à afficher
      */
-    public void afficherCouleur(List<Jeune> lesInscrits, Niveau niveau) {
+    public void afficherCouleur(List<Jeune> classement, Niveau niveau) {
         this.setTitle("Classement des " + niveau.getNom());
 
         this.getContentPane().setLayout(new GridBagLayout());
@@ -39,7 +39,7 @@ public class FicheClassement extends JInternalFrame {
         int k = 0;
         int nbPoints = 0;
 
-        for (Jeune j : lesInscrits) {
+        for (Jeune j : classement) {
             if (j.getNiveau() == niveau) {
                 i++;
                 if (nbPoints != j.getPoints())
@@ -48,12 +48,12 @@ public class FicheClassement extends JInternalFrame {
                 nbPoints = j.getPoints();
 
                 // initialiser les labels
-                JLabel classement = new JLabel("" + k);
+                JLabel place = new JLabel("" + k);
                 JLabel nom = new JLabel(j.getNom());
                 JLabel prenom = new JLabel(j.getPrenom());
                 JLabel club = new JLabel(j.getClub().getNom());
                 JLabel points = new JLabel("" + j.getPoints());
-                classement.setForeground(Color.WHITE);
+                place.setForeground(Color.WHITE);
                 nom.setForeground(Color.WHITE);
                 prenom.setForeground(Color.WHITE);
                 club.setForeground(Color.WHITE);
@@ -64,7 +64,7 @@ public class FicheClassement extends JInternalFrame {
                 c.fill = GridBagConstraints.HORIZONTAL;
                 c.gridx = 0;
                 c.gridy = i;
-                this.add(classement, c);
+                this.add(place, c);
 
                 c = new GridBagConstraints();
                 c.fill = GridBagConstraints.HORIZONTAL;

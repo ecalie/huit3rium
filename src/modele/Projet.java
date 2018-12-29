@@ -103,7 +103,7 @@ public class Projet {
     /**
      * Classement du critérium.
      */
-    private SortedSet<Jeune> classement;
+    private HashMap<Niveau, SortedSet<Jeune>> classement;
     /**
      * Les fiches classements
      */
@@ -139,7 +139,7 @@ public class Projet {
     }
 
     ////////////////////////
-    // GETTERS ET SETTERS //
+    ///METHODES STATIQUES///
     ////////////////////////
 
     /**
@@ -321,6 +321,10 @@ public class Projet {
                 nomFic.endsWith(".xlam"));
     }
 
+    ////////////////////////
+    // GETTERS ET SETTERS //
+    ////////////////////////
+
     /**
      * Récupérer le nombre de balises.
      *
@@ -438,10 +442,6 @@ public class Projet {
         this.nbOrientation = nbOrientation;
     }
 
-    /////////////////////////////////////////
-    ///AFFICHER LES FENETRES DE PARAMETRES///
-    /////////////////////////////////////////
-
     /**
      * Récupérer le nombre de segments par zone de maniabilité.
      *
@@ -474,10 +474,6 @@ public class Projet {
         return this.nbCircuit;
     }
 
-    //////////////////////////////
-    ///METTRE A JOUR LA FENETRE///
-    //////////////////////////////
-
     /**
      * Modifier le nombre de circuits différents pour l'orientation.
      *
@@ -487,16 +483,12 @@ public class Projet {
         this.nbCircuit = c;
     }
 
-    /**
-     * Afficher la fiche pour définir les points gagnés.
-     */
-    public void afficherFicheGains() {
-        this.ficheGains.show();
+    public HashMap<Niveau, SortedSet<Jeune>> getClassement() {
+        return classement;
     }
-
-    ///////////////////////////////////////
-    ///GESTION DES LICENCIES ET INSCRITS///
-    ///////////////////////////////////////
+/////////////////////////////////////////
+    ///AFFICHER LES FENETRES DE PARAMETRES///
+    /////////////////////////////////////////
 
     /**
      * Afficher la fiche des paramètres.
@@ -508,50 +500,10 @@ public class Projet {
     }
 
     /**
-     * Afficher la fenêtre de suppression des inscrits.
+     * Afficher la fiche pour définir les points gagnés.
      */
-    public void afficherFenetreSuppression() {
-        if (this.lesInscrits.size() > 0) {
-            // Créer la fenêtre interne
-            JInternalFrame jif = new JInternalFrame("Supprimer un / des inscrit(s)");
-            this.fp.getDesktop().add(jif);
-            jif.getContentPane().setLayout(new BorderLayout());
-
-            JPanel panel1 = new JPanel(new GridLayout(20, 10));
-            JPanel panel2 = new JPanel(new FlowLayout());
-
-            // Afficher les numéros de tous les licenciés
-            ArrayList<JCheckBox> list = new ArrayList<>();
-            for (Jeune licencie : lesInscrits) {
-                JCheckBox btn = new JCheckBox(licencie.toString());
-                panel1.add(btn);
-                list.add(btn);
-            }
-
-            // Ajouter les boutons
-            JButton btnValider = new JButton("Valider");
-            btnValider.addActionListener(new ActionValiderSuppr(list, this, jif));
-
-            JButton btnAnnuler = new JButton("Annuler");
-            btnAnnuler.addActionListener(new ActionAnnulerSuppr(jif));
-
-            panel2.add(btnValider);
-            panel2.add(btnAnnuler);
-
-            // Mise en forme de la fenêtre
-            jif.getContentPane().add(panel1, BorderLayout.CENTER);
-            jif.getContentPane().add(panel2, BorderLayout.SOUTH);
-
-            // Afficher la fenêtre
-            jif.pack();
-            jif.setVisible(true);
-            jif.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        } else {
-            JOptionPane.showMessageDialog(this.fp,
-                    "Aucun licencié n'est inscrit.",
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-        }
+    public void afficherFicheGains() {
+        this.ficheGains.show();
     }
 
     /**
@@ -569,6 +521,10 @@ public class Projet {
             ficheReponse.get(niv).setVisible(true);
         }
     }
+
+    //////////////////////////////
+    ///METTRE A JOUR LA FENETRE///
+    //////////////////////////////
 
     /**
      * Afficher la grille des licenciés
@@ -622,6 +578,121 @@ public class Projet {
         this.fp.ouvrirModeAdmin();
     }
 
+    ///////////////////////////////////////
+    ///GESTION DES LICENCIES ET INSCRITS///
+    ///////////////////////////////////////
+
+    /**
+     * Ajouter un inscrit à la liste triée.
+     *
+     * @param licencie Le licencié que l'on ajoute
+     **/
+    public void ajouterInscrit(Jeune licencie) {
+        // Si le jeune est déjà dans la liste, rien à faire
+        if (this.dejaIscrit(licencie))
+            return;
+
+        // Si c'est le permier, pas besoin de trier
+        if (this.lesInscrits.size() == 0) {
+            this.lesInscrits.add(licencie);
+        } else {
+            int i;
+            for (i = 0; i < this.lesInscrits.size(); i++) {
+                // Chercher l'emplacement
+                if (licencie.inferieur(this.lesInscrits.get(i))) {
+                    // Faire une place
+                    this.decaler(this.lesInscrits, i);
+                    // Ajouter
+                    this.lesInscrits.set(i, licencie);
+                    break;
+                }
+            }
+            // Ou l'ajouter à la fin
+            if (i == this.lesInscrits.size()) {
+                this.lesInscrits.add(licencie);
+            }
+        }
+        this.critEnreg = false;
+    }
+
+    /**
+     * Supprimer un licencié.
+     *
+     * @param numero Le numéro du jeune à supprimer
+     **/
+    public void supprimerInscrit(String numero) {
+        for (Jeune licencie : this.lesInscrits) {
+            if (licencie.toString().equals(numero)) {
+                this.lesInscrits.remove(licencie);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Valider la suppression des licenciés.
+     *
+     * @param list La liste des boutons
+     * @param jif  La fiche de suppression d'une couleur donnée
+     */
+    public void validerSuppression(ArrayList<JCheckBox> list, JInternalFrame jif) {
+        for (JCheckBox checkBox : list) {
+            if (checkBox.isSelected()) {
+                this.supprimerInscrit(checkBox.getText());
+                this.critEnreg = false;
+            }
+        }
+        jif.dispose();
+        this.affichage();
+    }
+
+    /**
+     * Afficher la fenêtre de suppression des inscrits.
+     */
+    public void afficherFenetreSuppression() {
+        if (this.lesInscrits.size() > 0) {
+            // Créer la fenêtre interne
+            JInternalFrame jif = new JInternalFrame("Supprimer un / des inscrit(s)");
+            this.fp.getDesktop().add(jif);
+            jif.getContentPane().setLayout(new BorderLayout());
+
+            JPanel panel1 = new JPanel(new GridLayout(20, 10));
+            JPanel panel2 = new JPanel(new FlowLayout());
+
+            // Afficher les numéros de tous les licenciés
+            ArrayList<JCheckBox> list = new ArrayList<>();
+            for (Jeune licencie : lesInscrits) {
+                JCheckBox btn = new JCheckBox(licencie.toString());
+                panel1.add(btn);
+                list.add(btn);
+            }
+
+            // Ajouter les boutons
+            JButton btnValider = new JButton("Valider");
+            btnValider.addActionListener(new ActionValiderSuppr(list, this, jif));
+
+            JButton btnAnnuler = new JButton("Annuler");
+            btnAnnuler.addActionListener(new ActionAnnulerSuppr(jif));
+
+            panel2.add(btnValider);
+            panel2.add(btnAnnuler);
+
+            // Mise en forme de la fenêtre
+            jif.getContentPane().add(panel1, BorderLayout.CENTER);
+            jif.getContentPane().add(panel2, BorderLayout.SOUTH);
+
+            // Afficher la fenêtre
+            jif.pack();
+            jif.setVisible(true);
+            jif.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        } else {
+            JOptionPane.showMessageDialog(this.fp,
+                    "Aucun licencié n'est inscrit.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     /**
      * Afficher la grille des sélectionnés.
      *
@@ -673,91 +744,6 @@ public class Projet {
     ////////////////////
     ///ENREGSITREMENT///
     ////////////////////
-
-    /**
-     * Ajouter un inscrit à la liste triée.
-     *
-     * @param licencie Le licencié que l'on ajoute
-     **/
-    public void ajouterInscrit(Jeune licencie) {
-        // Si le jeune est déjà dans la liste, rien à faire
-        if (this.dejaIscrit(licencie))
-            return;
-
-        // Si c'est le permier, pas besoin de trier
-        if (this.lesInscrits.size() == 0) {
-            this.lesInscrits.add(licencie);
-        } else {
-            int i;
-            for (i = 0; i < this.lesInscrits.size(); i++) {
-                // Chercher l'emplacement
-                if (licencie.inferieur(this.lesInscrits.get(i))) {
-                    // Faire une place
-                    this.decaler(this.lesInscrits, i);
-                    // Ajouter
-                    this.lesInscrits.set(i, licencie);
-                    break;
-                }
-            }
-            // Ou l'ajouter à la fin
-            if (i == this.lesInscrits.size()) {
-                this.lesInscrits.add(licencie);
-            }
-        }
-        this.critEnreg = false;
-    }
-
-    ////////////////
-    ///CLASSEMENT///
-    ////////////////
-
-    /**
-     * Supprimer un licencié.
-     *
-     * @param numero Le numéro du jeune à supprimer
-     **/
-    public void supprimerInscrit(String numero) {
-        for (Jeune licencie : this.lesInscrits) {
-            if (licencie.toString().equals(numero)) {
-                this.lesInscrits.remove(licencie);
-                break;
-            }
-        }
-    }
-
-    /**
-     * Récupérer un jeune grâce à son numéro.
-     *
-     * @param numero Le numéro du jeune à récupérer
-     * @return Le jeune correspondant au numéro
-     **/
-    public Jeune recupJeune(String numero) {
-        Jeune res = null;
-        for (Jeune licencie : this.lesInscrits) {
-            if (licencie.toString().equals(numero)) {
-                res = licencie;
-                break;
-            }
-        }
-        return res;
-    }
-
-    /**
-     * Valider la suppression des licenciés.
-     *
-     * @param list La liste des boutons
-     * @param jif  La fiche de suppression d'une couleur donnée
-     */
-    public void validerSuppression(ArrayList<JCheckBox> list, JInternalFrame jif) {
-        for (JCheckBox checkBox : list) {
-            if (checkBox.isSelected()) {
-                this.supprimerInscrit(checkBox.getText());
-                this.critEnreg = false;
-            }
-        }
-        jif.dispose();
-        this.affichage();
-    }
 
     /**
      * Enregistrer l'ensemble des inscrits dans un fichier excel.
@@ -1526,10 +1512,6 @@ public class Projet {
         timer.start();
     }
 
-    ////////////////
-    ///CHARGEMENT///
-    ////////////////
-
     /**
      * Enregistrer l'ensemble des licenciées dans un fichier excel dans un nouveau fichier.
      */
@@ -1560,6 +1542,10 @@ public class Projet {
             }
         }
     }
+
+    ////////////////
+    ///CLASSEMENT///
+    ////////////////
 
     /**
      * Demander quels classements.
@@ -1647,10 +1633,6 @@ public class Projet {
         jif.pack();
     }
 
-    /////////////////////
-    ///ORDRE DE DEPART///
-    /////////////////////
-
     /**
      * Afficher le classement d'un niveau.
      *
@@ -1666,19 +1648,19 @@ public class Projet {
                     return;
             }
         // Calcul des scores et tri
-        classement = new TreeSet<>((Jeune j1, Jeune j2) ->
+        TreeSet<Jeune> set = new TreeSet<>((Jeune j1, Jeune j2) ->
                 ((j2.getPoints() - j1.getPoints()) == 0) ? 1 : j2.getPoints() - j1.getPoints());
+            this.classement.put(niveau, set);
         for (Jeune j : this.lesInscrits)
             if (j.getNiveau() == niveau) {
                 j.modifierPoints(this.reponses.get(j.getNiveau()), this.nbBalise, this.nbOrientation,
                         this.nbMemo, this.nbSegment, this.gains, this.fp);
-                classement.add(j);
+                classement.get(niveau).add(j);
             }
 
         // regarder s'il y a des égalités sur le podium
         List<Jeune> tmp = new ArrayList<>();
-        for (Jeune j : classement)
-            if (j.getNiveau() == niveau)
+        for (Jeune j : classement.get(niveau))
                 tmp.add(j);
 
         int position = 1;
@@ -1686,9 +1668,8 @@ public class Projet {
         for (int i = 0; i < tmp.size() - 1; i++)
             if (position > 3)
                 break;
-            else if (tmp.get(i).getNiveau() == niveau)
-                if (tmp.get(i).getPoints() == tmp.get(i + 1).getPoints()) {
-                    new FicheBonus(this, tmp.get(i).getPoints(), classement, position, niveau);
+            else if (tmp.get(i).getPoints() == tmp.get(i + 1).getPoints()) {
+                    new FicheBonus(this, tmp.get(i).getPoints(), classement.get(niveau), position, niveau);
                     egalite = true;
                     break;
                 } else
@@ -1701,26 +1682,26 @@ public class Projet {
         // Afficher le classement
         switch (niveau) {
             case V:
-                if (fcVert != null)
-                    fcVert.dispose();
+              /*  if (fcVert != null)
+                    fcVert.dispose();*/
                 fcVert = new FicheClassement(this);
                 fcVert.afficherCouleur(classement, Niveau.V);
                 break;
             case B:
-                if (fcBleu != null)
-                    fcBleu.dispose();
+                /*if (fcBleu != null)
+                    fcBleu.dispose();*/
                 fcBleu = new FicheClassement(this);
                 fcBleu.afficherCouleur(classement, Niveau.B);
                 break;
             case R:
-                if (fcRouge != null)
-                    fcRouge.dispose();
+               /* if (fcRouge != null)
+                    fcRouge.dispose();*/
                 fcRouge = new FicheClassement(this);
                 fcRouge.afficherCouleur(classement, Niveau.R);
                 break;
             case N:
-                if (fcNoir != null)
-                    fcNoir.dispose();
+               /* if (fcNoir != null)
+                    fcNoir.dispose();*/
                 fcNoir = new FicheClassement(this);
                 fcNoir.afficherCouleur(classement, Niveau.N);
                 break;
@@ -1734,8 +1715,14 @@ public class Projet {
      */
     public void exporterClassement(Niveau niveau) {
         // On vérifie que les fiches sont correctement remplies
-        boolean ok = true;
-        for (Jeune j : this.lesInscrits)
+        /*boolean ok = true;
+
+        List<Jeune> tmp = new ArrayList<>();
+        for (Jeune j : classement)
+            if (j.getNiveau() == niveau)
+                tmp.add(j);
+
+        for (Jeune j : tmp)
             if (j.getNiveau() == niveau) {
                 ok = ok && j.getFiche2().toutRempli();
                 if (!ok) {
@@ -1743,6 +1730,7 @@ public class Projet {
                     return;
                 }
             }
+*/
 
         // Récupérer le fichier
         JFileChooser chooser = new JFileChooser();
@@ -1938,17 +1926,17 @@ public class Projet {
 
             int k = 1;
             int nbPoints = 0;
-            // Remplir le fichier avec les jeunes de la couleur passée en paramèters
+           /* // Remplir le fichier avec les jeunes de la couleur passée en paramèters
             classement = new TreeSet<>(Comparator.comparingInt(Jeune::getPoints));
 
             // calculer le classement
             for (Jeune j : this.lesInscrits)
                 if (j.getNiveau() == niveau)
                     classement.add(j);
-
+            */
             // ecrire le classement
             int c = 0;
-            for (Jeune j : classement) {
+            for (Jeune j : classement.get(niveau)) {
                 row = sheet.createRow(i);
                 i++;
                 c++;
@@ -2026,7 +2014,7 @@ public class Projet {
 
             // calculer le classement
             c = 0;
-            for (Jeune j : classement) {
+            for (Jeune j : classement.get(niveau)) {
                 row = sheet.createRow(i);
                 if (j.getNiveau() == niveau && j.getSexe() == 'F') {
                     i++;
@@ -2105,7 +2093,7 @@ public class Projet {
             nbPoints = 0;
 
             c = 0;
-            for (Jeune j : classement) {
+            for (Jeune j : classement.get(niveau)) {
                 row = sheet.createRow(i);
                 if (j.getNiveau() == niveau && j.getSexe() == 'G') {
                     i++;
@@ -2159,6 +2147,34 @@ public class Projet {
                     "Erreur dans l'exportation du classement des " + niveau + ". \n S'il est ouvert dans excel, le fermer et réessayer.");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    ////////////////
+    ///CHARGEMENT///
+    ////////////////
+
+    /**
+     * Demander quels fichiers sont à charger et les charger.
+     */
+    public void chargerFichierInscription() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm", "xltx", "xlt", "xltm", "xla", "xlam"));
+        choisirDossier(chooser);
+
+        chooser.setMultiSelectionEnabled(true);
+
+        // Si validation du fichier
+        if (chooser.showDialog(chooser, "Ouvrir") == 0) {
+            File files[] = chooser.getSelectedFiles();
+
+            for (int ind = 0; ind < files.length; ind++) {
+                File f = files[ind];
+                inscription(f);
+            }
+
+            this.affichage();
+            this.critEnreg = false;
         }
     }
 
@@ -2376,10 +2392,6 @@ public class Projet {
         }
     }
 
-    /////////////////////////////////////
-    ///GERER LES BARRES DE PROGRESSION///
-    /////////////////////////////////////
-
     /**
      * Récupérer les jeunes inscrits dans le fichier.
      *
@@ -2452,29 +2464,9 @@ public class Projet {
         }
     }
 
-    /**
-     * Demander quels fichiers sont à charger et les charger.
-     */
-    public void chargerFichierInscription() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("fichier excel", "xls", "xlsx", "xlsm", "xltx", "xlt", "xltm", "xla", "xlam"));
-        choisirDossier(chooser);
-
-        chooser.setMultiSelectionEnabled(true);
-
-        // Si validation du fichier
-        if (chooser.showDialog(chooser, "Ouvrir") == 0) {
-            File files[] = chooser.getSelectedFiles();
-
-            for (int ind = 0; ind < files.length; ind++) {
-                File f = files[ind];
-                inscription(f);
-            }
-
-            this.affichage();
-            this.critEnreg = false;
-        }
-    }
+    /////////////////////
+    ///ORDRE DE DEPART///
+    /////////////////////
 
     /**
      * Demander l'ordre de départ de quel niveau ?
@@ -2534,6 +2526,82 @@ public class Projet {
         // Afficher une fiche pour renseigner le numéro de son parcours d'orientation
         new FicheDepart(ordre, this);
         ordre.get(0).getFiche2().setVisible(true);
+    }
+
+    /////////////////////////////////////
+    ///GERER LES BARRES DE PROGRESSION///
+    /////////////////////////////////////
+
+    /**
+     * Signaler qu'un jeune est revenu des mémos.
+     *
+     * @param j Le jeune qui est revenu des mémos
+     */
+    public void arriveMemo(Jeune j) {
+        if (!this.revenuMemo.contains(j))
+            this.revenuMemo.add(j);
+        majBarreMemo(j.getNiveau());
+    }
+
+    /**
+     * Mettre à jour la barre de progression des mémos.
+     *
+     * @param niveau La couleur de la barre à mettre à jour
+     */
+    public void majBarreMemo(Niveau niveau) {
+        // Calculer le nombre de jeunes dans cette catégorie
+        int nb = 0;
+        for (Jeune jj : revenuMemo)
+            if (jj.getNiveau() == niveau)
+                nb++;
+
+        // Calculer le nombre total de jeunes inscrits dans cette catégorie
+        int total = 0;
+        for (Jeune jj : lesInscrits)
+            if (jj.getNiveau() == niveau)
+                total++;
+
+        // Mettre à jour la barre de progression et le label
+        this.barreMemo.setValue(nb);
+        this.nombreArriveMemo.setText(nb + "/" + total);
+        this.barreMemo.setMaximum(total);
+        this.fp.repaint();
+    }
+
+    /**
+     * Signaler qu'un jeune est revenu des balises.
+     *
+     * @param j Le jeune qui est revenu des balises
+     */
+    public void arriveBalise(Jeune j) {
+        if (!this.revenuBalises.contains(j))
+            this.revenuBalises.add(j);
+        majBarreBalise(j.getNiveau());
+    }
+
+    /**
+     * Mettre à jour la barre de progression.
+     *
+     * @param niveau La couleur de la barre de progression
+     */
+    public void majBarreBalise(Niveau niveau) {
+        // Calculer le nombre de jeunes dans cette catégorie
+        int nb = 0;
+        for (Jeune jj : revenuBalises)
+            if (jj.getNiveau() == niveau)
+                nb++;
+
+        // Calculer le nombre total de jeunes inscrits dans cette catégorie
+        int total = 0;
+        for (Jeune jj : lesInscrits)
+            if (jj.getNiveau() == niveau)
+                total++;
+
+        // Mettre à jour la barre de progression et le label
+        this.barreBalise.setValue(nb);
+        this.nombreArriveBalise.setText(nb + "/" + total);
+        this.barreBalise.setMaximum(total);
+        this.fp.repaint();
     }
 
     //////////////////////
@@ -2632,82 +2700,6 @@ public class Projet {
     }
 
     /**
-     * Signaler qu'un jeune est revenu des mémos.
-     *
-     * @param j Le jeune qui est revenu des mémos
-     */
-    public void arriveMemo(Jeune j) {
-        if (!this.revenuMemo.contains(j))
-            this.revenuMemo.add(j);
-        majBarreMemo(j.getNiveau());
-    }
-
-    /**
-     * Mettre à jour la barre de progression des mémos.
-     *
-     * @param niveau La couleur de la barre à mettre à jour
-     */
-    public void majBarreMemo(Niveau niveau) {
-        // Calculer le nombre de jeunes dans cette catégorie
-        int nb = 0;
-        for (Jeune jj : revenuMemo)
-            if (jj.getNiveau() == niveau)
-                nb++;
-
-        // Calculer le nombre total de jeunes inscrits dans cette catégorie
-        int total = 0;
-        for (Jeune jj : lesInscrits)
-            if (jj.getNiveau() == niveau)
-                total++;
-
-        // Mettre à jour la barre de progression et le label
-        this.barreMemo.setValue(nb);
-        this.nombreArriveMemo.setText(nb + "/" + total);
-        this.barreMemo.setMaximum(total);
-        this.fp.repaint();
-    }
-
-    /**
-     * Signaler qu'un jeune est revenu des balises.
-     *
-     * @param j Le jeune qui est revenu des balises
-     */
-    public void arriveBalise(Jeune j) {
-        if (!this.revenuBalises.contains(j))
-            this.revenuBalises.add(j);
-        majBarreBalise(j.getNiveau());
-    }
-
-    /**
-     * Mettre à jour la barre de progression.
-     *
-     * @param niveau La couleur de la barre de progression
-     */
-    public void majBarreBalise(Niveau niveau) {
-        // Calculer le nombre de jeunes dans cette catégorie
-        int nb = 0;
-        for (Jeune jj : revenuBalises)
-            if (jj.getNiveau() == niveau)
-                nb++;
-
-        // Calculer le nombre total de jeunes inscrits dans cette catégorie
-        int total = 0;
-        for (Jeune jj : lesInscrits)
-            if (jj.getNiveau() == niveau)
-                total++;
-
-        // Mettre à jour la barre de progression et le label
-        this.barreBalise.setValue(nb);
-        this.nombreArriveBalise.setText(nb + "/" + total);
-        this.barreBalise.setMaximum(total);
-        this.fp.repaint();
-    }
-
-    ////////////////////////
-    ///METHODES STATIQUES///
-    ////////////////////////
-
-    /**
      * Décaler les éléments d'une liste.
      *
      * @param liste  La liste
@@ -2784,6 +2776,7 @@ public class Projet {
         for (Niveau niv : Niveau.values()) {
             reponses.put(niv, new Reponses());
         }
+        this.classement = new HashMap<>();
         this.lesInscrits = new ArrayList<>();
         this.gains = new HashMap<>();
         this.gains.put("baliseTrouvee", 2);
@@ -2882,5 +2875,23 @@ public class Projet {
         }
         chooser.setCurrentDirectory(new File("C:" + File.separator + "Users" + File.separator));
     }
+
+    /**
+     * Récupérer un jeune grâce à son numéro.
+     *
+     * @param numero Le numéro du jeune à récupérer
+     * @return Le jeune correspondant au numéro
+     **/
+    public Jeune recupJeune(String numero) {
+        Jeune res = null;
+        for (Jeune licencie : this.lesInscrits) {
+            if (licencie.toString().equals(numero)) {
+                res = licencie;
+                break;
+            }
+        }
+        return res;
+    }
+
 }
 
